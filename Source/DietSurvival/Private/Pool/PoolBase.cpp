@@ -65,3 +65,22 @@ void APoolBase::Release(APoolObjectBase* Object)
 	AvailableObjects.Push(Object);
 }
 
+void APoolBase::Shrink(int32 NewPoolSize)
+{
+	if (AllObjects.Num() < NewPoolSize) {
+		return;
+	}
+
+	int32 DeleteCount = AllObjects.Num() - NewPoolSize;
+
+	for (int32 I = 0; I < DeleteCount; I++) {
+		if (AvailableObjects.IsEmpty()) {
+			break;
+		}
+		APoolObjectBase* PopedObject = AvailableObjects.Pop();
+		PopedObject->SetPoolState(EPoolObjectState::Active);
+		AllObjects.Remove(PopedObject);
+		PopedObject->Destroy();
+	}
+}
+

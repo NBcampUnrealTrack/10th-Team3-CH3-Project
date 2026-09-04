@@ -38,5 +38,6 @@ public:
 
 	APoolObjectBase* Acquire();
 	void Release(APoolObjectBase* Object);
+	void Shrink(int32 NewPoolSize);
 
 };
