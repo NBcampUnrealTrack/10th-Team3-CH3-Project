@@ -2,7 +2,6 @@
 
 
 #include "System/DietGameState.h"
-#include "DietGameState.h"
 
 ADietGameState::ADietGameState()
 {

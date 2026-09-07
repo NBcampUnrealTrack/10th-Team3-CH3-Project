@@ -4,7 +4,9 @@
 #include "GameFramework/GameMode.h"
 #include "DietGameMode.generated.h"
 
+//적 AI 작업 후 주석제거
 //class AMonsterSpawner;
+class ADietGameState;
 
 UCLASS()
 class DIETSURVIVAL_API ADietGameMode : public AGameMode
@@ -32,9 +34,9 @@ protected:
 	//UPROPERTY()
 	//TObjectPtr<AMonsterSpawner> MonsterSpawner;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Spawn")
-	//TObjectPtr<UDataTable> WaveSpawnDataTable;
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
+	TObjectPtr<UDataTable> WaveSpawnDataTable;
 
 private:
-	//ADietGameState* GetDietGameState() const;
+	ADietGameState* GetDietGameState() const;
 };
