@@ -1,6 +1,7 @@
 ﻿#include "System/AugmentManagerComponent.h"
 #include "System/DietGameState.h"
 #include "System/AugmentsDataRow.h"
+#include "System/DataTableSubsystem.h"
 #include "Algo/RandomShuffle.h"
 
 UAugmentManagerComponent::UAugmentManagerComponent()
@@ -14,11 +15,9 @@ void UAugmentManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ADietGameState* DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState()))
+	if (UDataTableSubsystem* DataTableSubsystem = UDataTableSubsystem::Get(this))
 	{
-		// DataTableSubsystem이 갖고있는 증강 데이터 테이블을 AugmentsData에 연결
-		// 예)
-		//AugmentsData = DataTableSubsystem->AugmentsDataTable;
+		AugmentsData = DataTableSubsystem->GetAugmentDataTable();
 	}
 
 	if (AugmentsData.IsValid())
@@ -30,7 +29,16 @@ void UAugmentManagerComponent::BeginPlay()
 		{
 			AugmentsMap.Add(Augment->AugmentFName, TArray<int32>({ 0, Augment->MaxAugmentLevel }));
 		}
+
+		// Test
+		for (const auto& [Name, Levels] : AugmentsMap)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
+		}
 	}
+
+	// Test
+	StartAugment();
 }
 
 void UAugmentManagerComponent::StartAugment()
