@@ -1,6 +1,7 @@
 ﻿#include "System/AugmentManagerComponent.h"
 #include "System/DietGameState.h"
 #include "System/AugmentsDataRow.h"
+#include "Algo/RandomShuffle.h"
 
 UAugmentManagerComponent::UAugmentManagerComponent()
 {
@@ -34,9 +35,35 @@ void UAugmentManagerComponent::BeginPlay()
 
 void UAugmentManagerComponent::StartAugment()
 {
+	TArray<FName> SelectedAugments = SelectRandomAugments();
+
+	// test log
+	for (int32 i = 0; i < SelectedAugments.Num(); i++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%d번째 증강: %s"), i + 1, *SelectedAugments[i].ToString());
+	}
 }
 
 TArray<FName> UAugmentManagerComponent::SelectRandomAugments()
 {
-	return TArray<FName>();
+	TArray<FName> Candidates;
+	for (const auto& [Name, Levels] : AugmentsMap)
+	{
+		int32 CurrentLevel = Levels[0];
+		int32 MaxLevel = Levels[1];
+		if (CurrentLevel < MaxLevel)
+		{
+			Candidates.Add(Name);
+		}
+	}
+
+	if (Candidates.Num() <= 3)
+	{
+		return Candidates;
+	}
+
+	Algo::RandomShuffle(Candidates);
+	TArray<FName> Selection;
+	Selection.Append(&Candidates[0], 3);
+	return Selection;
 }
