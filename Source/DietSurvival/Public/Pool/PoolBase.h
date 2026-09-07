@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PoolBase.generated.h"
 
-class APoolObjectBase;
+class UPoolObjectComponent;
 
 UCLASS()
 class DIETSURVIVAL_API APoolBase : public AActor
@@ -19,12 +19,12 @@ public:
 
 protected:
 	UPROPERTY()
-	TArray<TObjectPtr<APoolObjectBase>> AllObjects;
+	TArray<TObjectPtr<AActor>> AllObjects;
 	UPROPERTY()
-	TArray<TObjectPtr<APoolObjectBase>> AvailableObjects;
+	TArray<TObjectPtr<AActor>> AvailableObjects;
 
 	UPROPERTY()
-	TSubclassOf<APoolObjectBase> ObjectClassSaved;
+	TObjectPtr<UClass> ObjectClassSaved;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,12 +32,12 @@ protected:
 public:
 
 	void InitalizePool(
-		TSubclassOf<APoolObjectBase> ObjectClass,
+		TSubclassOf<AActor> ObjectClass,
 		int32 PoolSize
 	);
 
-	APoolObjectBase* Acquire();
-	void Release(APoolObjectBase* Object);
+	AActor* Acquire();
+	void Release(UPoolObjectComponent* Object);
 	void Shrink(int32 NewPoolSize);
 
 };

@@ -2,7 +2,7 @@
 
 
 #include "Pool/PoolBase.h"
-#include "Pool/PoolObjectBase.h"
+#include "Pool/PoolObjectComponent.h"
 
 // Sets default values
 APoolBase::APoolBase()
@@ -19,50 +19,61 @@ void APoolBase::BeginPlay()
 	
 }
 
-void APoolBase::InitalizePool(TSubclassOf<APoolObjectBase> ObjectClass, int32 PoolSize)
+void APoolBase::InitalizePool(TSubclassOf<AActor> ObjectClass, int32 PoolSize)
 {
 	if (ObjectClassSaved) {
 		return;
 	}
-	ObjectClassSaved = ObjectClass;
-	for (int32 i = 0; i < PoolSize; i++) {
-		APoolObjectBase* NewObject =
-			GetWorld()->SpawnActor<APoolObjectBase>(ObjectClass);
 
-		if (NewObject) {
-			NewObject->SetPool(this);
+	if (!ObjectClass) return;
+
+	ObjectClassSaved = ObjectClass;
+
+	for (int32 i = 0; i < PoolSize; i++) {
+		AActor* NewObject =
+			GetWorld()->SpawnActor<AActor>(ObjectClassSaved);
+
+		if (NewObject && NewObject->FindComponentByClass<UPoolObjectComponent>()) {
 			AllObjects.Add(NewObject);
 			AvailableObjects.Add(NewObject);
 		}
 	}
 }
 
-APoolObjectBase* APoolBase::Acquire()
+AActor* APoolBase::Acquire()
 {
+	if (!ObjectClassSaved) {
+		return nullptr;
+	}
 	if (AvailableObjects.IsEmpty()) {
-		APoolObjectBase* NewObject =
-			GetWorld()->SpawnActor<APoolObjectBase>(ObjectClassSaved);
-		NewObject->SetPool(this);
+		AActor* NewObject =
+			GetWorld()->SpawnActor<AActor>(ObjectClassSaved);
+		UPoolObjectComponent* PoolObjectComponent = NewObject->FindComponentByClass<UPoolObjectComponent>();
+		PoolObjectComponent->SetPool(this);
 		AllObjects.Add(NewObject);
-		NewObject->SetPoolState(EPoolObjectState::Active);
+		PoolObjectComponent->SetIsInPool(false);
 		return NewObject;
 	}
-	APoolObjectBase* PopedObject = AvailableObjects.Pop();
-	PopedObject->SetPoolState(EPoolObjectState::Active);
+	AActor* PopedObject = AvailableObjects.Pop();
+	UPoolObjectComponent* PoolObjectComponent = PopedObject->FindComponentByClass<UPoolObjectComponent>();
+	PoolObjectComponent->SetIsInPool(false);
 	return PopedObject;
 }
 
-void APoolBase::Release(APoolObjectBase* Object)
+void APoolBase::Release(UPoolObjectComponent* Object)
 {
-	if (!Object) {
+	if (!ObjectClassSaved) return;
+
+	if (!Object || Object->IsInPool()) {
 		return;
 	}
-	if (Object->GetPoolState() == EPoolObjectState::InPool) {
+	AActor* PoolObjectOwner = Object->GetOwner();
+	if (!PoolObjectOwner) {
 		return;
 	}
-	Object->SetPoolState(EPoolObjectState::InPool);
+	Object->SetIsInPool(true);
 	Object->OnRelease();
-	AvailableObjects.Push(Object);
+	AvailableObjects.Push(PoolObjectOwner);
 }
 
 void APoolBase::Shrink(int32 NewPoolSize)
@@ -77,8 +88,7 @@ void APoolBase::Shrink(int32 NewPoolSize)
 		if (AvailableObjects.IsEmpty()) {
 			break;
 		}
-		APoolObjectBase* PopedObject = AvailableObjects.Pop();
-		PopedObject->SetPoolState(EPoolObjectState::Active);
+		AActor* PopedObject = AvailableObjects.Pop();
 		AllObjects.Remove(PopedObject);
 		PopedObject->Destroy();
 	}
