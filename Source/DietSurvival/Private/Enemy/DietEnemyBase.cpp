@@ -72,6 +72,8 @@ void ADietEnemyBase::RunAI()
 		return;
 	}
 
+	PoolObjectComponent->OnAcquire();
+
 	// BT 재시작
 	DietAIController->RunBehaviorTree(BehaviorTree);
 }
