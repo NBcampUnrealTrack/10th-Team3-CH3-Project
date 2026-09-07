@@ -34,7 +34,7 @@ ADietEnemyBase::ADietEnemyBase()
 
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (DamageAmount <= 0) return;
+	if (DamageAmount <= 0) return DamageAmount;
 	HealthComponent->TakeDamage(DamageAmount);
 	return DamageAmount;
 }
