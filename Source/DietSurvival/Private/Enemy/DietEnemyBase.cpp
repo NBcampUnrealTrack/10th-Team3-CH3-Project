@@ -31,6 +31,12 @@ ADietEnemyBase::ADietEnemyBase()
 
 	PowerAttack = 0;
 }
+
+float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (DamageAmount <= 0) return;
+	HealthComponent->TakeDamage(DamageAmount);
+	return DamageAmount;
 }
 
 void ADietEnemyBase::PossessedBy(AController* NewController)
@@ -89,5 +95,38 @@ void ADietEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ADietEnemyBase::HandleDeath()
+{
+	StopAI();
+	if (PoolObjectComponent) {
+		PoolObjectComponent->ReturnToPool();
+	}
+}
+
+void ADietEnemyBase::OnCapsuleOverlap(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
+	const FHitResult& SweepResult)
+{
+	if (!OtherActor
+		|| !OtherActor->ActorHasTag("Player")) return;
+
+	AttackToTarget(OtherActor);
+}
+
+void ADietEnemyBase::AttackToTarget(AActor* Target)
+{
+	UGameplayStatics::ApplyDamage(
+		Target,
+		PowerAttack,
+		GetController(),
+		this,
+		UDamageType::StaticClass()
+	);
 }
 

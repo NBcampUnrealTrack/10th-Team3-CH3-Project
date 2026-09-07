@@ -19,13 +19,38 @@ class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
 public:
 	ADietEnemyBase();
 
+	virtual float TakeDamage(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		class AActor* DamageCauser) override;
+
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void RunAI();
 
 	virtual void StopAI();
 protected:
+
+	int32 PowerAttack;
+
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	virtual void HandleDeath();
+
+	UFUNCTION()
+	virtual void AttackToTarget(AActor* Target);
+
+	UFUNCTION()
+	void OnCapsuleOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 
 	UPROPERTY(EditAnywhere, Category="Mesh")
 	TObjectPtr<UStaticMeshComponent> StaticMesh;
