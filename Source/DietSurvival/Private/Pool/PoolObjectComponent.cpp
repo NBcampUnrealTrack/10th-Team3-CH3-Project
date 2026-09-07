@@ -7,7 +7,7 @@
 // Sets default values for this component's properties
 UPoolObjectComponent::UPoolObjectComponent()
 {
-
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UPoolObjectComponent::OnAcquire(bool bIsNeedTick)

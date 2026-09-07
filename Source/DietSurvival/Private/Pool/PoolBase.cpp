@@ -7,6 +7,7 @@
 // Sets default values
 APoolBase::APoolBase()
 {
+	PrimaryActorTick.bCanEverTick = false;
 	AllObjects = {};
 	AvailableObjects = {};
 	ObjectClassSaved = nullptr;
