@@ -31,14 +31,14 @@ void UAugmentManagerComponent::BeginPlay()
 		}
 
 		// Test
-		for (const auto& [Name, Levels] : AugmentsMap)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
-		}
+		//for (const auto& [Name, Levels] : AugmentsMap)
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
+		//}
 	}
 
 	// Test
-	StartAugment();
+	//StartAugment();
 }
 
 void UAugmentManagerComponent::StartAugment()
