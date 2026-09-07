@@ -11,6 +11,9 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule"
+			],
+			"AdditionalDependencies": [
+				"Engine"
 			]
 		}
 	],
