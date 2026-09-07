@@ -7,7 +7,6 @@
 #include "PoolManager.generated.h"
 
 class APoolBase;
-class APoolObjectBase;
 
 UCLASS()
 class DIETSURVIVAL_API APoolManager : public AActor
@@ -20,15 +19,15 @@ public:
 
 protected:
 	UPROPERTY()
-	TMap<TSubclassOf<APoolObjectBase>, TObjectPtr<APoolBase>> PoolsMap;
+	TMap<TObjectPtr<UClass>, TObjectPtr<APoolBase>> PoolsMap;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	APoolBase* AddPool(TSubclassOf<APoolObjectBase> PoolingClass, int32 PoolSize);
+	APoolBase* AddPool(TSubclassOf<AActor> PoolObjectClass, int32 PoolSize);
 
-	APoolObjectBase* GetPoolOjbect(TSubclassOf<APoolObjectBase> PoolingClass);
+	AActor* GetPoolOjbect(UClass* PoolObjectClass);
 
-	void ShrinkPool(TSubclassOf<APoolObjectBase> PoolingClass, int32 NewPoolSize = 0);
+	void ShrinkPool(UClass* PoolObjectClass, int32 NewPoolSize = 0);
 };

@@ -4,7 +4,7 @@
 #include "Pool/PoolManager.h"
 
 #include "Pool/PoolBase.h"
-#include "Pool/PoolObjectBase.h"
+#include "Pool/PoolObjectComponent.h"
 
 // Sets default values
 APoolManager::APoolManager()
@@ -19,32 +19,55 @@ void APoolManager::BeginPlay()
 	
 }
 
-APoolBase* APoolManager::AddPool(TSubclassOf<APoolObjectBase> PoolingClass, int32 PoolSize)
+APoolBase* APoolManager::AddPool(TSubclassOf<AActor> PoolObjectClass, int32 PoolSize)
 {
-	if (PoolsMap.Contains(PoolingClass)) {
-		return PoolsMap[PoolingClass];
+	if (PoolObjectClass) return nullptr;
+
+	UClass* ObjectClass = PoolObjectClass.Get();
+	if (TObjectPtr<APoolBase> const* ExistingPool = PoolsMap.Find(ObjectClass)) {
+		return *ExistingPool;
+	}
+
+	if (PoolsMap.Contains(ObjectClass)) {
+		return PoolsMap[ObjectClass];
+	}
+
+	AActor* TestActor = Cast<AActor>(ObjectClass->GetDefaultObject());
+	if (!TestActor) {
+		return nullptr;
+	}
+
+	UPoolObjectComponent* PoolComponent =
+		TestActor->FindComponentByClass<UPoolObjectComponent>();
+
+	if (!PoolComponent) {
+		return nullptr;
 	}
 
 	APoolBase* NewPool = GetWorld()->SpawnActor<APoolBase>();
-	NewPool->InitalizePool(PoolingClass, PoolSize);
-	PoolsMap.Add(PoolingClass, NewPool);
+	if (!NewPool) return nullptr;
+
+	NewPool->InitalizePool(PoolObjectClass, PoolSize);
+	PoolsMap.Add(PoolObjectClass, NewPool);
 	return NewPool;
 }
 
-APoolObjectBase* APoolManager::GetPoolOjbect(TSubclassOf<APoolObjectBase> PoolingClass)
+AActor* APoolManager::GetPoolOjbect(UClass* PoolObjectClass)
 {
-	if (!PoolsMap.Contains(PoolingClass)) {
+	if (!PoolObjectClass) return nullptr;
+	if (!PoolsMap.Contains(PoolObjectClass)) {
 		return nullptr;
 	}
-	return PoolsMap[PoolingClass]->Acquire();
+	return PoolsMap[PoolObjectClass]->Acquire();
 }
 
-void APoolManager::ShrinkPool(TSubclassOf<APoolObjectBase> PoolingClass, int32 NewPoolSize)
+void APoolManager::ShrinkPool(UClass* PoolObjectClass, int32 NewPoolSize)
 {
-	if (!PoolsMap.Contains(PoolingClass)) {
+	if (!PoolObjectClass) return;
+	if (!PoolsMap.Contains(PoolObjectClass)) {
 		return;
 	}
-	PoolsMap[PoolingClass]->Shrink(NewPoolSize);
+	PoolsMap[PoolObjectClass]->Shrink(NewPoolSize);
 }
 
 
