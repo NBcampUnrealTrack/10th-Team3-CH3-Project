@@ -32,7 +32,7 @@ void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
 	SpawnTime = NewSpawnTime;
 
 	if (!MonsterRow) {
-		SpawnEnemy();
+		StartSpawn();
 	}
 }
 void AEnemySpawner::SetSpawnMonster(FTableRowBase* NewMonsterRow)
@@ -46,15 +46,42 @@ void AEnemySpawner::SetSpawnMonster(FTableRowBase* NewMonsterRow)
 
 	if (FMath::IsNearlyZero(SpawnTime)) return;
 
-	SpawnEnemy();
+	StartSpawn();
 }
 
 void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* NewMonsterRow)
 {
+	if (NewSpawnTime <= 0 || !NewMonsterRow) return;
+
+	SpawnTime = NewSpawnTime;
+	MonsterRow = NewMonsterRow;
+
+	StartSpawn();
 }
 
 void AEnemySpawner::SpawnStop()
 {
+	if (GetWorldTimerManager().IsTimerActive(SpawnTimer)) {
+		GetWorldTimerManager().ClearTimer(SpawnTimer);
+	}
+}
+
+
+void AEnemySpawner::StartSpawn()
+{
+	if (!PoolManager) return;
+
+	if (GetWorldTimerManager().IsTimerActive(SpawnTimer)) {
+		GetWorldTimerManager().ClearTimer(SpawnTimer);
+	}
+
+	GetWorldTimerManager().SetTimer(
+		SpawnTimer,
+		this,
+		AEnemySpawner::SpawnEnemy,
+		SpawnTime,
+		true
+	);
 }
 
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
@@ -63,14 +90,9 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 	return FVector3d();
 }
 
+
 void AEnemySpawner::SpawnEnemy()
 {
-	if (!PoolManager) return;
-
-	if (GetWorldTimerManager().IsTimerActive(SpawnTimer)) {
-		GetWorldTimerManager().ClearTimer(SpawnTimer);
-	}
-
 	AActor* NewEnemy = PoolManager->GetPoolOjbect(nullptr);
 	if (!NewEnemy) return;
 

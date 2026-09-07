@@ -43,5 +43,8 @@ protected:
 
 	FVector3d GetNewSpawnLocation() const;
 
+	void StartSpawn();
+
+	UFUNCTION()
 	void SpawnEnemy();
 };
