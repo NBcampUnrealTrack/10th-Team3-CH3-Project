@@ -18,10 +18,15 @@ public:
 	void GainExp(int32 Amount);
 
 protected:
+	void LevelUp();
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
 
-	int32 Exp;
+	int32 Exp = 0;
 
-	int32 Level;
+	int32 MaxExp = 10;
+
+	int32 Level = 1;
 };
