@@ -8,6 +8,8 @@
 
 class UBehaviorTree;
 class ADietAIController;
+class UHealthComponent;
+class UPoolObjectComponent;
 
 UCLASS()
 class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
@@ -25,9 +27,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, Category="Mesh")
+	TObjectPtr<UStaticMeshComponent> StaticMesh;
+
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	UPROPERTY()
 	TObjectPtr<ADietAIController> DietAIController;
+	UPROPERTY()
+	TObjectPtr<UPoolObjectComponent> PoolObjectComponent;
+	UPROPERTY()
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 };

@@ -3,14 +3,34 @@
 
 #include "Enemy/DietEnemyBase.h"
 #include "Enemy/DietAIController.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Enemy/Component/HealthComponent.h"
+#include "Pool/PoolObjectComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	UCapsuleComponent* Collision = GetCapsuleComponent();
+	if (Collision) {
+		Collision->OnComponentBeginOverlap.AddDynamic(this, &ADietEnemyBase::OnCapsuleOverlap);
+	}
 
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetupAttachment(GetRootComponent());
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health");
+	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
+
+	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+
+	PowerAttack = 0;
+}
 }
 
 void ADietEnemyBase::PossessedBy(AController* NewController)
