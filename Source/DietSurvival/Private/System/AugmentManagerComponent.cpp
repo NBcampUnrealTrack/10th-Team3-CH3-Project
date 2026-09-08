@@ -15,6 +15,8 @@ void UAugmentManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Warning, TEXT("AugmentManagerComponent BeginPlay()"));
+
 	if (UDataTableSubsystem* DataTableSubsystem = UDataTableSubsystem::Get(this))
 	{
 		AugmentsData = DataTableSubsystem->GetAugmentDataTable();
@@ -31,10 +33,18 @@ void UAugmentManagerComponent::BeginPlay()
 		}
 
 		// Test
-		//for (const auto& [Name, Levels] : AugmentsMap)
-		//{
-		//	UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
-		//}
+		if (AugmentsMap.Num() == 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Map 초기화 안 됨"));
+		}
+		for (const auto& [Name, Levels] : AugmentsMap)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("증강 데이터 테이블을 가져올 수 없음"));
 	}
 
 	// Test

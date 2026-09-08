@@ -66,6 +66,15 @@ void UAugmentSelectionComponent::StartSelection()
 	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
 	TArray<TTuple<FName, int32>> Candidates = PS->AugmentManager->SelectRandomAugments();
 
+	if (Candidates.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
+	}
+	for (const auto& [Name, Level] : Candidates)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("증강: %s"), *Name.ToString());
+	}
+
 	// 위젯 관련
 	ActiveWidgetInstance = CreateWidget<UAugmentSelectionWidget>(PC, SelectionWidgetClass);
 	ActiveWidgetInstance->InitializeCards(Candidates);
