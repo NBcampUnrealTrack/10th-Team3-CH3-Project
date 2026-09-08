@@ -60,7 +60,7 @@ void UAugmentSelectionComponent::StartSelection()
 	bIsSelecting = true;
 
 	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
-	TArray<FName> Candidates = PS->AugmentManager->SelectRandomAugments();
+	TArray<TTuple<FName, int32>> Candidates = PS->AugmentManager->SelectRandomAugments();
 }
 
 void UAugmentSelectionComponent::FinishSelection()
