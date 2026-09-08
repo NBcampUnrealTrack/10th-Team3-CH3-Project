@@ -6,8 +6,11 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "TimerManager.h"
+#include "Engine/Engine.h"
 
  #include "Player/PlayerStatComponent.h"
+ //#include "DietGameState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -35,6 +38,8 @@ APlayerCharacter::APlayerCharacter()
 	{ 
 		MoveComp->bOrientRotationToMovement = false; //마우스 방향으로만 회전.
 	}
+
+	Tags.Add(FName("Player"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -60,6 +65,11 @@ void APlayerCharacter::BeginPlay()
 				MoveComp->MaxWalkSpeed = StatComponent->GetMoveSpeed();
 			}
 		}
+
+		//if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
+		//{
+		//	  GS->SetPlayerRef(this);
+		//}
 	}
 
 }
@@ -123,6 +133,11 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (IsInvincible())
+	{
+		return 0.f;
+	}
+
 	// AActor 기본 구현: OnTakeAnyDamage 등 표준 델리게이트 브로드캐스트 후 DamageAmount를 그대로 반환
 	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
@@ -130,7 +145,29 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	{
 		// 실제 스탯 변경은 StatComponent에만 위임 (적한테 맞으면 포만감 증가)
 		StatComponent->ApplyDamage(ActualDamage);
-	}
 
+		// 무적 시간 부여 
+		StartHitInvincibility();
+	}
 	return ActualDamage;
+}
+
+void APlayerCharacter::StartHitInvincibility()
+{
+	bIsHitInvincible = true;
+	OnInvincibilityChanged.Broadcast(true);
+
+	GetWorldTimerManager().SetTimer(
+		HitInvincibilityTimerHandle,
+		this,
+		&APlayerCharacter::EndHitInvincibility,
+		HitInvincibilityDuration,
+		false 
+	);
+}
+
+void APlayerCharacter::EndHitInvincibility()
+{
+	bIsHitInvincible = false;
+	OnInvincibilityChanged.Broadcast(false);
 }

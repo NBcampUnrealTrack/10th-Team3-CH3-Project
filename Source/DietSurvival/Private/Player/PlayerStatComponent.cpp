@@ -1,0 +1,78 @@
+﻿#include "Player/PlayerStatComponent.h"
+
+UPlayerStatComponent::UPlayerStatComponent()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UPlayerStatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 시작 시점에 UI 등에 현재 포만감 상태를 브로드캐스트
+	OnFullnessChanged.Broadcast(Fullness, MaxFullness);
+}
+
+void UPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bIsGameOver)
+	{
+		return;
+	}
+}
+
+void UPlayerStatComponent::AddFullness(float Amount)
+{
+	if (bIsGameOver)
+	{
+		return;
+	}
+
+	const float PreviousFullness = Fullness;
+	Fullness = FMath::Clamp(Fullness + Amount, 0.f, MaxFullness);
+
+	if (!FMath::IsNearlyEqual(PreviousFullness, Fullness))
+	{
+		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
+	}
+
+	if (Fullness >= MaxFullness)
+	{
+		bIsGameOver = true;
+		OnGameOver.Broadcast();
+	}
+}
+
+void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
+{
+	// 모든 업그레이드는 덧셈으로 통일. 감소시키고 싶으면 음수 Amount를 넘기면 됨.
+	switch (StatType)
+	{
+	case EPlayerStatType::MoveSpeed:
+		MoveSpeed += Amount;
+		break;
+
+	case EPlayerStatType::AttackPower:
+		AttackPower += Amount;
+		break;
+
+	case EPlayerStatType::AttackSpeed:
+		AttackSpeed += Amount;
+		break;
+
+	case EPlayerStatType::Fullness:
+		AddFullness(Amount);
+		break;
+
+	case EPlayerStatType::MaxFullness:
+		MaxFullness += Amount;
+		// 최대치가 바뀌면 비율(UI 게이지 등)이 달라지므로 다시 알려줌
+		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
+		break;
+
+	default:
+		break;
+	}
+}
