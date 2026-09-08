@@ -22,7 +22,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-
 	UFUNCTION(BlueprintPure, Category = "GameState")
 	int32 GetCurrentWave() const { return CurrentWave; }
 
@@ -35,6 +34,12 @@ public:
 	// 타이머 조건 확인 함수 -- 웨이브, 종료 조건
 	UFUNCTION()
 	void TickTimer();
+
+	UFUNCTION()
+	void SetPlayerRef(APawn* InPlayer);
+
+	UFUNCTION()
+	TWeakObjectPtr<APawn> GetPlayerRef();
 
 public:
 	//Deligates
@@ -66,6 +71,9 @@ protected:
 	// 게임 진행 시간(승리 조건)
 	UPROPERTY(EditDefaultsOnly, Category = "Timer")
 	float MaxGameTime;
+
+	UPROPERTY()
+	TWeakObjectPtr<APawn> PlayerRef;
 
 private:
 	ADietGameMode* GetDietGameMode() const;

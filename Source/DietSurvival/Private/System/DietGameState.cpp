@@ -56,3 +56,17 @@ void ADietGameState::TickTimer()
 		UE_LOG(LogTemp, Log, TEXT("[DietGameState]최대 시간 도달"));
 	}
 }
+
+void ADietGameState::SetPlayerRef(APawn* InPlayer)
+{
+	if (InPlayer == nullptr)
+	{
+		return;
+	}
+	PlayerRef = InPlayer;
+}
+
+TWeakObjectPtr<APawn> ADietGameState::GetPlayerRef()
+{
+	return PlayerRef;
+}
