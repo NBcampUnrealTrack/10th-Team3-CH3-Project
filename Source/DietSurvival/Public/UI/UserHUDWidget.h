@@ -14,7 +14,7 @@ class DIETSURVIVAL_API UUserHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetHealth(float CurrentHP, float MaxHP);
+	void SetFullness(float CurrentFullness, float MaxFullness);
 	void SetExp(int32 CurrentExp, int32 MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
@@ -26,7 +26,7 @@ public:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> HealthBar;
+	TObjectPtr<UProgressBar> FullnessBar;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> ExpBar;

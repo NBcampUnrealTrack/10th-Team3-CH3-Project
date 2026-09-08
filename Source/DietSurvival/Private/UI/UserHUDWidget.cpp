@@ -2,13 +2,13 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
-void UUserHUDWidget::SetHealth(float CurrentHP, float MaxHP)
+void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 {
-	const float Ratio = (MaxHP > 0.f)
-		? FMath::Clamp(CurrentHP / MaxHP, 0.f, 1.f)
+	const float Ratio = (MaxFullness > 0.f)
+		? FMath::Clamp(CurrentFullness / MaxFullness, 0.f, 1.f)
 		: 0.f;
 
-	HealthBar->SetPercent(Ratio);
+	FullnessBar->SetPercent(Ratio);
 }
 
 void UUserHUDWidget::SetExp(int32 CurrentExp, int32 MaxExp)
