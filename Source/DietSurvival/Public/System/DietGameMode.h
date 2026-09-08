@@ -45,11 +45,8 @@ public:
 	//void HandlePlayerDefeat(); //todo 함수 이름 변경
 
 protected:
-	//UPROPERTY(EditDefaultsOnly, Category = "Spawn")
-	//TSubclassOf<AMonsterSpawner> MonsterSpawnerClass;
-
 	//UPROPERTY()
-	//TObjectPtr<AMonsterSpawner> MonsterSpawner;
+	//TObjectPtr<AEnemySpawner> CashedEnemySpawner;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
@@ -58,5 +55,5 @@ private:
 	ADietGameState* GetDietGameState() const;
 
 	UPROPERTY()
-	TObjectPtr<ADietGameState> DietGameState;
+	TObjectPtr<ADietGameState> CashedDietGameState;
 };

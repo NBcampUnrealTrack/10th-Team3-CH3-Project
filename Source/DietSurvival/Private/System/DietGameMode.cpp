@@ -16,14 +16,14 @@ void ADietGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	//델리게이트 구독
-	DietGameState = GetGameState<ADietGameState>();
-	if (DietGameState == nullptr)
+	CashedDietGameState = GetGameState<ADietGameState>();
+	if (CashedDietGameState == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
 		return;
 	}
-	DietGameState->OnWaveIncrease.AddDynamic(this, &ADietGameMode::HandleWaveIncrease);
-	DietGameState->OnTimeUp.AddDynamic(this, &ADietGameMode::HandleTimeUp);
+	CashedDietGameState->OnWaveIncrease.AddDynamic(this, &ADietGameMode::HandleWaveIncrease);
+	CashedDietGameState->OnTimeUp.AddDynamic(this, &ADietGameMode::HandleTimeUp);
 
 	StartLevel();
 }
@@ -46,11 +46,11 @@ ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
 
 void ADietGameMode::StartLevel()
 {
-	if (DietGameState == nullptr)
+	if (CashedDietGameState == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
 	}
-	DietGameState->StartTimer();
+	CashedDietGameState->StartTimer();
 }
 
 void ADietGameMode::EndLevel(bool bWin)
@@ -61,7 +61,7 @@ void ADietGameMode::EndLevel(bool bWin)
 		//UI출력
 
 	//종료 조건 추가 시 DietGameState 유효성 검사 추가 검토하기
-	DietGameState->StopTimer();
+	CashedDietGameState->StopTimer();
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
@@ -82,10 +82,10 @@ void ADietGameMode::HandleTimeUp()
 
 ADietGameState* ADietGameMode::GetDietGameState() const
 {
-	if (DietGameState == nullptr)
+	if (CashedDietGameState == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
 		return nullptr;
 	}
-	return DietGameState;
+	return CashedDietGameState;
 }

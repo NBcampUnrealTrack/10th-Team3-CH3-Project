@@ -14,6 +14,7 @@ ADietGameState::ADietGameState()
 
 void ADietGameState::BeginPlay()
 {
+	Super::BeginPlay();
 	//테스트용
 	StartTimer();
 }
