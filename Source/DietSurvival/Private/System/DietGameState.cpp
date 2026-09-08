@@ -57,6 +57,7 @@ void ADietGameState::TickTimer()
 	}
 }
 
+//플레이어 참조 셋
 void ADietGameState::SetPlayerRef(APawn* InPlayer)
 {
 	if (InPlayer == nullptr)
@@ -66,6 +67,7 @@ void ADietGameState::SetPlayerRef(APawn* InPlayer)
 	PlayerRef = InPlayer;
 }
 
+//플레이어 참조 겟
 TWeakObjectPtr<APawn> ADietGameState::GetPlayerRef()
 {
 	return PlayerRef;

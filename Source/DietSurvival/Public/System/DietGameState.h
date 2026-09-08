@@ -72,7 +72,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Timer")
 	float MaxGameTime;
 
-	UPROPERTY()
+	//플레이어 캐릭터 참조 포인터
+	UPROPERTY()	//GC가 추적 하도록
 	TWeakObjectPtr<APawn> PlayerRef;
 
 private:
