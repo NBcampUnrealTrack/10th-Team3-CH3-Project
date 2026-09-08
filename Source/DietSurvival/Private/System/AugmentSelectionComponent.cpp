@@ -1,6 +1,7 @@
 ﻿#include "System/AugmentSelectionComponent.h"
 #include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
+#include "Augment/AugmentSelectionWidget.h"
 
 UAugmentSelectionComponent::UAugmentSelectionComponent()
 {
@@ -41,6 +42,8 @@ void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
 
 void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s 증강 선택."), *ChosenAugmentFName.ToString());
+	FinishSelection();
 }
 
 void UAugmentSelectionComponent::TryBindToLevelUp()
@@ -59,10 +62,41 @@ void UAugmentSelectionComponent::StartSelection()
 
 	bIsSelecting = true;
 
+	// 랜덤한 증강 최대 3개 뽑기
 	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
 	TArray<TTuple<FName, int32>> Candidates = PS->AugmentManager->SelectRandomAugments();
+
+	// 위젯 관련
+	ActiveWidgetInstance = CreateWidget<UAugmentSelectionWidget>(PC, SelectionWidgetClass);
+	ActiveWidgetInstance->InitializeCards(Candidates);
+	ActiveWidgetInstance->OnAugmentChosen.AddDynamic(this, &UAugmentSelectionComponent::HandleAugmentChosen);
+	ActiveWidgetInstance->AddToViewport();
+
+	// 정지, 입력모드
+	PC->SetPause(true);
+	PC->SetInputMode(FInputModeUIOnly());
+	PC->bShowMouseCursor = true;
 }
 
 void UAugmentSelectionComponent::FinishSelection()
 {
+	APlayerController* PC = GetOwningController();
+	if (!PC) { return; }
+
+	if (ActiveWidgetInstance)
+	{
+		ActiveWidgetInstance->RemoveFromParent();
+		ActiveWidgetInstance = nullptr;
+	}
+
+	PC->bShowMouseCursor = false;
+	PC->SetInputMode(FInputModeGameOnly());
+	PC->SetPause(false);
+	bIsSelecting = false;
+
+	if (PendingLevelUpCount > 0)
+	{
+		PendingLevelUpCount--;
+		StartSelection();
+	}
 }

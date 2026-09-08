@@ -6,7 +6,7 @@ void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 {
 	AugmentFName = InAugmentFName;
 
-	if (UDataTableSubsystem* Subsystem = UDataTableSubsystem::Get(GetOwningPlayer()))
+	if (UDataTableSubsystem* Subsystem = UDataTableSubsystem::Get(this))
 	{
 		FAugmentsDataRow* Row = Subsystem->GetAugmentRowByFName(InAugmentFName);
 		if (!Row) { return; }

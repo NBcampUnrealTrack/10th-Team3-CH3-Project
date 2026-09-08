@@ -5,6 +5,7 @@
 #include "AugmentSelectionComponent.generated.h"
 
 class ADietPlayerState;
+class UAugmentSelectionWidget;
 
 UCLASS( ClassGroup=(DietSurvival), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API UAugmentSelectionComponent : public UActorComponent
@@ -35,6 +36,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPS;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Augment")
+	TSubclassOf<UAugmentSelectionWidget> SelectionWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UAugmentSelectionWidget> ActiveWidgetInstance;
 
 	int32 PendingLevelUpCount = 0;
 	bool bIsSelecting = false;
