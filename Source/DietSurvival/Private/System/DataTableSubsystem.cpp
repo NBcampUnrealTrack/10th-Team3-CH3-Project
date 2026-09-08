@@ -26,6 +26,13 @@ UDataTable* UDataTableSubsystem::GetAugmentDataTable()
 	return AugmentDataTable;
 }
 
+FAugmentsDataRow* UDataTableSubsystem::GetAugmentRowByFName(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow =
+		AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("SubsystemFindContext"));
+	return FoundRow;
+}
+
 void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
