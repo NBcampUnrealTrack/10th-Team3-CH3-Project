@@ -22,8 +22,11 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
+	void HandleButtonClicked();
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Augment")
-	void OnCardDataReady();
+	void OnCardDataReady(const FText& AugmentName, const FText& Description);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> CardButton;
