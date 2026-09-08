@@ -132,8 +132,7 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 void AEnemySpawner::SpawnEnemy()
 {
 	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
-	AActor* PoolObject = PoolManager->GetPoolOjbect(TestMonster);
-	//Todo : 테스트 끝나고 TestMonster 없앨 것
+	AActor* PoolObject = PoolManager->GetPoolOjbect(nullptr);
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
 
