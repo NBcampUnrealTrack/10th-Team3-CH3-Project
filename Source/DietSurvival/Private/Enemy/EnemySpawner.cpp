@@ -101,29 +101,45 @@ void AEnemySpawner::StartSpawn()
 
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
 {
-	//Todo : 플레이어 위치 알아내고, 일정 범위 밖에서 스폰 하도록 위치 설정
-	return FVector3d();
+	if (!CollisionBox) return FVector(0);
+	FVector SpawnerLocation = GetActorLocation();
+	FVector BoxExtent = CollisionBox->GetScaledBoxExtent();
+
+	//ToDo : 플레이어 로케이션 가져오기
+	FVector PlayerLocation = FVector(0);
+
+	float DistSuqredSafeDistance = DistanceSafeSpawn * DistanceSafeSpawn;
+
+	while (true)
+	{
+		FVector SpawnLocation = FVector(
+			FMath::RandRange(SpawnerLocation.X - BoxExtent.X, SpawnerLocation.X + BoxExtent.X),
+			FMath::RandRange(SpawnerLocation.Y - BoxExtent.Y, SpawnerLocation.Y + BoxExtent.Y),
+			SpawnerLocation.Z
+		);
+
+		float DistSuqredDistanceFromPlayer = FVector::DistSquared(PlayerLocation, SpawnLocation);
+
+		if (DistSuqredDistanceFromPlayer <= DistSuqredSafeDistance) {
+			continue;
+		}
+
+		return SpawnLocation;
+	}
 }
 
 
 void AEnemySpawner::SpawnEnemy()
 {
-	AActor* NewEnemy = PoolManager->GetPoolOjbect(nullptr);
-	if (!NewEnemy) return;
+	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
+	AActor* PoolObject = PoolManager->GetPoolOjbect(TestMonster);
+	//Todo : 테스트 끝나고 TestMonster 없앨 것
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
-	if (!CollisionBox) return;
 
-	FVector SpawnerLocation = GetActorLocation();
-	FVector BoxExtent = CollisionBox->GetScaledBoxExtent();
+	if (!NewEnemy) return;
 
-	FVector SpawnLocation = FVector(
-		FMath::RandRange(SpawnerLocation.X - BoxExtent.X, SpawnerLocation.X + BoxExtent.X),
-		FMath::RandRange(SpawnerLocation.Y - BoxExtent.Y, SpawnerLocation.Y + BoxExtent.Y),
-		SpawnerLocation.Z
-	);
-
-	NewEnemy->SetActorLocation(SpawnLocation);
+	NewEnemy->SetActorLocation(GetNewSpawnLocation());
 	NewEnemy->RunAI();
 }
 
