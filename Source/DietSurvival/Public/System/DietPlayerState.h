@@ -26,13 +26,13 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+
 protected:
 	void LevelUp();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
-	TObjectPtr<UAugmentManagerComponent> AugmentManager;
-
 	int32 Exp = 0;
 
 	int32 MaxExp = 10;
