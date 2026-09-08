@@ -93,7 +93,7 @@ void AEnemySpawner::StartSpawn()
 	GetWorldTimerManager().SetTimer(
 		SpawnTimer,
 		this,
-		AEnemySpawner::SpawnEnemy,
+		&AEnemySpawner::SpawnEnemy,
 		SpawnTime,
 		true
 	);
