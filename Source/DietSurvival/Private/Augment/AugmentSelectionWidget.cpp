@@ -1,6 +1,7 @@
 ﻿#include "Augment/AugmentSelectionWidget.h"
 #include "Augment/AugmentCardWidget.h"
 #include "Components/HorizontalBox.h"
+#include "Components/HorizontalBoxSlot.h"
 
 void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
 {
@@ -15,7 +16,10 @@ void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>
 		Card->SetupCard(Name, Level);
 		Card->OnCardClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleCardClicked);
 
-		CardContainer->AddChildToHorizontalBox(Card);
+		UHorizontalBoxSlot* HorizonSlot = CardContainer->AddChildToHorizontalBox(Card);
+		HorizonSlot->SetPadding(FMargin(12.f, 0.f));
+		HorizonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+		HorizonSlot->SetVerticalAlignment(VAlign_Center);
 		ActiveCards.Add(Card);
 	}
 }
