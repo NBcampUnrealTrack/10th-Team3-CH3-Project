@@ -29,6 +29,12 @@ ADietEnemyBase::ADietEnemyBase()
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
 
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
 	PowerAttack = 0;
 }
 
