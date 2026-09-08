@@ -46,7 +46,7 @@ protected:
 
 	float SpawnTime;
 
-	TObjectPtr<FTableRowBase> MonsterRow;
+	FTableRowBase* MonsterRow;
 
 	virtual void BeginPlay() override;
 
