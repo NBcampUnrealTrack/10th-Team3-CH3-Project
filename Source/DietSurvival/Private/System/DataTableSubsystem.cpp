@@ -1,5 +1,6 @@
 ﻿#include "System/DataTableSubsystem.h"
 #include "System/DietGameInstance.h"
+#include "System/AugmentsDataRow.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
