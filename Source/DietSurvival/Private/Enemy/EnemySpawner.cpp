@@ -6,8 +6,8 @@
 #include "Components/BoxComponent.h"
 
 #include "Pool/PoolManager.h"
-//#include "Pool/PoolObjectComponent.h"
 #include "Enemy/DietEnemyBase.h"
+#include "System/DietGameState.h"
 
 
 AEnemySpawner::AEnemySpawner()
@@ -37,7 +37,7 @@ void AEnemySpawner::BeginPlay()
 	if (NewPoolManager) {
 		PoolManager = NewPoolManager;
 	}
-
+	DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
 }
 
 void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
@@ -102,11 +102,16 @@ void AEnemySpawner::StartSpawn()
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
 {
 	if (!CollisionBox) return FVector(0);
+	if (!DietGameState) return FVector(0);
+
+	if (!DietGameState->GetPlayerRef().IsValid()) {
+		return FVector(0);
+	}
+
+	FVector PlayerLocation = DietGameState->GetPlayerRef().Get()->GetActorLocation();
+
 	FVector SpawnerLocation = GetActorLocation();
 	FVector BoxExtent = CollisionBox->GetScaledBoxExtent();
-
-	//ToDo : 플레이어 로케이션 가져오기
-	FVector PlayerLocation = FVector(0);
 
 	float DistSuqredSafeDistance = DistanceSafeSpawn * DistanceSafeSpawn;
 
