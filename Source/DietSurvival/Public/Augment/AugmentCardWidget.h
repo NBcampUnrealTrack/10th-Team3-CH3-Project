@@ -14,7 +14,7 @@ class DIETSURVIVAL_API UAugmentCardWidget : public UUserWidget
 public:
 	void SetupCard(FName InAugmentFName, int32 InAugmentLevel);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardClickedSignature, FName, AugmentId);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardClickedSignature, FName, AugmentFName);
 
 	UPROPERTY(BlueprintAssignable, Category = "Augment")
 	FOnCardClickedSignature OnCardClicked;
