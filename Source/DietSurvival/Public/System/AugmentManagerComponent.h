@@ -25,7 +25,7 @@ protected:
 	TArray<FName> SelectRandomAugments();
 
 protected:
-	// GameStae가 갖고있는 증강 데이터 테이블을 참조
+	// DataTableSubsystem이 갖고있는 증강 데이터 테이블을 참조
 	TWeakObjectPtr<UDataTable> AugmentsData;
 
 	// 플레이어의 증강 정보를 저장. 예) [ AttackAugment, {CurrentLevel: 2, MaxLevel: 10} ]
