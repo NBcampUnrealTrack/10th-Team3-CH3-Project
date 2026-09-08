@@ -39,7 +39,7 @@ void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
 	}
 }
 
-void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentId)
+void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 {
 }
 

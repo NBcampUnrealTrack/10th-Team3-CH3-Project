@@ -22,7 +22,7 @@ protected:
 	void HandleLevelUp(int32 NewLevel);
 
 	UFUNCTION()
-	void HandleAugmentChosen(FName ChosenAugmentId);
+	void HandleAugmentChosen(FName ChosenAugmentFName);
 
 	UFUNCTION()
 	void TryBindToLevelUp();
