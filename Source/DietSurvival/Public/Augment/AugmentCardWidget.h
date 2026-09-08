@@ -20,7 +20,7 @@ public:
 	FOnCardClickedSignature OnCardClicked;
 
 protected:
-	virtual void NativaConstruct() override;
+	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Augment")
 	void OnCardDataReady();
