@@ -7,6 +7,9 @@
 #include "EnemySpawner.generated.h"
 
 class APoolManager;
+class USceneComponent;
+class UBoxComponent;
+class ADietEnemyBase;
 
 UCLASS()
 class DIETSURVIVAL_API AEnemySpawner : public AActor
@@ -25,6 +28,12 @@ public:
 	void SpawnStop();
 
 protected:
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USceneComponent> Scene;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UBoxComponent> CollisionBox;
 
 	UPROPERTY()
 	TObjectPtr<APoolManager> PoolManager;

@@ -2,11 +2,26 @@
 
 
 #include "Enemy/EnemySpawner.h"
+#include "Components/SceneComponent.h"
+#include "Components/BoxComponent.h"
+
 #include "Pool/PoolManager.h"
-#include "Pool/PoolObjectComponent.h"
+//#include "Pool/PoolObjectComponent.h"
+#include "Enemy/DietEnemyBase.h"
+
 
 AEnemySpawner::AEnemySpawner()
 {
+	Scene = CreateDefaultSubobject<USceneComponent>("Scene");
+	if (Scene) {
+		SetRootComponent(Scene);
+	}
+	CollisionBox = CreateDefaultSubobject<UBoxComponent>("CollisionBox");
+	if (CollisionBox) {
+		CollisionBox->SetupAttachment(Scene);
+	}
+
+
 	PrimaryActorTick.bCanEverTick = false;
 	SpawnTime = 0.f;
 	DistanceSafeSpawn = 500.f;
