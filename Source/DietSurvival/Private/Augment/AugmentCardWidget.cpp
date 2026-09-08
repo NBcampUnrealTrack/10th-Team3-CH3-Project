@@ -1,6 +1,7 @@
 ﻿#include "Augment/AugmentCardWidget.h"
 #include "System/DataTableSubsystem.h"
 #include "System/AugmentsDataRow.h"
+#include "Components/Button.h"
 
 void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 {
@@ -24,6 +25,11 @@ void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 void UAugmentCardWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (CardButton)
+	{
+		CardButton->OnClicked.AddDynamic(this, &UAugmentCardWidget::HandleButtonClicked);
+	}
 }
 
 void UAugmentCardWidget::HandleButtonClicked()
