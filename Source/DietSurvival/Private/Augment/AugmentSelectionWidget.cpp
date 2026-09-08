@@ -1,0 +1,32 @@
+﻿#include "Augment/AugmentSelectionWidget.h"
+#include "Augment/AugmentCardWidget.h"
+#include "Components/HorizontalBox.h"
+
+void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
+{
+	CardContainer->ClearChildren();
+	ActiveCards.Reset();
+
+	for (const auto& [Name, Level] : Augments)
+	{
+		UAugmentCardWidget* Card = CreateWidget<UAugmentCardWidget>(GetOwningPlayer(), CardWidgetClass);
+		if (!Card) { continue; }
+
+		Card->SetupCard(Name, Level);
+		Card->OnCardClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleCardClicked);
+
+		CardContainer->AddChildToHorizontalBox(Card);
+		ActiveCards.Add(Card);
+	}
+}
+
+void UAugmentSelectionWidget::HandleCardClicked(FName AugmentFName)
+{
+	// 중복 클릭 방지. 모든 카드 비활성화.
+	for (UAugmentCardWidget* Card : ActiveCards)
+	{
+		Card->SetIsEnabled(false);
+	}
+
+	OnAugmentChosen.Broadcast(AugmentFName);
+}
