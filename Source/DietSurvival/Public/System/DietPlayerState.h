@@ -26,6 +26,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
+	FORCEINLINE int32 GetCurrentLevel() { return Level; }
+
+	FORCEINLINE int32 GetCurrentExp() { return Exp; }
+
+	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
+
 protected:
 	void LevelUp();
 
