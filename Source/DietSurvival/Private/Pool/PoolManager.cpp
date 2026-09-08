@@ -21,7 +21,7 @@ void APoolManager::BeginPlay()
 
 APoolBase* APoolManager::AddPool(TSubclassOf<AActor> PoolObjectClass, int32 PoolSize)
 {
-	if (PoolObjectClass) return nullptr;
+	if (!PoolObjectClass) return nullptr;
 
 	UClass* ObjectClass = PoolObjectClass.Get();
 	if (TObjectPtr<APoolBase> const* ExistingPool = PoolsMap.Find(ObjectClass)) {
