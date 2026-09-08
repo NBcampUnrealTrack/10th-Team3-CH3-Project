@@ -28,9 +28,17 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+	
+	FORCEINLINE int32 GetCurrentLevel() { return Level; }
+
+	FORCEINLINE int32 GetCurrentExp() { return Exp; }
+
+	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
 
 protected:
 	void LevelUp();
+
+	virtual void BeginPlay() override;
 
 protected:
 	int32 Exp = 0;
@@ -38,4 +46,7 @@ protected:
 	int32 MaxExp = 10;
 
 	int32 Level = 1;
+
+	FTimerHandle TestExpTimer;
+	void TestGainExp();
 };
