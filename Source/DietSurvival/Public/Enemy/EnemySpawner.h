@@ -10,6 +10,7 @@ class APoolManager;
 class USceneComponent;
 class UBoxComponent;
 class ADietEnemyBase;
+class ADietGameState;
 
 UCLASS()
 class DIETSURVIVAL_API AEnemySpawner : public AActor
@@ -28,6 +29,7 @@ public:
 	void SpawnStop();
 
 protected:
+	TObjectPtr<ADietGameState> DietGameState;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USceneComponent> Scene;
