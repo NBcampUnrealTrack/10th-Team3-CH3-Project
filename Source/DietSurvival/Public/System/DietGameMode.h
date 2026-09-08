@@ -16,16 +16,33 @@ class DIETSURVIVAL_API ADietGameMode : public AGameMode
 public:
 	ADietGameMode();
 
+	//게임모드 인스턴스를 찾아주는 함수
+	static ADietGameMode* Get(const UObject* WorldContext);
+
 	virtual void BeginPlay() override;
 
+	// 레벨 시작 함수. 메인->전투 레벨 전환
+	void StartLevel();
+
+	// 레벨 종료 함수. 종료 조건: 플레이어 포만감 최대 or 타이머 종료
+	void EndLevel(bool bWin);
 	//스포너에게 스폰 간격/데이터 전달 후 웨이브 시작
 	void CommandSpawn();
+
+public:
+	//델리게이트 바인딩 함수
+
 	//다음 웨이브 진입
-	void NextWave(int32 Wave);
-	//제한 시간 도달 시 호출
-	void OnTimeUp();
-	//레벨업 시 pause 호출
-	void OnPlayerLevelUp();
+	UFUNCTION()
+	void HandleWaveIncrease(int32 Wave);
+
+	//제한 시간 도달 시 호출->종료조건
+	UFUNCTION()
+	void HandleTimeUp();
+
+	//플레이어 포만감 최대 시 호출
+	//UFUNCTION()
+	//void HandlePlayerDefeat(); //todo 함수 이름 변경
 
 protected:
 	//UPROPERTY(EditDefaultsOnly, Category = "Spawn")
@@ -39,4 +56,7 @@ protected:
 
 private:
 	ADietGameState* GetDietGameState() const;
+
+	UPROPERTY()
+	TObjectPtr<ADietGameState> DietGameState;
 };
