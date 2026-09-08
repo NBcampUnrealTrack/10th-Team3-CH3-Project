@@ -28,3 +28,13 @@ void ADietPlayerState::LevelUp()
 
 	OnLevelUp.Broadcast(Level);
 }
+
+void ADietPlayerState::BeginPlay()
+{
+	GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
+}
+
+void ADietPlayerState::TestGainExp()
+{
+	GainExp(5);
+}
