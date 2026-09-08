@@ -110,7 +110,20 @@ void AEnemySpawner::SpawnEnemy()
 {
 	AActor* NewEnemy = PoolManager->GetPoolOjbect(nullptr);
 	if (!NewEnemy) return;
+	if (!PoolObject) return;
+	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
+	if (!CollisionBox) return;
 
-	
+	FVector SpawnerLocation = GetActorLocation();
+	FVector BoxExtent = CollisionBox->GetScaledBoxExtent();
+
+	FVector SpawnLocation = FVector(
+		FMath::RandRange(SpawnerLocation.X - BoxExtent.X, SpawnerLocation.X + BoxExtent.X),
+		FMath::RandRange(SpawnerLocation.Y - BoxExtent.Y, SpawnerLocation.Y + BoxExtent.Y),
+		SpawnerLocation.Z
+	);
+
+	NewEnemy->SetActorLocation(SpawnLocation);
+	NewEnemy->RunAI();
 }
 
