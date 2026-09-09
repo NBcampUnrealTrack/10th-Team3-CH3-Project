@@ -69,6 +69,12 @@ EPlayerStatType UDataTableSubsystem::GetAugmentStatType(FName AugmentFName)
 	return FoundRow->StatType;
 }
 
+bool UDataTableSubsystem::IsAugmentShowFractionalDigit(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: IsAugmentShowFractionalDigit"));
+	return FoundRow->bShowFractionalDigit;
+}
+
 void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
