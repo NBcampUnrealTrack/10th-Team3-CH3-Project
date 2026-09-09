@@ -47,6 +47,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float DistanceSafeSpawn;
 
+	UPROPERTY(EditAnywhere, Category = "Test")
 	float SpawnTime;
 
 	FEnemyDataRow MonsterRow;
@@ -59,4 +60,13 @@ protected:
 
 	UFUNCTION()
 	void SpawnEnemy();
+
+	UPROPERTY(EditAnywhere, Category = "Test")
+	bool bIsTest = true;
+	UPROPERTY(EditAnywhere, Category="Test")
+	TSubclassOf<ADietEnemyBase> TestClass = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Test")
+	int32 TestHealth = 100;
+	UPROPERTY(EditAnywhere, Category = "Test")
+	int32 TestPowerAttack = 10;
 };

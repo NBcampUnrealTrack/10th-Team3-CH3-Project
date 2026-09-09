@@ -39,8 +39,16 @@ void AEnemySpawner::BeginPlay()
 	}
 	DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
 
-
-
+	if (bIsTest) {
+		PoolManager->AddPool(TestClass, 10);
+		MonsterRow.EnemyClass = TestClass;
+		MonsterRow.Health = TestHealth;
+		MonsterRow.PowerAttack = TestPowerAttack;
+		if (FMath::IsNearlyZero(SpawnTime) || SpawnTime < 0) {
+			SpawnTime = 3.f;
+		}
+		StartSpawn();
+	}
 }
 
 void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
@@ -104,10 +112,21 @@ void AEnemySpawner::StartSpawn()
 
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
 {
-	if (!CollisionBox) return FVector(0);
-	if (!DietGameState) return FVector(0);
+	if (!CollisionBox) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, CollisionBox is Null"));
+		return FVector(0);
+	}
+
+	if (!DietGameState) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, DietGameState is Null"));
+		return FVector(0);
+	}
 
 	if (!DietGameState->GetPlayerRef().IsValid()) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, GetPlayerRef is Null"));
 		return FVector(0);
 	}
 
@@ -147,7 +166,12 @@ void AEnemySpawner::SpawnEnemy()
 	if (!NewEnemy) return;
 
 	NewEnemy->InitAttritube(MonsterRow);
-	NewEnemy->SetActorLocation(GetNewSpawnLocation());
+	FVector SpawnLocation = GetNewSpawnLocation();
+	UE_LOG(
+		LogTemp,
+		Warning,
+		TEXT("Location X : %f, Y: %f, Z: %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);
+	NewEnemy->SetActorLocation(SpawnLocation);
 	NewEnemy->RunAI();
 }
 
