@@ -36,6 +36,10 @@ public:
 
 	EPlayerStatType GetAugmentStatType(FName AugmentFName);
 
+	bool IsAugmentValueNegative(FName AugmentFName);
+
+	bool IsAugmentShowFractionalDigit(FName AugmentFName);
+
 public:
 	// functions
 
