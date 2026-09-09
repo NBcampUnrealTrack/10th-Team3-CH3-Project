@@ -16,7 +16,7 @@ void ADietGameState::BeginPlay()
 {
 	Super::BeginPlay();
 	//테스트용
-	StartTimer();
+	//StartTimer();
 }
 
 void ADietGameState::Tick(float DeltaTime)
