@@ -31,7 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	bUseControllerRotationYaw = true;
-	bUseControllerRotationPitch = false;
+	bUseControllerRotationPitch = true;
 	bUseControllerRotationRoll = false;
 
 	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
