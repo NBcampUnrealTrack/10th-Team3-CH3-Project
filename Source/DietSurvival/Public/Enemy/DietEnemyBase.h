@@ -21,7 +21,7 @@ class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
 public:
 	ADietEnemyBase();
 
-	void InitAttritube(FEnemyDataRow* EnemyDataRow);
+	void InitAttritube(const FEnemyDataRow& EnemyDataRow);
 
 	virtual float TakeDamage(
 		float DamageAmount,

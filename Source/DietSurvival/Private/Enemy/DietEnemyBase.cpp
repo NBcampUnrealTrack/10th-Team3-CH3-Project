@@ -39,11 +39,11 @@ ADietEnemyBase::ADietEnemyBase()
 	PowerAttack = 0;
 }
 
-void ADietEnemyBase::InitAttritube(FEnemyDataRow* EnemyDataRow)
+void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 {
-	if (!EnemyDataRow) return;
-	PowerAttack = EnemyDataRow->PowerAttack;
-	HealthComponent->Initailize(EnemyDataRow->Health);
+	if (EnemyDataRow.Health == 0) return;
+	PowerAttack = EnemyDataRow.PowerAttack;
+	HealthComponent->Initailize(EnemyDataRow.Health);
 }
 
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

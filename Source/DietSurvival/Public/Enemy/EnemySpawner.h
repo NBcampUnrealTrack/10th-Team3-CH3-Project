@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "System/EnemyDataRow.h"
 #include "EnemySpawner.generated.h"
 
 class APoolManager;
@@ -11,8 +12,6 @@ class USceneComponent;
 class UBoxComponent;
 class ADietEnemyBase;
 class ADietGameState;
-
-struct FEnemyDataRow;
 
 UCLASS()
 class DIETSURVIVAL_API AEnemySpawner : public AActor
@@ -24,19 +23,19 @@ public:
 
 	void SetSpawnTime(float NewSpawnTime);
 
-	void SetSpawnMonster(FEnemyDataRow* NewMonsterRow);
+	void SetSpawnMonster(const FEnemyDataRow& NewMonsterRow);
 
-	void SetSpawnTimeAndMonster(float NewSpawnTime, FEnemyDataRow* NewMonsterRow);
+	void SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataRow& NewMonsterRow);
 
 	void SpawnStop();
 
 protected:
 	TObjectPtr<ADietGameState> DietGameState;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Scene;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> CollisionBox;
 
 	UPROPERTY()
@@ -50,7 +49,7 @@ protected:
 
 	float SpawnTime;
 
-	FEnemyDataRow* MonsterRow;
+	FEnemyDataRow MonsterRow;
 
 	virtual void BeginPlay() override;
 

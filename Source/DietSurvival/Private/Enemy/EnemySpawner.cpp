@@ -8,7 +8,6 @@
 #include "Pool/PoolManager.h"
 #include "Enemy/DietEnemyBase.h"
 #include "System/DietGameState.h"
-#include "System/EnemyDataRow.h"
 
 
 AEnemySpawner::AEnemySpawner()
@@ -26,7 +25,7 @@ AEnemySpawner::AEnemySpawner()
 	PrimaryActorTick.bCanEverTick = false;
 	SpawnTime = 0.f;
 	DistanceSafeSpawn = 500.f;
-	MonsterRow = nullptr;
+	MonsterRow = {};
 	PoolManager = nullptr;
 }
 
@@ -39,6 +38,9 @@ void AEnemySpawner::BeginPlay()
 		PoolManager = NewPoolManager;
 	}
 	DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
+
+
+
 }
 
 void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
@@ -47,31 +49,30 @@ void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
 
 	SpawnTime = NewSpawnTime;
 
-	if (!MonsterRow) {
-		StartSpawn();
-	}
-}
-void AEnemySpawner::SetSpawnMonster(FEnemyDataRow* NewMonsterRow)
-{
-	if (!NewMonsterRow) return;
+	if (MonsterRow.Health == 0) return;
 
+	StartSpawn();
+
+}
+void AEnemySpawner::SetSpawnMonster(const FEnemyDataRow& NewMonsterRow)
+{
 	MonsterRow = NewMonsterRow;
 
-	PoolManager->AddPool(MonsterRow->EnemyClass, 10);
+	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 
 	if (FMath::IsNearlyZero(SpawnTime)) return;
 
 	StartSpawn();
 }
 
-void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FEnemyDataRow* NewMonsterRow)
+void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataRow& NewMonsterRow)
 {
-	if (NewSpawnTime <= 0 || !NewMonsterRow) return;
+	if (NewSpawnTime <= 0) return;
 
 	SpawnTime = NewSpawnTime;
 	MonsterRow = NewMonsterRow;
 
-	PoolManager->AddPool(MonsterRow->EnemyClass, 10);
+	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 
 	StartSpawn();
 }
@@ -139,7 +140,7 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 void AEnemySpawner::SpawnEnemy()
 {
 	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
-	AActor* PoolObject = PoolManager->GetPoolOjbect(MonsterRow->EnemyClass);
+	AActor* PoolObject = PoolManager->GetPoolOjbect(MonsterRow.EnemyClass);
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
 
