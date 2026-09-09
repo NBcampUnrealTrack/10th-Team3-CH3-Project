@@ -71,6 +71,9 @@ void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* Ne
 	SpawnTime = NewSpawnTime;
 	MonsterRow = NewMonsterRow;
 
+	//Todo : MonsterRow에서 클래스 가져와서 Pool 할 것
+	PoolManager->AddPool(nullptr, 10);
+
 	StartSpawn();
 }
 
