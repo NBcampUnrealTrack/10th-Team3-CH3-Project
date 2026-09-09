@@ -29,6 +29,9 @@ ADietEnemyBase::ADietEnemyBase()
 	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+	if (PoolObjectComponent) {
+		PoolObjectComponent->OnRelease();
+	}
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -57,11 +60,19 @@ void ADietEnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (!HasAuthority()) return;
+	if (!HasAuthority()) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::PossessedBy, Not Authority"));
+		return;
+	}
 
 	DietAIController = Cast<ADietAIController>(NewController);
 
-	if (!DietAIController) return;
+	if (!DietAIController) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::PossessedBy, DietAIController is Null"));
+		return;
+	}
 
 	UBlackboardComponent* Blackboard = DietAIController->GetBlackboardComponent();
 
@@ -77,12 +88,16 @@ void ADietEnemyBase::RunAI()
 {
 	if (!DietAIController)
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::RunAI, DietAIController is Null, Init Cast"));
 		DietAIController =
 			Cast<ADietAIController>(GetController());
 	}
 
 	if (!DietAIController)
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::RunAI, DietAIController is Null"));
 		return;
 	}
 
