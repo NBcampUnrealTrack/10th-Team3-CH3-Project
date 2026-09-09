@@ -36,6 +36,8 @@ public:
 
 	EPlayerStatType GetAugmentStatType(FName AugmentFName);
 
+	bool IsAugmentShowFractionalDigit(FName AugmentFName);
+
 public:
 	// functions
 
