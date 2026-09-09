@@ -91,10 +91,10 @@ void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 void UAugmentSelectionComponent::TryBindToLevelUp()
 {
 	APlayerController* PC = GetOwningController();
-	ADietPlayerState* PS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
-	if (!PS) { return; }
+	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
+	if (!CachedPS) { return; }
 
-	PS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
+	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
 }
 
 void UAugmentSelectionComponent::StartSelection()
