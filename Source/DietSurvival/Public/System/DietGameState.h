@@ -31,9 +31,14 @@ public:
 	// 타이머 시작 함수
 	void StartTimer();
 
+	// 타이머 종료 함수
+	void StopTimer();
+
 	// 타이머 조건 확인 함수 -- 웨이브, 종료 조건
 	UFUNCTION()
 	void TickTimer();
+
+	
 
 	UFUNCTION()
 	void SetPlayerRef(APawn* InPlayer);

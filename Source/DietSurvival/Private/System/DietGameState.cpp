@@ -14,6 +14,7 @@ ADietGameState::ADietGameState()
 
 void ADietGameState::BeginPlay()
 {
+	Super::BeginPlay();
 	//테스트용
 	StartTimer();
 }
@@ -33,6 +34,11 @@ void ADietGameState::StartTimer()
 		1.0f,
 		true
 	);
+}
+
+void ADietGameState::StopTimer()
+{
+	GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
 }
 
 //웨이브 증가와 제한 시간 조건 확인
@@ -57,7 +63,7 @@ void ADietGameState::TickTimer()
 	}
 }
 
-//플레이어 참조 셋
+//플레이어 참조 설정
 void ADietGameState::SetPlayerRef(APawn* InPlayer)
 {
 	if (InPlayer == nullptr)
@@ -67,7 +73,7 @@ void ADietGameState::SetPlayerRef(APawn* InPlayer)
 	PlayerRef = InPlayer;
 }
 
-//플레이어 참조 겟
+//플레이어 참조 반환
 TWeakObjectPtr<APawn> ADietGameState::GetPlayerRef()
 {
 	return PlayerRef;

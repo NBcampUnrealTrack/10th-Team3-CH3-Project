@@ -1,5 +1,6 @@
 ﻿#include "System/DataTableSubsystem.h"
 #include "System/DietGameInstance.h"
+#include "System/AugmentsDataRow.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
@@ -24,6 +25,13 @@ void UDataTableSubsystem::Deinitialize()
 UDataTable* UDataTableSubsystem::GetAugmentDataTable()
 {
 	return AugmentDataTable;
+}
+
+FAugmentsDataRow* UDataTableSubsystem::GetAugmentRowByFName(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow =
+		AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("SubsystemFindContext"));
+	return FoundRow;
 }
 
 void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)

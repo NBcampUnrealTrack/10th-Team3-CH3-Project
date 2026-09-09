@@ -15,6 +15,8 @@ void UAugmentManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Warning, TEXT("AugmentManagerComponent BeginPlay()"));
+
 	if (UDataTableSubsystem* DataTableSubsystem = UDataTableSubsystem::Get(this))
 	{
 		AugmentsData = DataTableSubsystem->GetAugmentDataTable();
@@ -31,10 +33,18 @@ void UAugmentManagerComponent::BeginPlay()
 		}
 
 		// Test
-		//for (const auto& [Name, Levels] : AugmentsMap)
-		//{
-		//	UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
-		//}
+		if (AugmentsMap.Num() == 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Map 초기화 안 됨"));
+		}
+		for (const auto& [Name, Levels] : AugmentsMap)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("증강 데이터 테이블을 가져올 수 없음"));
 	}
 
 	// Test
@@ -43,35 +53,34 @@ void UAugmentManagerComponent::BeginPlay()
 
 void UAugmentManagerComponent::StartAugment()
 {
-	TArray<FName> SelectedAugments = SelectRandomAugments();
+	TArray<TTuple<FName, int32>> SelectedAugments = SelectRandomAugments();
 
 	// test log
 	for (int32 i = 0; i < SelectedAugments.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d번째 증강: %s"), i + 1, *SelectedAugments[i].ToString());
+		UE_LOG(LogTemp, Warning, TEXT("%d번째 증강: %s"), i + 1, *(SelectedAugments[i].Get<0>()).ToString());
 	}
 }
 
-TArray<FName> UAugmentManagerComponent::SelectRandomAugments()
+TArray<TTuple<FName, int32>> UAugmentManagerComponent::SelectRandomAugments()
 {
-	TArray<FName> Candidates;
+	TArray<TTuple<FName, int32>> Candidates;
 	for (const auto& [Name, Levels] : AugmentsMap)
 	{
 		int32 CurrentLevel = Levels[0];
 		int32 MaxLevel = Levels[1];
 		if (CurrentLevel < MaxLevel)
 		{
-			Candidates.Add(Name);
+			Candidates.Add(MakeTuple(Name, CurrentLevel));
 		}
 	}
+	Algo::RandomShuffle(Candidates);
 
 	if (Candidates.Num() <= 3)
 	{
 		return Candidates;
 	}
-
-	Algo::RandomShuffle(Candidates);
-	TArray<FName> Selection;
+	TArray<TTuple<FName, int32>> Selection;
 	Selection.Append(&Candidates[0], 3);
 	return Selection;
 }

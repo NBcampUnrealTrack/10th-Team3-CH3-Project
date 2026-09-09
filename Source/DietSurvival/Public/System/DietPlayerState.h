@@ -26,16 +26,27 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+	
+	FORCEINLINE int32 GetCurrentLevel() { return Level; }
+
+	FORCEINLINE int32 GetCurrentExp() { return Exp; }
+
+	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
+
 protected:
 	void LevelUp();
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
-	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+	virtual void BeginPlay() override;
 
+protected:
 	int32 Exp = 0;
 
 	int32 MaxExp = 10;
 
 	int32 Level = 1;
+
+	FTimerHandle TestExpTimer;
+	void TestGainExp();
 };
