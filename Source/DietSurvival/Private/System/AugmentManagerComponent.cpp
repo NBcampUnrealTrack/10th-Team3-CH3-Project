@@ -51,17 +51,6 @@ void UAugmentManagerComponent::BeginPlay()
 	//StartAugment();
 }
 
-void UAugmentManagerComponent::StartAugment()
-{
-	TArray<TTuple<FName, int32>> SelectedAugments = SelectRandomAugments();
-
-	// test log
-	for (int32 i = 0; i < SelectedAugments.Num(); i++)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%d번째 증강: %s"), i + 1, *(SelectedAugments[i].Get<0>()).ToString());
-	}
-}
-
 TArray<TTuple<FName, int32>> UAugmentManagerComponent::SelectRandomAugments()
 {
 	TArray<TTuple<FName, int32>> Candidates;
