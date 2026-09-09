@@ -13,6 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessGameOver);
 UENUM(BlueprintType)
 enum class EPlayerStatType : uint8
 {
+	DefaultStat,    // 증강 적용이 구현되지 않은 경우 임시로 DefaultStat으로 설정
 	MoveSpeed,
 	AttackPower,
 	AttackSpeed,

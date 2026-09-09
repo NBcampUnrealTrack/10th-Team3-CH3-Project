@@ -34,6 +34,24 @@ FAugmentsDataRow* UDataTableSubsystem::GetAugmentRowByFName(FName AugmentFName)
 	return FoundRow;
 }
 
+float UDataTableSubsystem::GetAugmentDelta(FName AugmentFName, int32 AugmentLevel)
+{
+	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentDelta"));
+	return FoundRow->DeltaPerAugmentLevel[AugmentLevel];
+}
+
+FText UDataTableSubsystem::GetAugmentDescription(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentDescription"));
+	return FoundRow->Description;
+}
+
+EPlayerStatType UDataTableSubsystem::GetAugmentStatType(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentStatType"));
+	return FoundRow->StatType;
+}
+
 void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
