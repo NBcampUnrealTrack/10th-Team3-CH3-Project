@@ -4,6 +4,8 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DataTableSubsystem.generated.h"
 
+struct FAugmentsDataRow;
+
 UCLASS()
 class DIETSURVIVAL_API UDataTableSubsystem : public UGameInstanceSubsystem
 {
@@ -23,6 +25,8 @@ public:
 
 	// TWeakObjectPtr<UDataTable>로 받아서 사용
 	UDataTable* GetAugmentDataTable();
+
+	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
 
 public:
 	// functions

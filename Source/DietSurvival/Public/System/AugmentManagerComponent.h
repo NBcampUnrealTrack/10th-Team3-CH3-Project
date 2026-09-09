@@ -16,13 +16,11 @@ public:
 	// 증강 시작
 	void StartAugment();
 
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	// AugmentsMap에서 최대 증강 레벨에 도달하지 않은 랜덤한 증강을 최대 3개 뽑아서 반환
+	TArray<TTuple<FName, int32>> SelectRandomAugments();
 
 protected:
 	virtual void BeginPlay() override;
-
-	// AugmentsMap에서 최대 증강 레벨에 도달하지 않은 랜덤한 증강을 최대 3개 뽑아서 반환
-	TArray<FName> SelectRandomAugments();
 
 protected:
 	// DataTableSubsystem이 갖고있는 증강 데이터 테이블을 참조
