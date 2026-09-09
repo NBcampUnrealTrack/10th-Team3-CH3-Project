@@ -76,17 +76,21 @@ void UAttackComponent::PerformAttack()
 {
 	AActor* Owner = GetOwner();
 
-	if (Owner && CachedStatComponent)
+	if (Owner)
 	{
 		FVector Start = Owner->GetActorLocation();
+		FRotator ViewRotation = Owner->GetActorRotation();
 
-		// 캐릭터라면 눈높이에서 발사되도록 보정
-		if (const ACharacter* OwnerCharacter = Cast<ACharacter>(Owner))
+	
+		if (const APawn* OwnerPawn = Cast<APawn>(Owner))
 		{
-			Start += FVector(0.f, 0.f, OwnerCharacter->BaseEyeHeight);
+			if (const APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController()))
+			{
+				PC->GetPlayerViewPoint(Start, ViewRotation);
+			}
 		}
 
-		const FVector Forward = Owner->GetActorForwardVector();
+		const FVector Forward = ViewRotation.Vector();
 		const FVector End = Start + Forward * AttackRange;
 
 		FCollisionQueryParams QueryParams;

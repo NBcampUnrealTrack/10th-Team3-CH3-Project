@@ -88,7 +88,7 @@ protected:
 
 	// 기본 공격 속도
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
-	float AttackSpeed = 10.f;
+	float AttackSpeed = 3.f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")

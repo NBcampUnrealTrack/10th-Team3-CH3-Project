@@ -10,6 +10,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UPlayerStatComponent;
+class UAttackComponent;
 
 // 무적 상태 변화 시 브로드캐스트 (UI에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInvincibilityChanged, bool, bIsNowInvincible);
@@ -62,6 +63,10 @@ public:
 	//--------- 스탯 컴포넌트 ---------
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPlayerStatComponent> StatComponent;
+
+	//--------- 어택 컴포넌트 ----------
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAttackComponent> AttackComponent;
 
 protected:
 	//---------- 입력 관련 ----------

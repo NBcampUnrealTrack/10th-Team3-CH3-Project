@@ -40,6 +40,9 @@ APlayerCharacter::APlayerCharacter()
 	}
 
 	Tags.Add(FName("Player"));
+
+	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
+	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
