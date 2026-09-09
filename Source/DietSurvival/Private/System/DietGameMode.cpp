@@ -121,7 +121,7 @@ void ADietGameMode::HandleTimeUp()
 
 void ADietGameMode::HandlePlayerDefeat()
 {
-
+	//Todo PlayerStatComponent--Deligate 사용해 구현 예정
 }
 
 ADietGameState* ADietGameMode::GetDietGameState() const
