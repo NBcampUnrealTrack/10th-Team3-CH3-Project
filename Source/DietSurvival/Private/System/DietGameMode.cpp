@@ -99,7 +99,7 @@ void ADietGameMode::EndLevel(bool bWin)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
-void ADietGameMode::CommandSpawn(float DummySpawnTime, const FEnemyDataRow& MonsterRow)
+void ADietGameMode::CommandSpawn(float DummySpawnTime, FEnemyDataRow* MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -111,7 +111,7 @@ void ADietGameMode::CommandSpawn(float DummySpawnTime, const FEnemyDataRow& Mons
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn called "));
 }
 
-void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
+void ADietGameMode::CommandSpawn(FEnemyDataRow* MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -147,7 +147,7 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
 		return;
 	}
-	CommandSpawn(*ED);
+	CommandSpawn(ED);
 	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
 }
 
