@@ -5,7 +5,7 @@
 #include "DietGameMode.generated.h"
 
 //적 AI 작업 후 주석제거
-//class AMonsterSpawner;
+class AEnemySpawner;
 class ADietGameState;
 
 UCLASS()
@@ -26,13 +26,17 @@ public:
 
 	// 레벨 종료 함수. 종료 조건: 플레이어 포만감 최대 or 타이머 종료
 	void EndLevel(bool bWin);
+
 	//스포너에게 스폰 간격/데이터 전달 후 웨이브 시작
-	void CommandSpawn();
+	void CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonsterRow);
+
+	//
+	void NextWave(int32 Wave);
 
 public:
 	//델리게이트 바인딩 함수
 
-	//다음 웨이브 진입
+	//다음 웨이브 진입 판단
 	UFUNCTION()
 	void HandleWaveIncrease(int32 Wave);
 
@@ -41,12 +45,12 @@ public:
 	void HandleTimeUp();
 
 	//플레이어 포만감 최대 시 호출
-	//UFUNCTION()
-	//void HandlePlayerDefeat(); //todo 함수 이름 변경
+	UFUNCTION()
+	void HandlePlayerDefeat(); //todo 함수 이름 변경
 
 protected:
-	//UPROPERTY()
-	//TObjectPtr<AEnemySpawner> CashedEnemySpawner;
+	UPROPERTY()
+	TObjectPtr<AEnemySpawner> CachedEnemySpawner;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
@@ -55,5 +59,5 @@ private:
 	ADietGameState* GetDietGameState() const;
 
 	UPROPERTY()
-	TObjectPtr<ADietGameState> CashedDietGameState;
+	TObjectPtr<ADietGameState> CachedDietGameState;
 };
