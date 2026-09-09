@@ -75,6 +75,10 @@ void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 		{
 			Player->StatComponent->UpgradeStat(StatType, StatAmount);
 		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Possess중인 Pawn이 APlayerCharacter가 아님."));
+		}
 	}
 	else
 	{
