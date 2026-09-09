@@ -31,7 +31,9 @@ public:
 	void EndLevel(bool bWin);
 
 	//스포너에게 스폰 간격/데이터 전달 후 웨이브 시작
-	void CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonsterRow);
+	void CommandSpawn(float DummySpawnTime, FEnemyDataRow* DummyMonsterRow);
+
+	void CommandSpawn(FEnemyDataRow* DummyMonsterRow);
 
 	// 웨이브 진입 판단 후 스폰 명령
 	void NextWave(int32 Wave);

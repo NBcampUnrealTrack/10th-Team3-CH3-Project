@@ -3,6 +3,7 @@
 
 #include "System/DietGameMode.h"
 #include "System/DietGameState.h"
+#include "System/DataTableSubsystem.h"
 #include "Player/PlayerCharacter.h"
 #include "Enemy/EnemySpawner.h"
 #include "Kismet/GameplayStatics.h"
@@ -97,7 +98,7 @@ void ADietGameMode::EndLevel(bool bWin)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
-void ADietGameMode::CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonsterRow)
+void ADietGameMode::CommandSpawn(float DummySpawnTime, FEnemyDataRow* DummyMonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -109,15 +110,35 @@ void ADietGameMode::CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonst
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn called "));
 }
 
+void ADietGameMode::CommandSpawn(FEnemyDataRow* DummyMonsterRow)
+{
+	if (CachedEnemySpawner == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CachedEnemySpawner is nullptr "));
+		return;
+	}
+
+	CachedEnemySpawner->SetSpawnTimeAndMonster(DummyMonsterRow);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn called "));
+}
+
 void ADietGameMode::NextWave(int32 Wave)
 {
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
 
 	//Wave 몬스터 데이터 처리
-	float DummySpawnTime = 2.0f;
-	FTableRowBase* DummyMonsterRow = nullptr;
+	//float DummySpawnTime = 2.0f;
+	//FTableRowBase* DummyMonsterRow = nullptr;
 
-	CommandSpawn(DummySpawnTime, DummyMonsterRow);
+	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
+	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
+	FName RowName = FName(*RowNameString);
+
+	UDataTableSubsystem* DTS = UDataTableSubsystem::Get(this);
+	FEnemyDataRow* ED = DTS->GetEnemyRowByFName(RowName);
+
+	CommandSpawn(ED);
+	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
 }
 
 void ADietGameMode::HandleWaveIncrease(int32 Wave)
