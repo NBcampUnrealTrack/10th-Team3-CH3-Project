@@ -68,12 +68,20 @@ void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 
 		// UPlayerStatComponent::UpgradeStat에 필요한 파라미터 준비
 		EPlayerStatType StatType = Subsystem->GetAugmentStatType(ChosenAugmentFName);
-		float StatAmount = Subsystem->GetAugmentDelta(ChosenAugmentFName, AugmentLevel);
+		float StatAmount = 0.f;
+		if (AugmentLevel >= 0)
+		{
+			StatAmount = Subsystem->GetAugmentDelta(ChosenAugmentFName, AugmentLevel);
+		}
 
 		APlayerController* PC = GetOwningController();
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn()))
 		{
 			Player->StatComponent->UpgradeStat(StatType, StatAmount);
+			if (CachedPS)
+			{
+				CachedPS->AugmentManager->AugmentLevelUp(ChosenAugmentFName);
+			}
 		}
 		else
 		{
