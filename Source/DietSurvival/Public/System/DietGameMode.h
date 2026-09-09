@@ -55,6 +55,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
 
+	//플레이어, 컨트롤러 등록 임시
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APawn> DefaultPlayerCharacterClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APlayerController> DefaultPlayerControllerClass;
+
 private:
 	ADietGameState* GetDietGameState() const;
 

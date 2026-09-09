@@ -10,7 +10,19 @@
 ADietGameMode::ADietGameMode()
 {
 	GameStateClass = ADietGameState::StaticClass();
-	DefaultPawnClass = APlayerCharacter::StaticClass();
+	//DefaultPawnClass = APlayerCharacter::StaticClass();
+
+	//----------임시-----------
+	if (DefaultPlayerCharacterClass != nullptr)
+	{
+		DefaultPawnClass = DefaultPlayerCharacterClass;
+	}
+
+	if (DefaultPlayerControllerClass != nullptr)
+	{
+		PlayerControllerClass = DefaultPlayerControllerClass;
+	}
+	//----------임시-----------
 }
 
 void ADietGameMode::BeginPlay()
