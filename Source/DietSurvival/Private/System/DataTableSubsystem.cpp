@@ -77,7 +77,7 @@ bool UDataTableSubsystem::IsAugmentShowFractionalDigit(FName AugmentFName)
 	return FoundRow->bShowFractionalDigit;
 }
 
-void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
+void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
 }

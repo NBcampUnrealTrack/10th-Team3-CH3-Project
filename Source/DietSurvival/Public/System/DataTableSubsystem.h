@@ -45,7 +45,7 @@ public:
 public:
 	// functions
 
-	void LoadDataTables(UDataTable* InAugmentDataTable);
+	void LoadAugmentDataTable(UDataTable* InAugmentDataTable);
 	void LoadEnemyDataTable(UDataTable* InEnemyDataTable);
 
 private:
