@@ -5,6 +5,7 @@
 #include "DataTableSubsystem.generated.h"
 
 struct FAugmentsDataRow;
+struct FEnemyDataRow;
 
 UCLASS()
 class DIETSURVIVAL_API UDataTableSubsystem : public UGameInstanceSubsystem
@@ -28,14 +29,22 @@ public:
 
 	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
 
+	UDataTable* GetEnemyDataTable();
+
+	FEnemyDataRow* GetEnemyRowByFName(FName EnemyFName);
+
 public:
 	// functions
 
 	void LoadDataTables(UDataTable* InAugmentDataTable);
+	void LoadEnemyDataTable(UDataTable* InEnemyDataTable);
 
 private:
 	// variables
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> AugmentDataTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> EnemyDataTable;
 };

@@ -34,7 +34,24 @@ FAugmentsDataRow* UDataTableSubsystem::GetAugmentRowByFName(FName AugmentFName)
 	return FoundRow;
 }
 
+UDataTable* UDataTableSubsystem::GetEnemyDataTable()
+{
+	return EnemyDataTable;
+}
+
+FEnemyDataRow* UDataTableSubsystem::GetEnemyRowByFName(FName EnemyFName)
+{
+	FEnemyDataRow* FoundRow =
+		EnemyDataTable->FindRow<FEnemyDataRow>(EnemyFName, TEXT("Enemy row date not found"));
+	return FoundRow;
+}
+
 void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
+}
+
+void UDataTableSubsystem::LoadEnemyDataTable(UDataTable* InEnemyDataTable)
+{
+	EnemyDataTable = InEnemyDataTable;
 }
