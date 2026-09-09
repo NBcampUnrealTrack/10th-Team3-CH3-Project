@@ -5,6 +5,7 @@
 #include "DataTableSubsystem.generated.h"
 
 struct FAugmentsDataRow;
+enum class EPlayerStatType : uint8;
 
 UCLASS()
 class DIETSURVIVAL_API UDataTableSubsystem : public UGameInstanceSubsystem
@@ -27,6 +28,13 @@ public:
 	UDataTable* GetAugmentDataTable();
 
 	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
+
+	// 증강의 해당 레벨에서의 능력치 상승량 반환
+	float GetAugmentDelta(FName AugmentFName, int32 AugmentLevel);
+
+	FText GetAugmentDescription(FName AugmentFName);
+
+	EPlayerStatType GetAugmentStatType(FName AugmentFName);
 
 public:
 	// functions
