@@ -5,7 +5,7 @@
 #include "PlayerStatComponent.generated.h"
 
 // 포만감 변화 시 브로드캐스트 (UI에서 구독)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFullnessChanged, float, NewFullness, float, MaxFullness);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFullnessChanged, float, Fullness, float, MaxFullness);
 
 // 포만감이 최대치에 도달해 게임오버가 됐을 때 브로드캐스트 (게임모드에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessGameOver);
@@ -102,9 +102,9 @@ public:
 	void SetAttackPower(float NewAttackPower) { AttackPower = NewAttackPower; }
 
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
-	float GetAttackSpeedMultiplier() const { return AttackSpeed; }
+	float GetAttackSpeed() const { return AttackSpeed; }
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
-	void SetAttackSpeedMultiplier(float NewAttackSpeed) { AttackSpeed = NewAttackSpeed; }
+	void SetAttackSpeed(float NewAttackSpeed) { AttackSpeed = NewAttackSpeed; }
 
 	UFUNCTION(BlueprintCallable, Category = "Stat|Upgrade")
 	void UpgradeStat(EPlayerStatType StatType, float Amount);
