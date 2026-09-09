@@ -10,7 +10,7 @@
 #include "Engine/Engine.h"
 
  #include "Player/PlayerStatComponent.h"
- //#include "DietGameState.h"
+ #include "System/DietGameState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -66,10 +66,10 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 
-		//if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
-		//{
-		//	  GS->SetPlayerRef(this);
-		//}
+		if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
+		{
+			  GS->SetPlayerRef(this);
+		}
 	}
 
 }
@@ -118,7 +118,7 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-
+	UE_LOG(LogTemp, Warning, TEXT("Look called: %s"), *LookAxisVector.ToString());
 	if (!Controller)
 	{
 		return;
