@@ -17,17 +17,26 @@ class DIETSURVIVAL_API ADietGameState : public AGameState
 	GENERATED_BODY()
 
 public:
+	// lifecycle
 	ADietGameState();
 
+protected:
+	// lifecycle
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	// getters
 	UFUNCTION(BlueprintPure, Category = "GameState")
 	int32 GetCurrentWave() const { return CurrentWave; }
 
 	UFUNCTION(BlueprintPure, Category = "GameState")
 	float GetElapsedTime() const { return ElapsedTime; }
 
+	TWeakObjectPtr<APawn> GetPlayerRef();
+
+public:
+	// functions
 	// 타이머 시작 함수
 	void StartTimer();
 
@@ -38,39 +47,32 @@ public:
 	UFUNCTION()
 	void TickTimer();
 
-	
-
-	UFUNCTION()
 	void SetPlayerRef(APawn* InPlayer);
 
-	UFUNCTION()
-	TWeakObjectPtr<APawn> GetPlayerRef();
-
 public:
-	//Deligates
+	// deligates
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FOnWaveIncerease OnWaveIncrease;
 
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FOnTimeUp OnTimeUp;
 
-
 protected:
-	//Variables
+	// variables
 	//현재 wave 정보
-	UPROPERTY(BlueprintReadOnly, Category="Wave")
+	UPROPERTY(BlueprintReadOnly, Category = "Wave")
 	int32 CurrentWave;
 
 	// 게임 시작부터 흐른 시간
-	UPROPERTY(BlueprintReadOnly, Category = "Timer")
-	float ElaspedTime;
+	//UPROPERTY(BlueprintReadOnly, Category = "Timer")
+	//float ElapsedTime;
 
 	// 타이머 콜백 간격
 	UPROPERTY(EditDefaultsOnly, Category = "Timer")
-	float TimeInteval;
+	float TimeInterval;
 
 	// 다음 웨이브로 넘어가는 간격
-	UPROPERTY(EditDefaultsOnly, Category="Wave")
+	UPROPERTY(EditDefaultsOnly, Category = "Wave")
 	float WaveInterval;
 
 	// 게임 진행 시간(승리 조건)
@@ -79,10 +81,9 @@ protected:
 
 	//플레이어 캐릭터 참조 포인터
 	UPROPERTY()	//GC가 추적 하도록
-	TWeakObjectPtr<APawn> PlayerRef;
+	TWeakObjectPtr<APawn> PlayerRef;	
 
 private:
-	ADietGameMode* GetDietGameMode() const;
-
+	// variables
 	FTimerHandle ElapsedTimerHandle;
 };

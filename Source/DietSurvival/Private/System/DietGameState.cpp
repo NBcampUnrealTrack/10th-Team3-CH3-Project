@@ -7,7 +7,7 @@ ADietGameState::ADietGameState()
 {
 	CurrentWave = 1;
 	ElapsedTime = 0.0f;
-	TimeInteval = 1.0f;
+	TimeInterval = 1.0f;
 	WaveInterval = 10.0f;
 	MaxGameTime = 60.0f;
 }
@@ -22,7 +22,6 @@ void ADietGameState::BeginPlay()
 void ADietGameState::Tick(float DeltaTime)
 {
 }
-
 
 //타이머 시작. 
 void ADietGameState::StartTimer()

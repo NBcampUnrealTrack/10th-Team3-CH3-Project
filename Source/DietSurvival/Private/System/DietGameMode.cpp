@@ -7,6 +7,22 @@
 #include "Enemy/EnemySpawner.h"
 #include "Kismet/GameplayStatics.h"
 
+ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
+{
+	if (WorldContext == nullptr)
+	{
+		return nullptr;
+	}
+
+	UWorld* World = WorldContext->GetWorld();
+	if (World == nullptr)
+	{
+		return nullptr;
+	}
+
+	return World->GetAuthGameMode<ADietGameMode>();
+}
+
 ADietGameMode::ADietGameMode()
 {
 	GameStateClass = ADietGameState::StaticClass();
@@ -54,27 +70,12 @@ void ADietGameMode::BeginPlay()
 	StartLevel();
 }
 
-ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
-{
-	if (WorldContext == nullptr)
-	{
-		return nullptr;
-	}
-
-	UWorld* World = WorldContext->GetWorld();
-	if (World == nullptr)
-	{
-		return nullptr;
-	}
-
-	return World->GetAuthGameMode<ADietGameMode>();
-}
-
 void ADietGameMode::StartLevel()
 {
 	if (CachedDietGameState == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
+		return;
 	}
 	CachedDietGameState->StartTimer();
 }
@@ -134,14 +135,4 @@ void ADietGameMode::HandleTimeUp()
 void ADietGameMode::HandlePlayerDefeat()
 {
 	//Todo PlayerStatComponent--Deligate 사용해 구현 예정
-}
-
-ADietGameState* ADietGameMode::GetDietGameState() const
-{
-	if (CachedDietGameState == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
-		return nullptr;
-	}
-	return CachedDietGameState;
 }
