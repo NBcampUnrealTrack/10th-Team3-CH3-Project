@@ -43,6 +43,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> ActiveWidgetInstance;
 
+	TArray<TTuple<FName, int32>> CachedCandidates;
 	int32 PendingLevelUpCount = 0;
 	bool bIsSelecting = false;
 };

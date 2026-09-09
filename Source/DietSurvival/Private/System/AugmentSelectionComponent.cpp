@@ -1,7 +1,12 @@
 ﻿#include "System/AugmentSelectionComponent.h"
-#include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
+#include "System/DataTableSubsystem.h"
+#include "System/DietPlayerState.h"
+
 #include "Augment/AugmentSelectionWidget.h"
+
+#include "Player/PlayerStatComponent.h"
+#include "Player/PlayerCharacter.h"
 
 UAugmentSelectionComponent::UAugmentSelectionComponent()
 {
@@ -43,6 +48,39 @@ void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
 void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s 증강 선택."), *ChosenAugmentFName.ToString());
+
+	if (UDataTableSubsystem* Subsystem = UDataTableSubsystem::Get(this))
+	{
+		// 선택한 증강의 현재 레벨 파악
+		int32 AugmentLevel = -1;
+		for (const auto& [Name, Level] : CachedCandidates)
+		{
+			if (Name == ChosenAugmentFName)
+			{
+				AugmentLevel = Level;
+				break;
+			}
+		}
+		if (AugmentLevel == -1)
+		{
+			UE_LOG(LogTemp, Error, TEXT("큰일남. 증강 레벨을 알 수 없음."));
+		}
+
+		// UPlayerStatComponent::UpgradeStat에 필요한 파라미터 준비
+		EPlayerStatType StatType = Subsystem->GetAugmentStatType(ChosenAugmentFName);
+		float StatAmount = Subsystem->GetAugmentDelta(ChosenAugmentFName, AugmentLevel);
+
+		APlayerController* PC = GetOwningController();
+		if (APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn()))
+		{
+			Player->StatComponent->UpgradeStat(StatType, StatAmount);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UAugmentSelectionComponent::HandleAugmentChosen - DataTableSubsystem을 가져올 수 없음"));
+	}
+	CachedCandidates.Reset();
 	FinishSelection();
 }
 
@@ -63,21 +101,22 @@ void UAugmentSelectionComponent::StartSelection()
 	bIsSelecting = true;
 
 	// 랜덤한 증강 최대 3개 뽑기
+	CachedCandidates.Reset();
 	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
-	TArray<TTuple<FName, int32>> Candidates = PS->AugmentManager->SelectRandomAugments();
+	CachedCandidates = PS->AugmentManager->SelectRandomAugments();
 
-	if (Candidates.Num() == 0)
+	if (CachedCandidates.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
 	}
-	for (const auto& [Name, Level] : Candidates)
+	for (const auto& [Name, Level] : CachedCandidates)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("증강: %s"), *Name.ToString());
 	}
 
 	// 위젯 관련
 	ActiveWidgetInstance = CreateWidget<UAugmentSelectionWidget>(PC, SelectionWidgetClass);
-	ActiveWidgetInstance->InitializeCards(Candidates);
+	ActiveWidgetInstance->InitializeCards(CachedCandidates);
 	ActiveWidgetInstance->OnAugmentChosen.AddDynamic(this, &UAugmentSelectionComponent::HandleAugmentChosen);
 	ActiveWidgetInstance->AddToViewport();
 
