@@ -12,6 +12,8 @@ class UBoxComponent;
 class ADietEnemyBase;
 class ADietGameState;
 
+struct FEnemyDataRow;
+
 UCLASS()
 class DIETSURVIVAL_API AEnemySpawner : public AActor
 {
@@ -22,9 +24,9 @@ public:
 
 	void SetSpawnTime(float NewSpawnTime);
 
-	void SetSpawnMonster(FTableRowBase* NewMonsterRow);
+	void SetSpawnMonster(FEnemyDataRow* NewMonsterRow);
 
-	void SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* NewMonsterRow);
+	void SetSpawnTimeAndMonster(float NewSpawnTime, FEnemyDataRow* NewMonsterRow);
 
 	void SpawnStop();
 
@@ -48,7 +50,7 @@ protected:
 
 	float SpawnTime;
 
-	FTableRowBase* MonsterRow;
+	FEnemyDataRow* MonsterRow;
 
 	virtual void BeginPlay() override;
 

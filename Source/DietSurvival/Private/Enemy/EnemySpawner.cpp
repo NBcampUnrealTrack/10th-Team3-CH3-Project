@@ -8,6 +8,7 @@
 #include "Pool/PoolManager.h"
 #include "Enemy/DietEnemyBase.h"
 #include "System/DietGameState.h"
+#include "System/EnemyDataRow.h"
 
 
 AEnemySpawner::AEnemySpawner()
@@ -50,29 +51,27 @@ void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
 		StartSpawn();
 	}
 }
-void AEnemySpawner::SetSpawnMonster(FTableRowBase* NewMonsterRow)
+void AEnemySpawner::SetSpawnMonster(FEnemyDataRow* NewMonsterRow)
 {
 	if (!NewMonsterRow) return;
 
 	MonsterRow = NewMonsterRow;
 
-	//Todo : MonsterRow에서 클래스 가져와서 Pool 할 것
-	PoolManager->AddPool(nullptr, 10);
+	PoolManager->AddPool(MonsterRow->EnemyClass, 10);
 
 	if (FMath::IsNearlyZero(SpawnTime)) return;
 
 	StartSpawn();
 }
 
-void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* NewMonsterRow)
+void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FEnemyDataRow* NewMonsterRow)
 {
 	if (NewSpawnTime <= 0 || !NewMonsterRow) return;
 
 	SpawnTime = NewSpawnTime;
 	MonsterRow = NewMonsterRow;
 
-	//Todo : MonsterRow에서 클래스 가져와서 Pool 할 것
-	PoolManager->AddPool(nullptr, 10);
+	PoolManager->AddPool(MonsterRow->EnemyClass, 10);
 
 	StartSpawn();
 }
@@ -140,12 +139,13 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 void AEnemySpawner::SpawnEnemy()
 {
 	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
-	AActor* PoolObject = PoolManager->GetPoolOjbect(nullptr);
+	AActor* PoolObject = PoolManager->GetPoolOjbect(MonsterRow->EnemyClass);
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
 
 	if (!NewEnemy) return;
 
+	NewEnemy->InitAttritube(MonsterRow);
 	NewEnemy->SetActorLocation(GetNewSpawnLocation());
 	NewEnemy->RunAI();
 }

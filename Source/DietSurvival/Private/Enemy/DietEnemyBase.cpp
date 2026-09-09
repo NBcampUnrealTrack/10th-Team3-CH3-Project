@@ -11,6 +11,7 @@
 #include "Enemy/Component/HealthComponent.h"
 #include "Pool/PoolObjectComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/EnemyDataRow.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -36,6 +37,13 @@ ADietEnemyBase::ADietEnemyBase()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	PowerAttack = 0;
+}
+
+void ADietEnemyBase::InitAttritube(FEnemyDataRow* EnemyDataRow)
+{
+	if (!EnemyDataRow) return;
+	PowerAttack = EnemyDataRow->PowerAttack;
+	HealthComponent->Initailize(EnemyDataRow->Health);
 }
 
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

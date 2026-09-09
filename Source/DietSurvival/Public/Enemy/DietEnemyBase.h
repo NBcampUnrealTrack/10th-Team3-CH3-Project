@@ -11,6 +11,8 @@ class ADietAIController;
 class UHealthComponent;
 class UPoolObjectComponent;
 
+struct FEnemyDataRow;
+
 UCLASS()
 class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
 {
@@ -18,6 +20,8 @@ class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
 
 public:
 	ADietEnemyBase();
+
+	void InitAttritube(FEnemyDataRow* EnemyDataRow);
 
 	virtual float TakeDamage(
 		float DamageAmount,
