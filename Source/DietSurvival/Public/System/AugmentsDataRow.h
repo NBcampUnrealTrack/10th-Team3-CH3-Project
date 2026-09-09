@@ -30,10 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPlayerStatType StatType = EPlayerStatType::DefaultStat;
 
-	// DeltaPerAugmentLevel에 음수 값이 들어가면 true로 설정
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsNegative = false;
-
 	// UI에 소수점(첫째자리)을 표시하려면 true로 설정
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShowFractionalDigit = false;
