@@ -1,6 +1,7 @@
 ﻿#include "System/DataTableSubsystem.h"
 #include "System/DietGameInstance.h"
 #include "System/AugmentsDataRow.h"
+#include "System/EnemyDataRow.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
@@ -43,6 +44,12 @@ FEnemyDataRow* UDataTableSubsystem::GetEnemyRowByFName(FName EnemyFName)
 {
 	FEnemyDataRow* FoundRow =
 		EnemyDataTable->FindRow<FEnemyDataRow>(EnemyFName, TEXT("Enemy row date not found"));
+
+	if (FoundRow == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[DataTableSubsystem] Data row not found"));
+		return nullptr;
+	}
 	return FoundRow;
 }
 

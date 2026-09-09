@@ -4,9 +4,9 @@
 #include "GameFramework/GameMode.h"
 #include "DietGameMode.generated.h"
 
-//적 AI 작업 후 주석제거
 class AEnemySpawner;
 class ADietGameState;
+struct FEnemyDataRow;
 
 UCLASS()
 class DIETSURVIVAL_API ADietGameMode : public AGameMode
@@ -31,9 +31,9 @@ public:
 	void EndLevel(bool bWin);
 
 	//스포너에게 스폰 간격/데이터 전달 후 웨이브 시작
-	void CommandSpawn(float DummySpawnTime, FEnemyDataRow* DummyMonsterRow);
+	void CommandSpawn(float SpawnTime, const FEnemyDataRow& MonsterRow);
 
-	void CommandSpawn(FEnemyDataRow* DummyMonsterRow);
+	void CommandSpawn(const FEnemyDataRow& MonsterRow);
 
 	// 웨이브 진입 판단 후 스폰 명령
 	void NextWave(int32 Wave);
