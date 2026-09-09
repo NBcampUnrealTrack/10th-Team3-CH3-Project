@@ -50,6 +50,9 @@ protected:
 
 	FTimerHandle AttackTimerHandle;
 
+	//한 방향으로 라인트레이스 1회 발사 + 데미지 적용 
+	void FireTraceInDirection(const FVector& Start, const FRotator& BaseViewRotation, float YawOffset, float Range);
+
 	// 실제 라인트레이스 + 데미지 처리
 	void PerformAttack();
 
@@ -58,4 +61,8 @@ protected:
 
 	// 현재 AttackSpeed를 반영한 실제 공격 간격 계산	
 	float GetCurrentAttackInterval() const;
+
+	/** 방향 단계(1~4)에 따라 활성화되는 각도 오프셋 목록을 반환.
+	 * 1: 정면만 / 2: 정면+후면 / 3: 동서남북 4방향 / 4: 8방향 전체(45도 간격) */
+	static TArray<float> GetActiveDirectionAngles(int32 DirectionLevel);
 };

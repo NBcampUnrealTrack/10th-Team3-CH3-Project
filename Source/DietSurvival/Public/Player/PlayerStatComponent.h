@@ -17,6 +17,8 @@ enum class EPlayerStatType : uint8
 	MoveSpeed,
 	AttackPower,
 	AttackSpeed,
+	AttackRange,
+	AttackDirection,
 	Fullness,
 	MaxFullness
 };
@@ -91,6 +93,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
 	float AttackSpeed = 3.f;
 
+	// 기본 공격 사거리
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
+	float AttackRange = 1000.f;
+
+	// 공격 방향 수 (1~4단계)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true", ClampMin = "1", ClampMax = "4"))
+	int32 AttackDirection = 1;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")
 	float GetMoveSpeed() const { return MoveSpeed; }
@@ -106,6 +116,16 @@ public:
 	float GetAttackSpeed() const { return AttackSpeed; }
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
 	void SetAttackSpeed(float NewAttackSpeed) { AttackSpeed = NewAttackSpeed; }
+
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	float GetAttackRange() const { return AttackRange; }
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	void SetAttackRange(float NewAttackRange) { AttackRange = NewAttackRange; }
+
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	int32 GetAttackDirection() const { return AttackDirection; }
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	void SetAttackDirection(int32 NewCount) { AttackDirection = FMath::Clamp(NewCount, 1, 4); }
 
 	UFUNCTION(BlueprintCallable, Category = "Stat|Upgrade")
 	void UpgradeStat(EPlayerStatType StatType, float Amount);
