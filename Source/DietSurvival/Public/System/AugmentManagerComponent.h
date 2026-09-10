@@ -13,11 +13,11 @@ class DIETSURVIVAL_API UAugmentManagerComponent : public UActorComponent
 public:
 	UAugmentManagerComponent();
 
-	// 증강 시작
-	void StartAugment();
-
 	// AugmentsMap에서 최대 증강 레벨에 도달하지 않은 랜덤한 증강을 최대 3개 뽑아서 반환
 	TArray<TTuple<FName, int32>> SelectRandomAugments();
+
+	// 증간 레벨을 1 증가시킴
+	void AugmentLevelUp(FName ChosenAugmentFName);
 
 protected:
 	virtual void BeginPlay() override;

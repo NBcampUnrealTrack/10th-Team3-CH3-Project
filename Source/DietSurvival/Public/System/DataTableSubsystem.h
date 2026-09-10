@@ -5,6 +5,7 @@
 #include "DataTableSubsystem.generated.h"
 
 struct FAugmentsDataRow;
+struct FEnemyDataRow;
 enum class EPlayerStatType : uint8;
 
 UCLASS()
@@ -29,6 +30,9 @@ public:
 
 	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
 
+	UDataTable* GetEnemyDataTable();
+
+	FEnemyDataRow* GetEnemyRowByFName(FName EnemyFName);
 	// 증강의 해당 레벨에서의 능력치 상승량 반환
 	float GetAugmentDelta(FName AugmentFName, int32 AugmentLevel);
 
@@ -36,14 +40,20 @@ public:
 
 	EPlayerStatType GetAugmentStatType(FName AugmentFName);
 
+	bool IsAugmentShowFractionalDigit(FName AugmentFName);
+
 public:
 	// functions
 
-	void LoadDataTables(UDataTable* InAugmentDataTable);
+	void LoadAugmentDataTable(UDataTable* InAugmentDataTable);
+	void LoadEnemyDataTable(UDataTable* InEnemyDataTable);
 
 private:
 	// variables
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> AugmentDataTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> EnemyDataTable;
 };
