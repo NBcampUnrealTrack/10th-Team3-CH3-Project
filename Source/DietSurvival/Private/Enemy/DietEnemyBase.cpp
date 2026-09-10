@@ -11,6 +11,7 @@
 #include "Enemy/Component/HealthComponent.h"
 #include "Pool/PoolObjectComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/EnemyDataRow.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -28,6 +29,9 @@ ADietEnemyBase::ADietEnemyBase()
 	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+	if (PoolObjectComponent) {
+		PoolObjectComponent->OnRelease();
+	}
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -36,6 +40,13 @@ ADietEnemyBase::ADietEnemyBase()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	PowerAttack = 0;
+}
+
+void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
+{
+	if (EnemyDataRow.Health == 0) return;
+	PowerAttack = EnemyDataRow.PowerAttack;
+	HealthComponent->Initailize(EnemyDataRow.Health);
 }
 
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -49,11 +60,19 @@ void ADietEnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (!HasAuthority()) return;
+	if (!HasAuthority()) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::PossessedBy, Not Authority"));
+		return;
+	}
 
 	DietAIController = Cast<ADietAIController>(NewController);
 
-	if (!DietAIController) return;
+	if (!DietAIController) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::PossessedBy, DietAIController is Null"));
+		return;
+	}
 
 	UBlackboardComponent* Blackboard = DietAIController->GetBlackboardComponent();
 
@@ -69,12 +88,16 @@ void ADietEnemyBase::RunAI()
 {
 	if (!DietAIController)
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::RunAI, DietAIController is Null, Init Cast"));
 		DietAIController =
 			Cast<ADietAIController>(GetController());
 	}
 
 	if (!DietAIController)
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::RunAI, DietAIController is Null"));
 		return;
 	}
 

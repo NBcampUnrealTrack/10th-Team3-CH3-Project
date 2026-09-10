@@ -2,7 +2,8 @@
 
 
 #include "AI/BTS/FindPlayer.h"
-#include "BehaviorTree/BTFunctionLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
 #include "System/DietGameState.h"
 
 UFindPlayer::UFindPlayer()
@@ -16,7 +17,11 @@ void UFindPlayer::OnSearchStart(FBehaviorTreeSearchData& SearchData)
 
 	UWorld* World = GetWorld();
 
-	if (!World) return;
+	if (!World) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("UFindPlayer::OnSearchStart, World is Null"));
+		return;
+	}
 
 	DietGameState = Cast<ADietGameState>(World->GetGameState());
 }
@@ -25,15 +30,39 @@ void UFindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
+	if (!BlackboardComp) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("UFindPlayer::TickNode, BlackboardComp is Null"));
+		return;
+	}
+
 	if (!DietGameState) {
-		UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, nullptr);
+		UE_LOG(LogTemp, Warning,
+			TEXT("UFindPlayer::TickNode, DietGameState is Null"));
+
+		BlackboardComp->SetValueAsObject(
+			TargetToFollowSelector.SelectedKeyName, nullptr
+		);
 		return;
 	}
 	if (!DietGameState->GetPlayerRef().IsValid()) {
-		UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, nullptr);
+		UE_LOG(LogTemp, Warning,
+			TEXT("UFindPlayer::TickNode, GetPlayerRef is Null"));
+
+		BlackboardComp->SetValueAsObject(
+			TargetToFollowSelector.SelectedKeyName, nullptr
+		);
 		return;
 	}
-	AActor* Player = DietGameState->GetPlayerRef().Get();
+	AActor* PlayerRef = DietGameState->GetPlayerRef().Get();
 
-	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, Player);
+	UE_LOG(LogTemp, Warning,
+		TEXT("UFindPlayer::TickNode, Player name : %s"), *GetNameSafe(PlayerRef));
+
+	BlackboardComp->SetValueAsObject(
+		TargetToFollowSelector.SelectedKeyName, PlayerRef
+	);
+	UE_LOG(LogTemp, Warning,
+		TEXT("UFindPlayer::TickNode, Player is Set"));
 }
