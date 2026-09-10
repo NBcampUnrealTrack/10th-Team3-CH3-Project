@@ -38,6 +38,11 @@ protected:
 
 	int32 PowerAttack;
 
+	int32 Exp;
+
+	UPROPERTY()
+	TObjectPtr<AController> ControllerLastAttacked;
+
 	virtual void BeginPlay() override;
 
 	UFUNCTION()

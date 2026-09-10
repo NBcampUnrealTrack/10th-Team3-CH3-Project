@@ -12,6 +12,7 @@
 #include "Pool/PoolObjectComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/EnemyDataRow.h"
+#include "System/DietPlayerState.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -40,18 +41,21 @@ ADietEnemyBase::ADietEnemyBase()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	PowerAttack = 0;
+	Exp = 0;
 }
 
 void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 {
 	if (EnemyDataRow.Health == 0) return;
 	PowerAttack = EnemyDataRow.PowerAttack;
+	Exp = EnemyDataRow.Exp;
 	HealthComponent->Initailize(EnemyDataRow.Health);
 }
 
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (DamageAmount <= 0) return DamageAmount;
+	ControllerLastAttacked = EventInstigator;
 	HealthComponent->TakeDamage(DamageAmount);
 	return DamageAmount;
 }
@@ -125,12 +129,27 @@ void ADietEnemyBase::StopAI()
 void ADietEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ADietEnemyBase::HandleDeath()
 {
 	StopAI();
+
+	if (ControllerLastAttacked) {
+		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
+		if (DietPlayerState) {
+			DietPlayerState->GainExp(Exp);
+		}
+		else {
+			UE_LOG(LogTemp, Warning,
+				TEXT("ADietEnemyBase::HandleDeath, DietPlayerState is Null"));
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::HandleDeath, ControllerLastAttacked is Null"));
+	}
+
 	if (PoolObjectComponent) {
 		PoolObjectComponent->ReturnToPool();
 	}
