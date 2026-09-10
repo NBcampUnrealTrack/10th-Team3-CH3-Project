@@ -4,6 +4,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "System/DietPlayerState.h"
 #include "Player/PlayerStatComponent.h"
+#include "UI/AugmentSelectionWidget.h"
+#include "UI/ResultWidget.h"
 #include "GameFramework/Pawn.h"
 
 void AMainHUD::BeginPlay()
@@ -29,16 +31,11 @@ void AMainHUD::ShowMainHUD()
 	}
 
 	UserHUDWidget->AddToViewport(static_cast<int32>(EUILayer::HUD));
-
-	// 델리게이트 연결되면 삭제
-	UserHUDWidget->SetTimer(949.f);
-	UserHUDWidget->SetAmmo(24, 30);
-	UserHUDWidget->SetKillCount(99);
 }
 
 void AMainHUD::ShowPauseMenu()
 {
-	if (PauseMenuWidget || !PauseMenuWidgetClass)
+	if (PauseMenuWidget || !PauseMenuWidgetClass || UGameplayStatics::IsGamePaused(GetWorld()))
 	{
 		return;
 	}
@@ -68,6 +65,73 @@ void AMainHUD::HidePauseMenu()
 	SetUIInputMode(false);
 }
 
+UAugmentSelectionWidget* AMainHUD::ShowAugmentSelect(const TArray<TTuple<FName, int32>>& Augments)
+{
+	if (AugmentSelectWidget || !AugmentSelectWidgetClass)
+	{
+		return nullptr;
+	}
+
+	AugmentSelectWidget = CreateWidget<UAugmentSelectionWidget>(GetOwningPlayerController(), AugmentSelectWidgetClass);
+	if (!AugmentSelectWidget)
+	{
+		return nullptr;
+	}
+
+	AugmentSelectWidget->InitializeCards(Augments);
+	AugmentSelectWidget->AddToViewport(static_cast<int32>(EUILayer::AugmentSelect));
+
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	SetUIInputMode(true);
+
+	return AugmentSelectWidget;
+}
+
+void AMainHUD::HideAugmentSelect()
+{
+	if (!AugmentSelectWidget)
+	{
+		return;
+	}
+
+	AugmentSelectWidget->RemoveFromParent();
+	AugmentSelectWidget = nullptr;
+
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	SetUIInputMode(false);
+}
+
+void AMainHUD::ShowResult(bool bWin)
+{
+	if (ResultWidget || !ResultWidgetClass)
+	{
+		return;
+	}
+
+	ResultWidget = CreateWidget<UResultWidget>(GetOwningPlayerController(), ResultWidgetClass);
+	if (!ResultWidget)
+	{
+		return;
+	}
+
+	ResultWidget->AddToViewport(static_cast<int32>(EUILayer::PauseMenu));
+	ResultWidget->OnResultReady(bWin);
+	SetUIInputMode(true);
+}
+
+void AMainHUD::HideResult()
+{
+	if (!ResultWidget)
+	{
+		return;
+	}
+
+	ResultWidget->RemoveFromParent();
+	ResultWidget = nullptr;
+
+	SetUIInputMode(false);
+}
+
 void AMainHUD::SetUIInputMode(bool bUIOnly)
 {
 	APlayerController* PC = GetOwningPlayerController();
@@ -91,7 +155,7 @@ void AMainHUD::SetUIInputMode(bool bUIOnly)
 void AMainHUD::BindDelegates()
 {
 	APlayerController* PC = GetOwningPlayerController();
-	if (!PC)
+	if (!PC || !UserHUDWidget)
 	{
 		return;
 	}
@@ -146,3 +210,25 @@ void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 {
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
 }
+
+// 임시테스트용 함수들. 나중에 삭제 예정.
+void AMainHUD::TestFullness(float Current, float Max)
+{
+	if (UserHUDWidget) { UserHUDWidget->SetFullness(Current, Max); }
+}
+
+void AMainHUD::TestTimer(float Seconds)
+{
+	if (UserHUDWidget) { UserHUDWidget->SetTimer(Seconds); }
+}
+
+void AMainHUD::TestHitMarker()
+{
+	if (UserHUDWidget) { UserHUDWidget->PlayHitMarker(); }
+}
+
+void AMainHUD::TestResult(bool bWin)
+{
+	ShowResult(bWin);
+}
+// 요기까지

@@ -8,6 +8,8 @@ class UUserHUDWidget;
 class UPauseMenuWidget;
 class ADietPlayerState;
 class UPlayerStatComponent;
+class UAugmentSelectionWidget;
+class UResultWidget;
 
 UENUM()
 enum class EUILayer : uint8
@@ -28,13 +30,34 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void ShowMainHUD();
-	UUserHUDWidget* GetHUDWidget() const { return UserHUDWidget; }
 
 	UFUNCTION(Exec)
 	void ShowPauseMenu();
 
 	UFUNCTION(Exec)
 	void HidePauseMenu();
+
+	UAugmentSelectionWidget* ShowAugmentSelect(const TArray<TTuple<FName, int32>>& Augments);
+
+	void HideAugmentSelect();
+
+	void ShowResult(bool bWin);
+
+	void HideResult();
+
+	// 임시테스트용 함수들. 나중에 삭제 예정.
+	UFUNCTION(Exec)
+	void TestFullness(float Current, float Max);
+
+	UFUNCTION(Exec)
+	void TestTimer(float Seconds);
+
+	UFUNCTION(Exec)
+	void TestHitMarker();
+
+	UFUNCTION(Exec)
+	void TestResult(bool bWin);
+	// 요기까지
 
 protected:
 	void SetUIInputMode(bool bUIOnly);
@@ -54,7 +77,16 @@ protected:
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UAugmentSelectionWidget> AugmentSelectWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UPauseMenuWidget> PauseMenuWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UResultWidget> ResultWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;
 
 	UPROPERTY()
 	TObjectPtr<UUserHUDWidget> UserHUDWidget;
@@ -63,8 +95,12 @@ protected:
 	TObjectPtr<UPauseMenuWidget> PauseMenuWidget;
 
 	UPROPERTY()
+	TObjectPtr<UResultWidget> ResultWidget;
+
+	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPlayerState;
 
 	UPROPERTY()
 	TObjectPtr<UPlayerStatComponent> CachedStatComp;
+
 };

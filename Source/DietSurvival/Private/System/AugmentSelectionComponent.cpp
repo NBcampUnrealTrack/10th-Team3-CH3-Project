@@ -3,7 +3,7 @@
 #include "System/DataTableSubsystem.h"
 #include "System/DietPlayerState.h"
 
-#include "Augment/AugmentSelectionWidget.h"
+#include "UI/AugmentSelectionWidget.h"
 
 #include "Player/PlayerStatComponent.h"
 #include "Player/PlayerCharacter.h"
