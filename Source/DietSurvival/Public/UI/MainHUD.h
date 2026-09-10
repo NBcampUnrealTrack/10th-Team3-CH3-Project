@@ -31,10 +31,10 @@ public:
 
 	void ShowMainHUD();
 
-	UFUNCTION(Exec)
+	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
 	void ShowPauseMenu();
 
-	UFUNCTION(Exec)
+	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
 	void HidePauseMenu();
 
 	UAugmentSelectionWidget* ShowAugmentSelect(const TArray<TTuple<FName, int32>>& Augments);
