@@ -80,6 +80,7 @@ void ADietGameMode::StartLevel()
 		return;
 	}
 	CachedDietGameState->StartTimer();
+	NextWave(1);
 }
 
 void ADietGameMode::EndLevel(bool bWin)
