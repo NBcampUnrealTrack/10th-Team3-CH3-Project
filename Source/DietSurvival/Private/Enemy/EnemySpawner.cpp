@@ -25,7 +25,7 @@ AEnemySpawner::AEnemySpawner()
 	PrimaryActorTick.bCanEverTick = false;
 	SpawnTime = 0.f;
 	DistanceSafeSpawn = 500.f;
-	MonsterRow = nullptr;
+	MonsterRow = {};
 	PoolManager = nullptr;
 }
 
@@ -38,6 +38,17 @@ void AEnemySpawner::BeginPlay()
 		PoolManager = NewPoolManager;
 	}
 	DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
+
+	if (bIsTest) {
+		PoolManager->AddPool(TestClass, 10);
+		MonsterRow.EnemyClass = TestClass;
+		MonsterRow.Health = TestHealth;
+		MonsterRow.PowerAttack = TestPowerAttack;
+		if (FMath::IsNearlyZero(SpawnTime) || SpawnTime < 0) {
+			SpawnTime = 3.f;
+		}
+		StartSpawn();
+	}
 }
 
 void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
@@ -46,30 +57,30 @@ void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
 
 	SpawnTime = NewSpawnTime;
 
-	if (!MonsterRow) {
-		StartSpawn();
-	}
-}
-void AEnemySpawner::SetSpawnMonster(FTableRowBase* NewMonsterRow)
-{
-	if (!NewMonsterRow) return;
+	if (MonsterRow.Health == 0) return;
 
+	StartSpawn();
+
+}
+void AEnemySpawner::SetSpawnMonster(const FEnemyDataRow& NewMonsterRow)
+{
 	MonsterRow = NewMonsterRow;
 
-	//Todo : MonsterRow에서 클래스 가져와서 Pool 할 것
-	PoolManager->AddPool(nullptr, 10);
+	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 
 	if (FMath::IsNearlyZero(SpawnTime)) return;
 
 	StartSpawn();
 }
 
-void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* NewMonsterRow)
+void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataRow& NewMonsterRow)
 {
-	if (NewSpawnTime <= 0 || !NewMonsterRow) return;
+	if (NewSpawnTime <= 0) return;
 
 	SpawnTime = NewSpawnTime;
 	MonsterRow = NewMonsterRow;
+
+	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 
 	StartSpawn();
 }
@@ -101,10 +112,21 @@ void AEnemySpawner::StartSpawn()
 
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
 {
-	if (!CollisionBox) return FVector(0);
-	if (!DietGameState) return FVector(0);
+	if (!CollisionBox) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, CollisionBox is Null"));
+		return FVector(0);
+	}
+
+	if (!DietGameState) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, DietGameState is Null"));
+		return FVector(0);
+	}
 
 	if (!DietGameState->GetPlayerRef().IsValid()) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("AEnemySpawner::GetNewSpawnLocation, GetPlayerRef is Null"));
 		return FVector(0);
 	}
 
@@ -137,13 +159,19 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 void AEnemySpawner::SpawnEnemy()
 {
 	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
-	AActor* PoolObject = PoolManager->GetPoolOjbect(nullptr);
+	AActor* PoolObject = PoolManager->GetPoolOjbect(MonsterRow.EnemyClass);
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
 
 	if (!NewEnemy) return;
 
-	NewEnemy->SetActorLocation(GetNewSpawnLocation());
+	NewEnemy->InitAttritube(MonsterRow);
+	FVector SpawnLocation = GetNewSpawnLocation();
+	UE_LOG(
+		LogTemp,
+		Warning,
+		TEXT("Location X : %f, Y: %f, Z: %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);
+	NewEnemy->SetActorLocation(SpawnLocation);
 	NewEnemy->RunAI();
 }
 

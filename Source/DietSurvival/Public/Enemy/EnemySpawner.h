@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "System/EnemyDataRow.h"
 #include "EnemySpawner.generated.h"
 
 class APoolManager;
@@ -22,19 +23,19 @@ public:
 
 	void SetSpawnTime(float NewSpawnTime);
 
-	void SetSpawnMonster(FTableRowBase* NewMonsterRow);
+	void SetSpawnMonster(const FEnemyDataRow& NewMonsterRow);
 
-	void SetSpawnTimeAndMonster(float NewSpawnTime, FTableRowBase* NewMonsterRow);
+	void SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataRow& NewMonsterRow);
 
 	void SpawnStop();
 
 protected:
 	TObjectPtr<ADietGameState> DietGameState;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Scene;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> CollisionBox;
 
 	UPROPERTY()
@@ -46,9 +47,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float DistanceSafeSpawn;
 
+	UPROPERTY(EditAnywhere, Category = "Test")
 	float SpawnTime;
 
-	FTableRowBase* MonsterRow;
+	FEnemyDataRow MonsterRow;
 
 	virtual void BeginPlay() override;
 
@@ -58,4 +60,13 @@ protected:
 
 	UFUNCTION()
 	void SpawnEnemy();
+
+	UPROPERTY(EditAnywhere, Category = "Test")
+	bool bIsTest = true;
+	UPROPERTY(EditAnywhere, Category="Test")
+	TSubclassOf<ADietEnemyBase> TestClass = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Test")
+	int32 TestHealth = 100;
+	UPROPERTY(EditAnywhere, Category = "Test")
+	int32 TestPowerAttack = 10;
 };
