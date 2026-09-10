@@ -68,12 +68,24 @@ void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 
 		// UPlayerStatComponent::UpgradeStat에 필요한 파라미터 준비
 		EPlayerStatType StatType = Subsystem->GetAugmentStatType(ChosenAugmentFName);
-		float StatAmount = Subsystem->GetAugmentDelta(ChosenAugmentFName, AugmentLevel);
+		float StatAmount = 0.f;
+		if (AugmentLevel >= 0)
+		{
+			StatAmount = Subsystem->GetAugmentDelta(ChosenAugmentFName, AugmentLevel);
+		}
 
 		APlayerController* PC = GetOwningController();
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn()))
 		{
 			Player->StatComponent->UpgradeStat(StatType, StatAmount);
+			if (CachedPS)
+			{
+				CachedPS->AugmentManager->AugmentLevelUp(ChosenAugmentFName);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Possess중인 Pawn이 APlayerCharacter가 아님."));
 		}
 	}
 	else
@@ -87,10 +99,10 @@ void UAugmentSelectionComponent::HandleAugmentChosen(FName ChosenAugmentFName)
 void UAugmentSelectionComponent::TryBindToLevelUp()
 {
 	APlayerController* PC = GetOwningController();
-	ADietPlayerState* PS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
-	if (!PS) { return; }
+	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
+	if (!CachedPS) { return; }
 
-	PS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
+	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
 }
 
 void UAugmentSelectionComponent::StartSelection()

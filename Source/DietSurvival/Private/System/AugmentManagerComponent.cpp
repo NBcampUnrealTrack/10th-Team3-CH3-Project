@@ -51,14 +51,24 @@ void UAugmentManagerComponent::BeginPlay()
 	//StartAugment();
 }
 
-void UAugmentManagerComponent::StartAugment()
+void UAugmentManagerComponent::AugmentLevelUp(FName ChosenAugmentFName)
 {
-	TArray<TTuple<FName, int32>> SelectedAugments = SelectRandomAugments();
-
-	// test log
-	for (int32 i = 0; i < SelectedAugments.Num(); i++)
+	if (AugmentsMap.Contains(ChosenAugmentFName))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d번째 증강: %s"), i + 1, *(SelectedAugments[i].Get<0>()).ToString());
+		TArray<int32>& Levels = AugmentsMap[ChosenAugmentFName];
+		Levels[0]++;   // 증강 레벨 +1
+		if (Levels[0] != Levels[1])
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s 증강 레벨업: Lv.%d"), *ChosenAugmentFName.ToString(), Levels[0]);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s 증강 최대 레벨 도달: Lv.%d"), *ChosenAugmentFName.ToString(), Levels[0]);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("큰일남. 증강 목록에 없는 걸 선택해버림. 이 로그 뜨면 망함."));
 	}
 }
 
