@@ -1,7 +1,7 @@
 ﻿#include "System/AugmentSelectionComponent.h"
 #include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
-#include "Augment/AugmentSelectionWidget.h"
+#include "UI/AugmentSelectionWidget.h"
 
 UAugmentSelectionComponent::UAugmentSelectionComponent()
 {

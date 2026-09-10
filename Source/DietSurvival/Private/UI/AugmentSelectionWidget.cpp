@@ -1,5 +1,5 @@
-﻿#include "Augment/AugmentSelectionWidget.h"
-#include "Augment/AugmentCardWidget.h"
+﻿#include "UI/AugmentSelectionWidget.h"
+#include "UI/AugmentCardWidget.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 
