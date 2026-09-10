@@ -1,7 +1,9 @@
 ﻿#include "Player/PlayerCharacterController.h"
+#include "System/AugmentSelectionComponent.h"
 
 APlayerCharacterController::APlayerCharacterController()
 {
+	AugmentSelectionComponent = CreateDefaultSubobject<UAugmentSelectionComponent>(TEXT("AugmentSelection"));
 }
 
 void APlayerCharacterController::BeginPlay()
