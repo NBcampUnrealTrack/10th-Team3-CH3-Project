@@ -85,6 +85,11 @@ void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataR
 	StartSpawn();
 }
 
+void AEnemySpawner::ShrinkMonsters(const FEnemyDataRow& OldMonsterRow, int32 PoolSize)
+{
+	PoolManager->ShrinkPool(OldMonsterRow.EnemyClass, PoolSize);
+}
+
 void AEnemySpawner::SpawnStop()
 {
 	if (GetWorldTimerManager().IsTimerActive(SpawnTimer)) {

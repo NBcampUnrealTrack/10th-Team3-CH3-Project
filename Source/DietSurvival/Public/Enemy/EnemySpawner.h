@@ -27,6 +27,8 @@ public:
 
 	void SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataRow& NewMonsterRow);
 
+	void ShrinkMonsters(const FEnemyDataRow& OldMonsterRow, int32 PoolSize = 0);
+
 	void SpawnStop();
 
 protected:
