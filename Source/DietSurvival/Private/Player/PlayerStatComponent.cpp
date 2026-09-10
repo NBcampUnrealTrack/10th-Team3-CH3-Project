@@ -25,6 +25,7 @@ void UPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UPlayerStatComponent::AddFullness(float Amount)
 {
+	//이미 게임오버	상태라면 더 이상 포만감 증가 X
 	if (bIsGameOver)
 	{
 		return;
@@ -33,11 +34,13 @@ void UPlayerStatComponent::AddFullness(float Amount)
 	const float PreviousFullness = Fullness;
 	Fullness = FMath::Clamp(Fullness + Amount, 0.f, MaxFullness);
 
+	//포만감 변화 Broadcast
 	if (!FMath::IsNearlyEqual(PreviousFullness, Fullness))
 	{
 		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
 	}
 
+	//현재 포만감이 최대치 넘기면 게임오버, Broadcast
 	if (Fullness >= MaxFullness)
 	{
 		bIsGameOver = true;
@@ -68,7 +71,7 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 
 	case EPlayerStatType::MaxFullness:
 		MaxFullness += Amount;
-		// 최대치가 바뀌면 비율(UI 게이지 등)이 달라지므로 다시 알려줌
+		// 최대치가 바뀌면 비율(UI 게이지 등)이 달라지므로 다시 알려줌(Broadcast)
 		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
 		break;
 

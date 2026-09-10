@@ -21,7 +21,7 @@ void UAttackComponent::BeginPlay()
 
 	if (AActor* Owner = GetOwner())
 	{
-		// 매 공격마다 반복 탐색하지 않도록 한 번만 찾아서 캐싱
+		// 매 공격마다 반복 탐색하지 않도록 한 번만 찾아서 캐싱(포인터라서 자동으로 업데이트 됨)
 		CachedStatComponent = Owner->FindComponentByClass<UPlayerStatComponent>();
 
 		if (!CachedStatComponent)
@@ -91,11 +91,16 @@ void UAttackComponent::PerformAttack()
 				PC->GetPlayerViewPoint(Start, ViewRotation);
 			}
 		}
+		//카메라 위치가 아닌 시야 방향으로 앞으로 이동한 곳을 발사 지점으로 설정.
+		Start += ViewRotation.Vector() * MuzzleForwardOffset;
 
+		// 사거리: StatComponent가 있으면 그 값을, 없으면 기본값을 사용
 		const float Range = CachedStatComponent ? CachedStatComponent->GetAttackRange() : AttackRange;
+
+		// 탄 수 : StatComponent가 있으면 그 값을, 없으면 1단계(정면만)를 사용
 		const int32 DirectionCount = CachedStatComponent ? CachedStatComponent->GetAttackDirection() : 1;
 
-		// 방향 개수만큼 정해진 각도로 동시에 발사
+		// 탄 수만큼 정해진 각도로 동시에 발사
 		for (const float YawOffset : GetActiveDirectionAngles(DirectionCount))
 		{
 			FireTraceInDirection(Start, ViewRotation, YawOffset, Range);
@@ -106,6 +111,7 @@ void UAttackComponent::PerformAttack()
 	ScheduleNextAttack();
 }
 
+//지정된 한 방향으로 라인트레이스 1회
 void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator& BaseViewRotation, float YawOffset, float Range)
 {
 	AActor* Owner = GetOwner();
@@ -118,12 +124,15 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	FRotator DirectionRotation = BaseViewRotation;
 	DirectionRotation.Yaw += YawOffset;
 
+	//사거리에 따른 끝점 계산
 	const FVector Forward = DirectionRotation.Vector();
 	const FVector End = Start + Forward * Range;
 
+	//플레이어는 충돌 판정에서 제외
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(Owner);
 
+	//충돌이 일어나면 bHit = true
 	FHitResult HitResult;
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, TraceChannel, QueryParams);
 
@@ -151,27 +160,44 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	}
 }
 
-TArray<float> UAttackComponent::GetActiveDirectionAngles(int32 DirectionLevel)
+const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionLevel)
 {
-	const int32 ClampedLevel = FMath::Clamp(DirectionLevel, 1, 4);
+	// 1 미만으로 내려가지 않게 보정 (0단계, 음수 단계 같은 비정상 입력 방지)
+	const int32 ClampedLevel = FMath::Max(DirectionLevel, 1);
 
-	switch (ClampedLevel)
+	// 이미 이 단계를 계산해서 캐시에 넣어둔 적이 있는지 먼저 확인
+	if (const TArray<float>* FoundAngles = CachedDirectionAngles.Find(ClampedLevel))
 	{
-	case 1:
-		// 정면만
-		return { 0.f };
-
-	case 2:
-		// 정면 + 후면
-		return { 0.f, 180.f };
-
-	case 3:
-		// 동서남북 4방향
-		return { 0.f, 90.f, 180.f, -90.f };
-
-	case 4:
-	default:
-		// 8방향 전체 (45도 간격)
-		return { 0.f, 45.f, 90.f, 135.f, 180.f, -135.f, -90.f, -45.f };
+		// 캐시에 있으면 재계산 없이 바로 그 데이터의 참조를 반환
+		return *FoundAngles;
 	}
+
+	// 캐시에 없다면 이번 한 번만 계산함
+	// 단계당 발사 개수 계산: 1단계=1발, 2단계=3발, 3단계=5발, 4단계=7발...
+	const int32 ShotCount = 2 * ClampedLevel - 1;
+
+	TArray<float> NewAngles;
+	NewAngles.Reserve(ShotCount); // 몇 개 들어갈지 미리 알고 있으니 메모리 재할당 방지용으로 예약
+
+	if (ShotCount <= 1)
+	{
+		// 1발일 땐 분산시킬 필요 없이 정면 하나만
+		NewAngles.Add(0.f);
+	}
+	else
+	{
+		// 항상 고정된 ±30도(총 60도) 범위 안에서만 퍼짐. 단계가 올라가도 범위는 안 넓어지고
+		// 그 안에 들어가는 발사체 개수만 촘촘해지는 방식
+		constexpr float HalfSpreadAngle = 30.f;
+		const float StepAngle = (HalfSpreadAngle * 2.f) / (ShotCount - 1);
+
+		for (int32 i = 0; i < ShotCount; ++i)
+		{
+			NewAngles.Add(-HalfSpreadAngle + StepAngle * i);
+		}
+	}
+
+	// 계산 결과를 캐시에 저장. TMap::Add는 저장된 값 자체의 참조를 돌려주므로,
+	// 그 참조를 그대로 반환하면 매번 새로 복사할 필요 없이 캐시된 데이터를 바로 가리키게 됨
+	return CachedDirectionAngles.Add(ClampedLevel, MoveTemp(NewAngles));
 }

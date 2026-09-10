@@ -28,9 +28,9 @@ public:
 	void StopAutoAttack();
 
 protected:
-	// StatComponent를 못 찾았을 때 쓸 기본 공격 간격(초) 
+	// StatComponent를 못 찾았을 때 쓸 기본 공격 간격(혹시나)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
-	float FallbackAttackInterval = 1.f;
+	float FallbackAttackInterval = 3.f;
 
 	// 라인트레이스 사거리 (cm) 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
@@ -39,6 +39,10 @@ protected:
 	// 트레이스 판정에 쓸 콜리전 채널 (적 콜리전 프리셋에 맞게 조정 필요) 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Pawn;
+
+	// 라인트레이스 시작 위치를 카메라에서 앞으로 얼마나 이동시킬지 (cm)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	float MuzzleForwardOffset = 300.f;
 
 	// 디버그용 트레이스 라인을 화면에 그릴지 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack|Debug", meta = (AllowPrivateAccess = "true"))
@@ -62,7 +66,9 @@ protected:
 	// 현재 AttackSpeed를 반영한 실제 공격 간격 계산	
 	float GetCurrentAttackInterval() const;
 
-	/** 방향 단계(1~4)에 따라 활성화되는 각도 오프셋 목록을 반환.
-	 * 1: 정면만 / 2: 정면+후면 / 3: 동서남북 4방향 / 4: 8방향 전체(45도 간격) */
-	static TArray<float> GetActiveDirectionAngles(int32 DirectionLevel);
+	//방향 단계에 따라 발사 각도 목록을 계산해서 반환.
+	const TArray<float>& GetActiveDirectionAngles(int32 DirectionLevel);
+
+	// 방향 단계(int) -> 그 단계의 각도 목록. 한 번 계산되면 게임이 끝날 때까지 재사용됨
+	TMap<int32, TArray<float>> CachedDirectionAngles;
 };

@@ -97,11 +97,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
 	float AttackRange = 1000.f;
 
-	// 공격 방향 수 (1~4단계)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true", ClampMin = "1", ClampMax = "4"))
+	// 공격 방향 수 (1단계 시작)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true", ClampMin = "1"))
 	int32 AttackDirection = 1;
 
 public:
+	//---------Getter, Setter-----------
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")
 	float GetMoveSpeed() const { return MoveSpeed; }
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")
@@ -125,8 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
 	int32 GetAttackDirection() const { return AttackDirection; }
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
-	void SetAttackDirection(int32 NewCount) { AttackDirection = FMath::Clamp(NewCount, 1, 4); }
+	void SetAttackDirection(int32 NewCount) { AttackDirection = FMath::Max(NewCount, 1);}
 
+	//--------스탯 업그레이드--------
 	UFUNCTION(BlueprintCallable, Category = "Stat|Upgrade")
 	void UpgradeStat(EPlayerStatType StatType, float Amount);
 };

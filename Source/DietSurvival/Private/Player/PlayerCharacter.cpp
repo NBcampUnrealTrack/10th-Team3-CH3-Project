@@ -41,6 +41,7 @@ APlayerCharacter::APlayerCharacter()
 
 	Tags.Add(FName("Player"));
 
+	//컴포넌트 생성
 	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
 }
@@ -136,6 +137,7 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	//무적이면 데미지 무시
 	if (IsInvincible())
 	{
 		return 0.f;
@@ -155,6 +157,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return ActualDamage;
 }
 
+//------------------- 무적 시스템 -------------------
 void APlayerCharacter::StartHitInvincibility()
 {
 	bIsHitInvincible = true;
