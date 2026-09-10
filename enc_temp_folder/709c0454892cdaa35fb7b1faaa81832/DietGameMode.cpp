@@ -30,8 +30,6 @@ ADietGameMode::ADietGameMode()
 	GameStateClass = ADietGameState::StaticClass();
 	//DefaultPawnClass = APlayerCharacter::StaticClass();
 
-	SpawnDuration = 1.0f;
-
 	//----------임시-----------
 	if (DefaultPlayerCharacterClass != nullptr)
 	{
@@ -82,7 +80,6 @@ void ADietGameMode::StartLevel()
 		return;
 	}
 	CachedDietGameState->StartTimer();
-	NextWave(1);
 }
 
 void ADietGameMode::EndLevel(bool bWin)
@@ -102,7 +99,7 @@ void ADietGameMode::EndLevel(bool bWin)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
-void ADietGameMode::CommandSpawn(float InSpawnDuration, const FEnemyDataRow& MonsterRow)
+void ADietGameMode::CommandSpawn(float DummySpawnTime, const FEnemyDataRow& MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -110,8 +107,8 @@ void ADietGameMode::CommandSpawn(float InSpawnDuration, const FEnemyDataRow& Mon
 		return;
 	}
 
-	CachedEnemySpawner->SetSpawnTimeAndMonster(InSpawnDuration, MonsterRow);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] call SetSpawnTimeAndMonster()"));
+	CachedEnemySpawner->SetSpawnTimeAndMonster(DummySpawnTime, MonsterRow);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn_two_params called "));
 }
 
 void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
@@ -123,12 +120,16 @@ void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
 	}
 
 	CachedEnemySpawner->SetSpawnMonster(MonsterRow);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] call SetSpawnMonster() "));
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn_one_param called "));
 }
 
 void ADietGameMode::NextWave(int32 Wave)
 {
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
+
+	//Wave 몬스터 데이터 처리
+	//float DummySpawnTime = 2.0f;
+	//FTableRowBase* DummyMonsterRow = nullptr;
 
 	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
 	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
@@ -146,7 +147,8 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
 		return;
 	}
-	CommandSpawn(SpawnDuration, *ED);
+	CommandSpawn(*ED);
+	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
 }
 
 void ADietGameMode::HandleWaveIncrease(int32 Wave)

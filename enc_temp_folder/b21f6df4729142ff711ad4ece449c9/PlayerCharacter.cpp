@@ -8,10 +8,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
-#include "System/DietGameState.h"
 
  #include "Player/PlayerStatComponent.h"
- #include "System/DietGameState.h"
+ //#include "DietGameState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -32,7 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	bUseControllerRotationYaw = true;
-	bUseControllerRotationPitch = false;
+	bUseControllerRotationPitch = true;
 	bUseControllerRotationRoll = false;
 
 	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
@@ -41,10 +40,6 @@ APlayerCharacter::APlayerCharacter()
 	}
 
 	Tags.Add(FName("Player"));
-
-	//컴포넌트 생성
-	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
-	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -71,10 +66,10 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 
-		if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
-		{
-			  GS->SetPlayerRef(this);
-		}
+		//if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
+		//{
+		//	  GS->SetPlayerRef(this);
+		//}
 	}
 
 }
@@ -123,7 +118,7 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	UE_LOG(LogTemp, Warning, TEXT("Look called: %s"), *LookAxisVector.ToString());
+
 	if (!Controller)
 	{
 		return;
@@ -138,7 +133,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	//무적이면 데미지 무시
 	if (IsInvincible())
 	{
 		return 0.f;
@@ -158,7 +152,6 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return ActualDamage;
 }
 
-//------------------- 무적 시스템 -------------------
 void APlayerCharacter::StartHitInvincibility()
 {
 	bIsHitInvincible = true;

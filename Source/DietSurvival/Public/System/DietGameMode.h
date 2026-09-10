@@ -31,9 +31,9 @@ public:
 	void EndLevel(bool bWin);
 
 	//스포너에게 스폰 간격/데이터 전달 후 웨이브 시작
-	void CommandSpawn(float SpawnTime, FEnemyDataRow* MonsterRow);
+	void CommandSpawn(float SpawnTime, const FEnemyDataRow& MonsterRow);
 
-	void CommandSpawn(FEnemyDataRow* MonsterRow);
+	void CommandSpawn(const FEnemyDataRow& MonsterRow);
 
 	// 웨이브 진입 판단 후 스폰 명령
 	void NextWave(int32 Wave);
@@ -55,13 +55,17 @@ public:
 
 private:
 	// variables
+
+	UPROPERTY(VisibleAnywhere, Category = "Wave")
+	float SpawnDuration;
+
 	UPROPERTY()
 	TObjectPtr<AEnemySpawner> CachedEnemySpawner;
 
 	UPROPERTY()
 	TObjectPtr<ADietGameState> CachedDietGameState;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
+	UPROPERTY(EditDefaultsOnly, Category = "Wave")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
 
 	//플레이어, 컨트롤러 등록 임시
