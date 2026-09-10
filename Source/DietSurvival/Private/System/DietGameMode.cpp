@@ -30,6 +30,8 @@ ADietGameMode::ADietGameMode()
 	GameStateClass = ADietGameState::StaticClass();
 	//DefaultPawnClass = APlayerCharacter::StaticClass();
 
+	SpawnDuration = 1.0f;
+
 	//----------임시-----------
 	if (DefaultPlayerCharacterClass != nullptr)
 	{
@@ -100,7 +102,7 @@ void ADietGameMode::EndLevel(bool bWin)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
-void ADietGameMode::CommandSpawn(float DummySpawnTime, const FEnemyDataRow& MonsterRow)
+void ADietGameMode::CommandSpawn(float InSpawnDuration, const FEnemyDataRow& MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -108,8 +110,8 @@ void ADietGameMode::CommandSpawn(float DummySpawnTime, const FEnemyDataRow& Mons
 		return;
 	}
 
-	CachedEnemySpawner->SetSpawnTimeAndMonster(DummySpawnTime, MonsterRow);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn_two_params called "));
+	CachedEnemySpawner->SetSpawnTimeAndMonster(InSpawnDuration, MonsterRow);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] call SetSpawnTimeAndMonster()"));
 }
 
 void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
@@ -121,16 +123,12 @@ void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
 	}
 
 	CachedEnemySpawner->SetSpawnMonster(MonsterRow);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn_one_param called "));
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] call SetSpawnMonster() "));
 }
 
 void ADietGameMode::NextWave(int32 Wave)
 {
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
-
-	//Wave 몬스터 데이터 처리
-	float DummySpawnTime = 1.0f;
-	//FTableRowBase* DummyMonsterRow = nullptr;
 
 	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
 	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
@@ -148,8 +146,7 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
 		return;
 	}
-	CommandSpawn(DummySpawnTime, *ED);
-	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
+	CommandSpawn(SpawnDuration, *ED);
 }
 
 void ADietGameMode::HandleWaveIncrease(int32 Wave)

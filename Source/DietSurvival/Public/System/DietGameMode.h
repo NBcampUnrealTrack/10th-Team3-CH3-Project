@@ -55,13 +55,17 @@ public:
 
 private:
 	// variables
+
+	UPROPERTY(VisibleAnywhere, Category = "Wave")
+	float SpawnDuration;
+
 	UPROPERTY()
 	TObjectPtr<AEnemySpawner> CachedEnemySpawner;
 
 	UPROPERTY()
 	TObjectPtr<ADietGameState> CachedDietGameState;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn")
+	UPROPERTY(EditDefaultsOnly, Category = "Wave")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
 
 	//플레이어, 컨트롤러 등록 임시

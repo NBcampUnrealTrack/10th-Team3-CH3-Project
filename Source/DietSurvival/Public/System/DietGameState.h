@@ -60,7 +60,7 @@ public:
 protected:
 	// variables
 	//현재 wave 정보
-	UPROPERTY(BlueprintReadOnly, Category = "Wave")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 CurrentWave;
 
 	// 게임 시작부터 흐른 시간
