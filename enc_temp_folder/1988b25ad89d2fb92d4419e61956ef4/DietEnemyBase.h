@@ -36,7 +36,6 @@ public:
 	virtual void StopAI();
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category="Attribute")
 	int32 PowerAttack;
 
 	virtual void BeginPlay() override;
@@ -66,7 +65,7 @@ protected:
 	TObjectPtr<ADietAIController> DietAIController;
 	UPROPERTY()
 	TObjectPtr<UPoolObjectComponent> PoolObjectComponent;
-	UPROPERTY(VisibleAnywhere, Category = "Attribute")
+	UPROPERTY()
 	TObjectPtr<UHealthComponent> HealthComponent;
 
 };

@@ -128,7 +128,7 @@ void ADietGameMode::NextWave(int32 Wave)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
 
 	//Wave 몬스터 데이터 처리
-	float DummySpawnTime = 1.0f;
+	//float DummySpawnTime = 2.0f;
 	//FTableRowBase* DummyMonsterRow = nullptr;
 
 	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
@@ -147,7 +147,7 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
 		return;
 	}
-	CommandSpawn(DummySpawnTime, *ED);
+	CommandSpawn(*ED);
 	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
 }
 

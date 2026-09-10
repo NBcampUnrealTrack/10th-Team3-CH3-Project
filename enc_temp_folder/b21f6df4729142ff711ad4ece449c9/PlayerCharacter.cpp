@@ -8,7 +8,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
-#include "System/DietGameState.h"
 
  #include "Player/PlayerStatComponent.h"
  //#include "DietGameState.h"
@@ -67,10 +66,10 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 
-		if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
-		{
-			  GS->SetPlayerRef(this);
-		}
+		//if (ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>())
+		//{
+		//	  GS->SetPlayerRef(this);
+		//}
 	}
 
 }

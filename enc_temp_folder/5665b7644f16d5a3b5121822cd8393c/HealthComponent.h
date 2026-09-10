@@ -18,9 +18,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere, Category="Attribute")
+
 	int32 HealthMax;
-	UPROPERTY(VisibleAnywhere, Category = "Attribute")
 	int32 HealthCurrent;
 
 public:	
