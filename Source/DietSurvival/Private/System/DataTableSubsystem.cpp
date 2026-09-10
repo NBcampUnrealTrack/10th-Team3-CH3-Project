@@ -1,6 +1,7 @@
 ﻿#include "System/DataTableSubsystem.h"
 #include "System/DietGameInstance.h"
 #include "System/AugmentsDataRow.h"
+#include "System/EnemyDataRow.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
@@ -34,6 +35,24 @@ FAugmentsDataRow* UDataTableSubsystem::GetAugmentRowByFName(FName AugmentFName)
 	return FoundRow;
 }
 
+UDataTable* UDataTableSubsystem::GetEnemyDataTable()
+{
+	return EnemyDataTable;
+}
+
+FEnemyDataRow* UDataTableSubsystem::GetEnemyRowByFName(FName EnemyFName)
+{
+	FEnemyDataRow* FoundRow =
+		EnemyDataTable->FindRow<FEnemyDataRow>(EnemyFName, TEXT("Enemy row date not found"));
+
+	if (FoundRow == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[DataTableSubsystem] Data row not found"));
+		return nullptr;
+	}
+	return FoundRow;
+}
+
 float UDataTableSubsystem::GetAugmentDelta(FName AugmentFName, int32 AugmentLevel)
 {
 	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentDelta"));
@@ -58,7 +77,12 @@ bool UDataTableSubsystem::IsAugmentShowFractionalDigit(FName AugmentFName)
 	return FoundRow->bShowFractionalDigit;
 }
 
-void UDataTableSubsystem::LoadDataTables(UDataTable* InAugmentDataTable)
+void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
+}
+
+void UDataTableSubsystem::LoadEnemyDataTable(UDataTable* InEnemyDataTable)
+{
+	EnemyDataTable = InEnemyDataTable;
 }

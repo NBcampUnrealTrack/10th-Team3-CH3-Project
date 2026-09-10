@@ -3,9 +3,27 @@
 
 #include "System/DietGameMode.h"
 #include "System/DietGameState.h"
+#include "System/DataTableSubsystem.h"
+#include "System/EnemyDataRow.h"
 #include "Player/PlayerCharacter.h"
 #include "Enemy/EnemySpawner.h"
 #include "Kismet/GameplayStatics.h"
+
+ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
+{
+	if (WorldContext == nullptr)
+	{
+		return nullptr;
+	}
+
+	UWorld* World = WorldContext->GetWorld();
+	if (World == nullptr)
+	{
+		return nullptr;
+	}
+
+	return World->GetAuthGameMode<ADietGameMode>();
+}
 
 ADietGameMode::ADietGameMode()
 {
@@ -54,27 +72,12 @@ void ADietGameMode::BeginPlay()
 	StartLevel();
 }
 
-ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
-{
-	if (WorldContext == nullptr)
-	{
-		return nullptr;
-	}
-
-	UWorld* World = WorldContext->GetWorld();
-	if (World == nullptr)
-	{
-		return nullptr;
-	}
-
-	return World->GetAuthGameMode<ADietGameMode>();
-}
-
 void ADietGameMode::StartLevel()
 {
 	if (CachedDietGameState == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
+		return;
 	}
 	CachedDietGameState->StartTimer();
 }
@@ -96,7 +99,7 @@ void ADietGameMode::EndLevel(bool bWin)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
-void ADietGameMode::CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonsterRow)
+void ADietGameMode::CommandSpawn(float DummySpawnTime, FEnemyDataRow* MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
@@ -104,7 +107,19 @@ void ADietGameMode::CommandSpawn(float DummySpawnTime, FTableRowBase* DummyMonst
 		return;
 	}
 
-	CachedEnemySpawner->SetSpawnTimeAndMonster(DummySpawnTime, DummyMonsterRow);
+	CachedEnemySpawner->SetSpawnTimeAndMonster(DummySpawnTime, MonsterRow);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn called "));
+}
+
+void ADietGameMode::CommandSpawn(FEnemyDataRow* MonsterRow)
+{
+	if (CachedEnemySpawner == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CachedEnemySpawner is nullptr "));
+		return;
+	}
+
+	CachedEnemySpawner->SetSpawnMonster(MonsterRow);
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CommandSpawn called "));
 }
 
@@ -113,10 +128,27 @@ void ADietGameMode::NextWave(int32 Wave)
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
 
 	//Wave 몬스터 데이터 처리
-	float DummySpawnTime = 2.0f;
-	FTableRowBase* DummyMonsterRow = nullptr;
+	//float DummySpawnTime = 2.0f;
+	//FTableRowBase* DummyMonsterRow = nullptr;
 
-	CommandSpawn(DummySpawnTime, DummyMonsterRow);
+	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
+	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
+	FName RowName = FName(*RowNameString);
+
+	UDataTableSubsystem* DTS = UDataTableSubsystem::Get(this);
+	if (DTS == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] DataTableSussystem is nullptr"));
+		return;
+	}
+	FEnemyDataRow* ED = DTS->GetEnemyRowByFName(RowName);
+	if (ED == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
+		return;
+	}
+	CommandSpawn(ED);
+	//CommandSpawn(DummySpawnTime, DummyMonsterRow);
 }
 
 void ADietGameMode::HandleWaveIncrease(int32 Wave)
@@ -134,14 +166,4 @@ void ADietGameMode::HandleTimeUp()
 void ADietGameMode::HandlePlayerDefeat()
 {
 	//Todo PlayerStatComponent--Deligate 사용해 구현 예정
-}
-
-ADietGameState* ADietGameMode::GetDietGameState() const
-{
-	if (CachedDietGameState == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
-		return nullptr;
-	}
-	return CachedDietGameState;
 }
