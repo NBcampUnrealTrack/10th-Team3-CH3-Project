@@ -33,11 +33,7 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APoolManager* NewPoolManager = GetWorld()->SpawnActor<APoolManager>();
-	if (NewPoolManager) {
-		PoolManager = NewPoolManager;
-	}
-	DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
+	Initialize();
 
 	if (bIsTest) {
 		PoolManager->AddPool(TestClass, 10);
@@ -48,6 +44,19 @@ void AEnemySpawner::BeginPlay()
 			SpawnTime = 3.f;
 		}
 		StartSpawn();
+	}
+}
+
+void AEnemySpawner::Initialize()
+{
+	if (!PoolManager) {
+		APoolManager* NewPoolManager = GetWorld()->SpawnActor<APoolManager>();
+		if (NewPoolManager) {
+			PoolManager = NewPoolManager;
+		}
+	}
+	if (!DietGameState) {
+		DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
 	}
 }
 
@@ -66,6 +75,10 @@ void AEnemySpawner::SetSpawnMonster(const FEnemyDataRow& NewMonsterRow)
 {
 	MonsterRow = NewMonsterRow;
 
+	if (!PoolManager) {
+		Initialize();
+	}
+
 	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 
 	if (FMath::IsNearlyZero(SpawnTime)) return;
@@ -79,6 +92,10 @@ void AEnemySpawner::SetSpawnTimeAndMonster(float NewSpawnTime, const FEnemyDataR
 
 	SpawnTime = NewSpawnTime;
 	MonsterRow = NewMonsterRow;
+
+	if (!PoolManager) {
+		Initialize();
+	}
 
 	PoolManager->AddPool(MonsterRow.EnemyClass, 10);
 

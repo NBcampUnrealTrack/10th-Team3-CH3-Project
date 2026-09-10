@@ -31,6 +31,8 @@ public:
 
 	void SpawnStop();
 
+	void Initialize();
+
 protected:
 	TObjectPtr<ADietGameState> DietGameState;
 
