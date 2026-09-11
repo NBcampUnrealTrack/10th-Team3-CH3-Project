@@ -57,7 +57,7 @@ void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (DamageAmount <= 0) return DamageAmount;
-	if (bIsDead) return;
+	if (bIsDead) return DamageAmount;
 	ControllerLastAttacked = EventInstigator;
 	HealthComponent->TakeDamage(DamageAmount);
 	return DamageAmount;
