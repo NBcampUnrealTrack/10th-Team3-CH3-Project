@@ -133,8 +133,6 @@ void ADietEnemyBase::BeginPlay()
 
 void ADietEnemyBase::HandleDeath()
 {
-	UE_LOG(LogTemp, Warning,
-		TEXT("ADietEnemyBase::HandleDeath, %s"), *GetNameSafe(this));
 	StopAI();
 
 	if (ControllerLastAttacked) {
