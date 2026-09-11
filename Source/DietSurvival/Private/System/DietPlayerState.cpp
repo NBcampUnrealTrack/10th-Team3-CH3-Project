@@ -32,7 +32,7 @@ void ADietPlayerState::LevelUp()
 void ADietPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
+	//GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
 }
 
 void ADietPlayerState::TestGainExp()
