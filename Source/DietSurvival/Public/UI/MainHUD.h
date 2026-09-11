@@ -54,7 +54,7 @@ protected:
 	void BindDelegates();
 
 	UFUNCTION()
-	void HandleExpChanged(int32 CurrentExp, int32 MaxExp);
+	void HandleExpChanged(float CurrentExp, float MaxExp);
 
 	UFUNCTION()
 	void HandleLevelUp(int32 NewLevel);

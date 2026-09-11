@@ -35,7 +35,7 @@ void UExpWidget::HandleLevelUp(int32 NewLevel)
 	OnLevelDisplayUpdated(NewLevel);
 }
 
-void UExpWidget::HandleExpChanged(int32 CurrentExp, int32 MaxExp)
+void UExpWidget::HandleExpChanged(float CurrentExp, float MaxExp)
 {
 	const float Percent = (MaxExp > 0)
 		? FMath::Clamp(static_cast<float>(CurrentExp) / MaxExp * 100, 0.f, 100.f)

@@ -243,7 +243,7 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AMainHUD::HandleExpChanged(int32 CurrentExp, int32 MaxExp)
+void AMainHUD::HandleExpChanged(float CurrentExp, float MaxExp)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetExp(CurrentExp, MaxExp);

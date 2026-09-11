@@ -16,7 +16,7 @@ class DIETSURVIVAL_API UUserHUDWidget : public UUserWidget
 
 public:
 	void SetFullness(float CurrentFullness, float MaxFullness);
-	void SetExp(int32 CurrentExp, int32 MaxExp);
+	void SetExp(float CurrentExp, float MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
 	void SetWave(int32 Wave);
