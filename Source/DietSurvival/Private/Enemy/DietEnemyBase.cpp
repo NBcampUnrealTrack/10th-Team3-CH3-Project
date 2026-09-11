@@ -42,6 +42,8 @@ ADietEnemyBase::ADietEnemyBase()
 
 	PowerAttack = 0;
 	Exp = 0;
+
+	Tags.Add(FName("Enemy"));
 }
 
 void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
