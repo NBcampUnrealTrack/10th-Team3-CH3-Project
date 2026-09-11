@@ -41,6 +41,8 @@ protected:
 
 	int32 Exp;
 
+	bool bIsDead = true;
+
 	UPROPERTY()
 	TObjectPtr<AController> ControllerLastAttacked;
 

@@ -57,6 +57,7 @@ void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 float ADietEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (DamageAmount <= 0) return DamageAmount;
+	if (bIsDead) return;
 	ControllerLastAttacked = EventInstigator;
 	HealthComponent->TakeDamage(DamageAmount);
 	return DamageAmount;
@@ -107,6 +108,7 @@ void ADietEnemyBase::RunAI()
 		return;
 	}
 
+	bIsDead = false;
 	PoolObjectComponent->OnAcquire();
 
 	// BT 재시작
@@ -135,6 +137,8 @@ void ADietEnemyBase::BeginPlay()
 
 void ADietEnemyBase::HandleDeath()
 {
+	if (bIsDead) return;
+	bIsDead = true;
 	StopAI();
 
 	if (ControllerLastAttacked) {
