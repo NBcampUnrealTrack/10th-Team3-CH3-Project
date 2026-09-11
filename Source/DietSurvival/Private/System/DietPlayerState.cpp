@@ -14,10 +14,9 @@ void ADietPlayerState::GainExp(int32 Amount)
 	if (Amount <= 0) return;
 
 	PendingExp += (float)Amount;
-	UE_LOG(LogTemp, Warning, TEXT("%d 경험치 획득. PendingExp: %f"), Amount, PendingExp);
 }
 
-void ADietPlayerState::ApplyExp(int32 Amount)
+void ADietPlayerState::ApplyExp(float Amount)
 {
 	Exp += Amount;
 	OnExpChanged.Broadcast(Exp, MaxExp);
@@ -62,16 +61,12 @@ void ADietPlayerState::Tick(float DeltaTime)
 	if (FMath::IsNearlyZero(PendingExp) || PendingExp <= 0.f) { return; }
 
 	// 이번 프레임에서 적용할 경험치 계산
-	float TickExp = ExpAbsorbRate * DeltaTime + ExpRemainder;
-	if (PendingExp < TickExp) { TickExp = PendingExp; }
+	float TickExp = ExpAbsorbRate * DeltaTime;
+	TickExp = FMath::Min(TickExp, PendingExp);
 
-	// TickExp를 int32로 변환하면서 잘리는 소수점 저장
-	const int32 IntExp = FMath::FloorToInt32(TickExp);
-	ExpRemainder = TickExp - (float)IntExp;
-
-	if (IntExp <= 0) { return; }
-	PendingExp -= IntExp;
-	ApplyExp(IntExp);
+	if (FMath::IsNearlyZero(TickExp) || TickExp <= 0) { return; }
+	PendingExp -= TickExp;
+	ApplyExp(TickExp);
 }
 
 void ADietPlayerState::TestGainExp()

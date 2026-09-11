@@ -7,7 +7,7 @@
 class UAugmentManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, int32, CurrentExp, int32, MaxExp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
 
 UCLASS()
 class DIETSURVIVAL_API ADietPlayerState : public APlayerState
@@ -36,7 +36,7 @@ public:
 	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
 
 protected:
-	void ApplyExp(int32 Amount);
+	void ApplyExp(float Amount);
 
 	void LevelUp();
 
@@ -49,8 +49,8 @@ protected:
 protected:
 	// ----- 경험치, 레벨 -----
 
-	int32 Exp = 0;
-	int32 MaxExp = 10;
+	float Exp = 0;
+	float MaxExp = 10;
 	int32 Level = 1;
 
 	// ----- 경험치 대기열(점진적 경험치 증가) -----
@@ -60,7 +60,6 @@ protected:
 	float ExpAbsorbRate = 5.f;
 
 	float PendingExp = 0.f;
-	float ExpRemainder = 0.f;
 
 	// ----- 경험치 증가 테스트용 -----
 	FTimerHandle TestExpTimer;
