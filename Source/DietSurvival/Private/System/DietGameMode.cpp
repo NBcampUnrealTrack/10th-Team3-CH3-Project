@@ -7,6 +7,7 @@
 #include "System/EnemyDataRow.h"
 #include "Player/PlayerCharacter.h"
 #include "Enemy/EnemySpawner.h"
+#include "Player/PlayerStatComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
@@ -82,6 +83,7 @@ void ADietGameMode::StartLevel()
 		return;
 	}
 	CachedDietGameState->StartTimer();
+	//Todo 첫 번째 웨이브 호출 시점 변경하기
 	NextWave(1);
 }
 
@@ -152,6 +154,25 @@ void ADietGameMode::NextWave(int32 Wave)
 void ADietGameMode::HandleWaveIncrease(int32 Wave)
 {
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Wave Increased: %d"), Wave);
+
+	//첫 번째 웨이브 시작할 때 게임종료 델리게이트 구독
+	if (Wave == 1)
+	{
+		APawn* Player = CachedDietGameState->GetPlayerRef().Get();
+		if (Player == nullptr)
+		{
+			UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlyaerRef is null"));
+		}
+		else
+		{
+			UPlayerStatComponent* StatComp = Player->FindComponentByClass<UPlayerStatComponent>();
+			if (StatComp != nullptr)
+			{
+				StatComp->OnGameOver.AddDynamic(this, &ADietGameMode::HandleGameOver);
+			}
+		}
+	}
+
 	NextWave(Wave);
 }
 
@@ -161,7 +182,8 @@ void ADietGameMode::HandleTimeUp()
 	EndLevel(true);
 }
 
-void ADietGameMode::HandlePlayerDefeat()
+void ADietGameMode::HandleGameOver()
 {
-	//Todo PlayerStatComponent--Deligate 사용해 구현 예정
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Player Defeat"));
+	EndLevel(false);
 }
