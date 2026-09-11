@@ -54,6 +54,12 @@ protected:
 	void BindDelegates();
 
 	UFUNCTION()
+	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	void BindPawnDelegates(APawn* Pawn);
+	void UnbindPawnDelegates();
+
+	UFUNCTION()
 	void HandleExpChanged(float CurrentExp, float MaxExp);
 
 	UFUNCTION()
@@ -69,9 +75,6 @@ protected:
 
 	UFUNCTION()
 	void HandleInvincibilityChanged(bool bIsNowInvincible);
-
-	UFUNCTION()
-	void HandleGameOver();
 
 	UFUNCTION()
 	void HandleAttackHit(AActor* HitActor, float DamageAmount);
