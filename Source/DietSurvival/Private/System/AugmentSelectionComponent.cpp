@@ -120,6 +120,7 @@ void UAugmentSelectionComponent::StartSelection()
 	if (CachedCandidates.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
+		return;
 	}
 	for (const auto& [Name, Level] : CachedCandidates)
 	{
