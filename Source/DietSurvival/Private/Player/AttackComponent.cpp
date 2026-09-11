@@ -136,18 +136,26 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	FHitResult HitResult;
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, TraceChannel, QueryParams);
 
+	//HitResult가 Enemy 태그를 가진 오브젝트와 충돌한 것일 때 true
+	const bool bHitEnemy = bHit && HitResult.GetActor() && HitResult.GetActor()->ActorHasTag(TEXT("Enemy"));
+
 	if (bDrawDebugTrace)
 	{
+		//아무것도 안맞았을 때 초록
+		FColor DebugColor = FColor::Green;
+		if (bHit)
+		{
+			//적이 맞았으면 빨강, 바닥 등에 맞았으면 노랑
+			DebugColor = bHitEnemy ? FColor::Red : FColor::Yellow;
+		}
+
 		DrawDebugLine(GetWorld(), Start, bHit ? HitResult.Location : End,
-			bHit ? FColor::Red : FColor::Green, false, 0.5f, 0, 2.f);
+			DebugColor, false, 0.5f, 0, 2.f);
 	}
 
-	if (bHit && HitResult.GetActor())
+	if (bHitEnemy)
 	{
-		if (!HitResult.GetActor()->ActorHasTag(FName("Enemy"))) {
-			return;
-		}
-		// StatComponent가 없으면 임시로 기본 데미지(10)를 사용 (테스트용 보호 로직)
+		// 보호용 코드
 		const float DamageAmount = CachedStatComponent ? CachedStatComponent->GetAttackPower() : 10.f;
 
 		UGameplayStatics::ApplyDamage(
@@ -158,8 +166,7 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 			UDamageType::StaticClass()
 		);
 
-		UE_LOG(LogTemp, Log, TEXT("[AttackComponent] %s에게 %.1f 데미지 적용 (방향 오프셋 %.0f°)"),
-			*HitResult.GetActor()->GetName(), DamageAmount, YawOffset);
+		OnAttackHit.Broadcast(HitResult.GetActor(), DamageAmount);
 	}
 }
 
