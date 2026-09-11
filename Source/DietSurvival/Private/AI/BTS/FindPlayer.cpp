@@ -57,12 +57,7 @@ void UFindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	}
 	AActor* PlayerRef = DietGameState->GetPlayerRef().Get();
 
-	UE_LOG(LogTemp, Warning,
-		TEXT("UFindPlayer::TickNode, Player name : %s"), *GetNameSafe(PlayerRef));
-
 	BlackboardComp->SetValueAsObject(
 		TargetToFollowSelector.SelectedKeyName, PlayerRef
 	);
-	UE_LOG(LogTemp, Warning,
-		TEXT("UFindPlayer::TickNode, Player is Set"));
 }

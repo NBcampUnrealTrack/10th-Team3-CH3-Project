@@ -180,7 +180,6 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 
 void AEnemySpawner::SpawnEnemy()
 {
-	//Todo : MonsterRow 에서 몬스터 클래스 가져오기
 	AActor* PoolObject = PoolManager->GetPoolOjbect(MonsterRow.EnemyClass);
 	if (!PoolObject) return;
 	ADietEnemyBase* NewEnemy = Cast<ADietEnemyBase>(PoolObject);
@@ -189,10 +188,10 @@ void AEnemySpawner::SpawnEnemy()
 
 	NewEnemy->InitAttritube(MonsterRow);
 	FVector SpawnLocation = GetNewSpawnLocation();
-	UE_LOG(
+	/*UE_LOG(
 		LogTemp,
 		Warning,
-		TEXT("Location X : %f, Y: %f, Z: %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);
+		TEXT("Location X : %f, Y: %f, Z: %f"), SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z);*/
 	NewEnemy->SetActorLocation(SpawnLocation);
 	NewEnemy->RunAI();
 }
