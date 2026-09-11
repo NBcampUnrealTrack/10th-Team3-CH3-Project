@@ -82,5 +82,11 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
+	//StatComponent의 OnFullnessChanged 구독용
+	UFUNCTION()
+	void HandleFullnessChanged(float NewFullness, float MaxFullnessValue);
 
+	//StatComponent의 OnMoveSpeedChanged 구독용
+	UFUNCTION()
+	void HandleMoveSpeedChanged(float NewEffectiveSpeed);
 };

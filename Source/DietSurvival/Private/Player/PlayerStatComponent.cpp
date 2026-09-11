@@ -55,6 +55,7 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 	{
 	case EPlayerStatType::MoveSpeed:
 		MoveSpeed += Amount;
+		OnMoveSpeedChanged.Broadcast(GetEffectiveMoveSpeed());
 		break;
 
 	case EPlayerStatType::AttackPower:
@@ -86,4 +87,24 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 	default:
 		break;
 	}
+}
+
+float UPlayerStatComponent::GetEffectiveMoveSpeed() const
+{
+	const float Ratio = GetFullnessRatio();
+
+	float StrongestMultiplier = 1.f; // 아무 임계값도 안 넘었으면 배율 1.0(정상 속도)
+	float HighestMatchedRatio = -1.f;
+
+	for (const FMoveSpeedPenaltyThreshold& Penalty : MoveSpeedPenalties)
+	{
+		// 다음 기준임계값을 넘었을 때 업데이트. (가장 높은 기준값으로 적용하기 위해)
+		if (Ratio >= Penalty.FullnessRatio && Penalty.FullnessRatio > HighestMatchedRatio)
+		{
+			HighestMatchedRatio = Penalty.FullnessRatio;
+			StrongestMultiplier = Penalty.SpeedMultiplier;
+		}
+	}
+
+	return MoveSpeed * StrongestMultiplier;
 }
