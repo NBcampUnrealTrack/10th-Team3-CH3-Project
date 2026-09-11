@@ -174,7 +174,7 @@ const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionL
 
 	// 캐시에 없다면 이번 한 번만 계산함
 	// 단계당 발사 개수 계산: 1단계=1발, 2단계=3발, 3단계=5발, 4단계=7발...
-	const int32 ShotCount = 2 * ClampedLevel - 1;
+	const int32 ShotCount = ClampedLevel;
 
 	TArray<float> NewAngles;
 	NewAngles.Reserve(ShotCount); // 몇 개 들어갈지 미리 알고 있으니 메모리 재할당 방지용으로 예약
