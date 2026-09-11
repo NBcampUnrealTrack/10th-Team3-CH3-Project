@@ -79,6 +79,12 @@ protected:
 	UFUNCTION()
 	void HandleAttackHit(AActor* HitActor, float DamageAmount);
 
+	UFUNCTION()
+	void HandleFullnessMax();
+
+	UFUNCTION()
+	void HandleTimeUp();
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
 

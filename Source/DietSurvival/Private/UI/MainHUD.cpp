@@ -187,6 +187,7 @@ void AMainHUD::BindDelegates()
 	if (CachedGameState)
 	{
 		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
+		CachedGameState->OnTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
 
 		HandleWaveIncrease(CachedGameState->GetCurrentWave());
 		RefreshTimer();
@@ -212,6 +213,7 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (CachedGameState)
 	{
 		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
+		CachedGameState->OnTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
 	}
 	GetWorldTimerManager().ClearTimer(TimerRefreshHandle);
 
@@ -272,6 +274,7 @@ void AMainHUD::BindPawnDelegates(APawn* Pawn)
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnFullnessMax.AddDynamic(this, &AMainHUD::HandleFullnessMax);
 
 		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
 	}
@@ -294,6 +297,7 @@ void AMainHUD::UnbindPawnDelegates()
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnFullnessMax.RemoveDynamic(this, &AMainHUD::HandleFullnessMax);
 		CachedStatComp = nullptr;
 	}
 
@@ -313,4 +317,14 @@ void AMainHUD::UnbindPawnDelegates()
 void AMainHUD::HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
 {
 	BindPawnDelegates(NewPawn);
+}
+
+void AMainHUD::HandleFullnessMax()
+{
+	ShowResult(false);
+}
+
+void AMainHUD::HandleTimeUp()
+{
+	ShowResult(true);
 }
