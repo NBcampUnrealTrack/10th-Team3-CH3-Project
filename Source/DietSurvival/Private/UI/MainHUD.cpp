@@ -188,7 +188,7 @@ void AMainHUD::BindDelegates()
 	{
 		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
-		CachedGameState->OnUpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->UpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 
 		HandleWaveIncrease(CachedGameState->GetCurrentWave());
 	}
@@ -213,7 +213,7 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
-		CachedGameState->OnUpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->UpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 	}
 
 	Super::EndPlay(EndPlayReason);
