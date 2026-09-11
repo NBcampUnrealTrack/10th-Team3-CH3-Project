@@ -6,6 +6,7 @@
 
 class UProgressBar;
 class UTextBlock;
+class UBorder;
 class UWidgetAnimation;
 
 UCLASS()
@@ -24,6 +25,8 @@ public:
 
 	void PlayHitMarker();
 	void PlayKillConfirm();
+	void PlayHitFlash();
+	void SetFullnessWarning(bool bShow);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -47,9 +50,15 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> KillCountText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> FullnessWarningBorder;
+
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HitMarkerAnim;
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> KillConfirmAnim;
+
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HitFlashAnim;
 };

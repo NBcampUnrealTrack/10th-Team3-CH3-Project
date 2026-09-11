@@ -8,6 +8,8 @@
 #include "UI/ResultWidget.h"
 #include "GameFramework/Pawn.h"
 #include "System/DietGameState.h"
+#include "Player/PlayerCharacter.h"
+#include "Player/AttackComponent.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -179,8 +181,22 @@ void AMainHUD::BindDelegates()
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnGameOver.AddDynamic(this, &AMainHUD::HandleGameOver);
 
 		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
+		UserHUDWidget->SetFullnessWarning(CachedStatComp->IsGameOver());
+	}
+
+	CachedPlayerCharacter = Cast<APlayerCharacter>(Pawn);
+	if (CachedPlayerCharacter)
+	{
+		CachedPlayerCharacter->OnInvincibilityChanged.AddDynamic(this, &AMainHUD::HandleInvincibilityChanged);
+	}
+
+	CachedAttackComp = Pawn ? Pawn->FindComponentByClass<UAttackComponent>() : nullptr;
+	if (CachedAttackComp)
+	{
+		CachedAttackComp->OnAttackHit.AddDynamic(this, &AMainHUD::HandleAttackHit);
 	}
 
 	CachedGameState = GetWorld()->GetGameState<ADietGameState>();
@@ -205,6 +221,17 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnGameOver.RemoveDynamic(this, &AMainHUD::HandleGameOver);
+	}
+
+	if (CachedPlayerCharacter)
+	{
+		CachedPlayerCharacter->OnInvincibilityChanged.RemoveDynamic(this, &AMainHUD::HandleInvincibilityChanged);
+	}
+
+	if (CachedAttackComp)
+	{
+		CachedAttackComp->OnAttackHit.RemoveDynamic(this, &AMainHUD::HandleAttackHit);
 	}
 
 	if (CachedGameState)
@@ -244,4 +271,23 @@ void AMainHUD::RefreshTimer()
 {
 	if (!UserHUDWidget || !CachedGameState) { return; }
 	UserHUDWidget->SetTimer(CachedGameState->GetElapsedTime());
+}
+
+
+void AMainHUD::HandleInvincibilityChanged(bool bIsNowInvincible)
+{
+	if (!UserHUDWidget || !bIsNowInvincible) { return; }
+	UserHUDWidget->PlayHitFlash();
+}
+
+void AMainHUD::HandleGameOver()
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetFullnessWarning(true);
+}
+
+void AMainHUD::HandleAttackHit(AActor* HitActor, float DamageAmount)
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->PlayHitMarker();
 }
