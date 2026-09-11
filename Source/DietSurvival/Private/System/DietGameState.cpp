@@ -30,7 +30,7 @@ void ADietGameState::StartTimer()
 		ElapsedTimerHandle,
 		this,
 		&ADietGameState::TickTimer,
-		1.0f,
+		TimeInterval,
 		true
 	);
 }
