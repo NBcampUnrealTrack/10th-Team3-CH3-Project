@@ -7,6 +7,7 @@
 #include "UI/AugmentSelectionWidget.h"
 #include "UI/ResultWidget.h"
 #include "GameFramework/Pawn.h"
+#include "System/DietGameState.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -98,10 +99,7 @@ void AMainHUD::HideAugmentSelect()
 	AugmentSelectWidget = nullptr;
 
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
-	if (!UGameplayStatics::IsGamePaused(GetWorld()))
-	{
-		SetUIInputMode(false);
-	}
+	SetUIInputMode(false);
 }
 
 void AMainHUD::ShowResult(bool bWin)
@@ -132,7 +130,10 @@ void AMainHUD::HideResult()
 	ResultWidget->RemoveFromParent();
 	ResultWidget = nullptr;
 
-	SetUIInputMode(false);
+	if (!UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		SetUIInputMode(false);
+	}
 }
 
 void AMainHUD::SetUIInputMode(bool bUIOnly)
@@ -181,6 +182,16 @@ void AMainHUD::BindDelegates()
 
 		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
 	}
+
+	CachedGameState = GetWorld()->GetGameState<ADietGameState>();
+	if (CachedGameState)
+	{
+		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
+
+		HandleWaveIncrease(CachedGameState->GetCurrentWave());
+		RefreshTimer();
+		GetWorldTimerManager().SetTimer(TimerRefreshHandle, this, &AMainHUD::RefreshTimer, 1.f, true);
+	}
 }
 
 void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -195,6 +206,12 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
 	}
+
+	if (CachedGameState)
+	{
+		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
+	}
+	GetWorldTimerManager().ClearTimer(TimerRefreshHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -217,24 +234,14 @@ void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
 }
 
-// 임시테스트용 함수들. 나중에 삭제 예정.
-void AMainHUD::TestFullness(float Current, float Max)
+void AMainHUD::HandleWaveIncrease(int32 CurrentWave)
 {
-	if (UserHUDWidget) { UserHUDWidget->SetFullness(Current, Max); }
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetWave(CurrentWave);
 }
 
-void AMainHUD::TestTimer(float Seconds)
+void AMainHUD::RefreshTimer()
 {
-	if (UserHUDWidget) { UserHUDWidget->SetTimer(Seconds); }
+	if (!UserHUDWidget || !CachedGameState) { return; }
+	UserHUDWidget->SetTimer(CachedGameState->GetElapsedTime());
 }
-
-void AMainHUD::TestHitMarker()
-{
-	if (UserHUDWidget) { UserHUDWidget->PlayHitMarker(); }
-}
-
-void AMainHUD::TestResult(bool bWin)
-{
-	ShowResult(bWin);
-}
-// 요기까지

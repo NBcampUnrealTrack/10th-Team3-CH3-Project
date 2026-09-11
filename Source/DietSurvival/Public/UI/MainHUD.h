@@ -10,6 +10,7 @@ class ADietPlayerState;
 class UPlayerStatComponent;
 class UAugmentSelectionWidget;
 class UResultWidget;
+class ADietGameState;
 
 UENUM()
 enum class EUILayer : uint8
@@ -45,20 +46,6 @@ public:
 
 	void HideResult();
 
-	// 임시테스트용 함수들. 나중에 삭제 예정.
-	UFUNCTION(Exec)
-	void TestFullness(float Current, float Max);
-
-	UFUNCTION(Exec)
-	void TestTimer(float Seconds);
-
-	UFUNCTION(Exec)
-	void TestHitMarker();
-
-	UFUNCTION(Exec)
-	void TestResult(bool bWin);
-	// 요기까지
-
 protected:
 	void SetUIInputMode(bool bUIOnly);
 
@@ -72,6 +59,11 @@ protected:
 
 	UFUNCTION()
 	void HandleFullnessChanged(float NewFullness, float MaxFullness);
+
+	UFUNCTION()
+	void HandleWaveIncrease(int32 CurrentWave);
+
+	void RefreshTimer();
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
@@ -102,5 +94,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UPlayerStatComponent> CachedStatComp;
+
+	UPROPERTY()
+	TObjectPtr<ADietGameState> CachedGameState;
+
+	FTimerHandle TimerRefreshHandle;
 
 };

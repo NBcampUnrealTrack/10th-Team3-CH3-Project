@@ -18,6 +18,7 @@ public:
 	void SetExp(int32 CurrentExp, int32 MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
+	void SetWave(int32 Wave);
 	void SetAmmo(int32 CurrentAmmo, int32 MaxAmmo);
 	void SetKillCount(int32 Count);
 
@@ -36,6 +37,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimerText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> WaveText;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
