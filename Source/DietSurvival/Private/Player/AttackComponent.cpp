@@ -144,6 +144,9 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 
 	if (bHit && HitResult.GetActor())
 	{
+		if (!HitResult.GetActor()->ActorHasTag(FName("Enemy"))) {
+			return;
+		}
 		// StatComponent가 없으면 임시로 기본 데미지(10)를 사용 (테스트용 보호 로직)
 		const float DamageAmount = CachedStatComponent ? CachedStatComponent->GetAttackPower() : 10.f;
 

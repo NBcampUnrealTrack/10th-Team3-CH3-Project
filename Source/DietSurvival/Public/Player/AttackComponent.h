@@ -38,7 +38,7 @@ protected:
 
 	// 트레이스 판정에 쓸 콜리전 채널 (적 콜리전 프리셋에 맞게 조정 필요) 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Pawn;
+	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
 	// 라인트레이스 시작 위치를 카메라에서 앞으로 얼마나 이동시킬지 (cm)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
