@@ -36,16 +36,31 @@ public:
 	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
 
 protected:
+	void ApplyExp(int32 Amount);
+
 	void LevelUp();
+
+	float CalculateTickExp(float DeltaTime);
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
+	// ----- 경험치, 레벨 -----
+
 	int32 Exp = 0;
-
 	int32 MaxExp = 10;
-
 	int32 Level = 1;
+
+	// ----- 경험치 대기열(점진적 경험치 증가) -----
+
+	// 초당 적용할 경험치
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float ExpAbsorbRate = 5.f;
+
+	float PendingExp = 0.f;
+
 
 	FTimerHandle TestExpTimer;
 	void TestGainExp();
