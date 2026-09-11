@@ -181,7 +181,7 @@ void AMainHUD::BindDelegates()
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
-		CachedStatComp->OnGameOver.AddDynamic(this, &AMainHUD::HandleGameOver);
+		CachedStatComp->OnFullnessMax.AddDynamic(this, &AMainHUD::HandleGameOver);
 
 		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
 		UserHUDWidget->SetFullnessWarning(CachedStatComp->IsGameOver());
@@ -221,7 +221,7 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (CachedStatComp)
 	{
 		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
-		CachedStatComp->OnGameOver.RemoveDynamic(this, &AMainHUD::HandleGameOver);
+		CachedStatComp->OnFullnessMax.RemoveDynamic(this, &AMainHUD::HandleGameOver);
 	}
 
 	if (CachedPlayerCharacter)
