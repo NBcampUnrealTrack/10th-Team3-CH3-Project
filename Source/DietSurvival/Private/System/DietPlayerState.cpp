@@ -62,14 +62,15 @@ void ADietPlayerState::Tick(float DeltaTime)
 	if (FMath::IsNearlyZero(PendingExp) || PendingExp <= 0.f) { return; }
 
 	// 이번 프레임에서 적용할 경험치 계산
-	float TickExp = ExpAbsorbRate * DeltaTime;
+	float TickExp = ExpAbsorbRate * DeltaTime + ExpRemainder;
 	if (PendingExp < TickExp) { TickExp = PendingExp; }
-	PendingExp -= TickExp;
 
 	// TickExp를 int32로 변환하면서 잘리는 소수점 저장
-	int32 IntExp = FMath::FloorToInt32(TickExp);
-	//UE_LOG(LogTemp, Error, TEXT("IntExp: %d"), IntExp);
-	PendingExp += TickExp - (float)IntExp;
+	const int32 IntExp = FMath::FloorToInt32(TickExp);
+	ExpRemainder = TickExp - (float)IntExp;
+
+	if (IntExp <= 0) { return; }
+	PendingExp -= IntExp;
 	ApplyExp(IntExp);
 }
 

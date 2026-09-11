@@ -60,8 +60,9 @@ protected:
 	float ExpAbsorbRate = 5.f;
 
 	float PendingExp = 0.f;
+	float ExpRemainder = 0.f;
 
-
+	// ----- 경험치 증가 테스트용 -----
 	FTimerHandle TestExpTimer;
 	void TestGainExp();
 };
