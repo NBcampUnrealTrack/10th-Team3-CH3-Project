@@ -54,6 +54,12 @@ protected:
 	void BindDelegates();
 
 	UFUNCTION()
+	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	void BindPawnDelegates(APawn* Pawn);
+	void UnbindPawnDelegates();
+
+	UFUNCTION()
 	void HandleExpChanged(float CurrentExp, float MaxExp);
 
 	UFUNCTION()
@@ -65,16 +71,20 @@ protected:
 	UFUNCTION()
 	void HandleWaveIncrease(int32 CurrentWave);
 
-	void RefreshTimer();
+	UFUNCTION()
+	void HandleElapsedTimeUpdated(float ElapsedSeconds);
 
 	UFUNCTION()
 	void HandleInvincibilityChanged(bool bIsNowInvincible);
 
 	UFUNCTION()
-	void HandleGameOver();
+	void HandleAttackHit(AActor* HitActor, float DamageAmount);
 
 	UFUNCTION()
-	void HandleAttackHit(AActor* HitActor, float DamageAmount);
+	void HandleFullnessMax();
+
+	UFUNCTION()
+	void HandleTimeUp();
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
@@ -108,8 +118,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ADietGameState> CachedGameState;
-
-	FTimerHandle TimerRefreshHandle;
 
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> CachedPlayerCharacter;

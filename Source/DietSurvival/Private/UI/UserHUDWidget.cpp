@@ -1,7 +1,53 @@
 ﻿#include "UI/UserHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Components/Border.h"
+#include "Components/Image.h"
+#include "Materials/MaterialInstanceDynamic.h"
+
+namespace
+{
+	const FName IntensityParam(TEXT("Intensity"));
+}
+
+void UUserHUDWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	HitFlashMID = HitFlashVignette->GetDynamicMaterial();
+	FullnessMID = FullnessVignette->GetDynamicMaterial();
+}
+
+void UUserHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (HitFlashMID && HitFlashIntensity > 0.f)
+	{
+		HitFlashIntensity *= FMath::Exp(-HitFlashDecay * InDeltaTime);
+		if (HitFlashIntensity < 0.01f) { HitFlashIntensity = 0.f; }
+		HitFlashMID->SetScalarParameterValue(IntensityParam, HitFlashIntensity);
+	}
+
+	if (FullnessMID)
+	{
+		if (FullnessRatio < FullnessWarningStart)
+		{
+			FullnessMID->SetScalarParameterValue(IntensityParam, 0.f);
+			PulsePhase = 0.f;
+			return;
+		}
+
+		// 50%→0, 100%→1
+		const float T = FMath::GetMappedRangeValueClamped(FVector2D(FullnessWarningStart, 1.f), FVector2D(0.f, 1.f), FullnessRatio);
+		const float Rate = FMath::Lerp(PulseRateMin, PulseRateMax, T);
+		PulsePhase = FMath::Fmod(PulsePhase + InDeltaTime * Rate, 1.f);
+
+		// 심장박동: 빠르게 올라갔다 천천히 내려감
+		const float Beat = FMath::Pow(1.f - PulsePhase, 3.f);
+		const float Base = FMath::Lerp(0.25f, 1.f, T);
+		FullnessMID->SetScalarParameterValue(IntensityParam, Base * (0.35f + 0.65f * Beat));
+	}
+}
 
 void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 {
@@ -34,7 +80,6 @@ void UUserHUDWidget::SetTimer(float ElapsedTime)
 
 void UUserHUDWidget::SetWave(int32 Wave)
 {
-	if (!WaveText) { return; }
 	WaveText->SetText(FText::FromString(FString::Printf(TEXT("Wave %d"), Wave)));
 }
 
@@ -58,13 +103,12 @@ void UUserHUDWidget::PlayKillConfirm()
 	PlayAnimation(KillConfirmAnim);
 }
 
-
 void UUserHUDWidget::PlayHitFlash()
 {
-	PlayAnimation(HitFlashAnim);
+	HitFlashIntensity = 1.f;
 }
 
-void UUserHUDWidget::SetFullnessWarning(bool bShow)
+void UUserHUDWidget::SetFullnessWarning(float Ratio)
 {
-	FullnessWarningBorder->SetVisibility(bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	FullnessRatio = Ratio;
 }
