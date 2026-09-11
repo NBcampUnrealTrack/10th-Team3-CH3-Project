@@ -10,6 +10,8 @@ class ADietGameMode;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveIncerease, int32, CurrentWave);
 //최대 시간 도달 시 호출되는 델리게이트(종료조건)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeUp);
+//1초마다 브로드캐스트 하는 델리게이트
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateElapsedTime, float, InElapsedTime);
 
 UCLASS()
 class DIETSURVIVAL_API ADietGameState : public AGameState
@@ -44,7 +46,7 @@ public:
 	void StopTimer();
 
 	// 타이머 조건 확인 함수 -- 웨이브, 종료 조건
-	UFUNCTION()
+	UFUNCTION() 
 	void TickTimer();
 
 	void SetPlayerRef(APawn* InPlayer);
@@ -57,6 +59,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FOnTimeUp OnTimeUp;
 
+	UPROPERTY(BlueprintAssignable, Category = "Timer")
+	FUpdateElapsedTime UpdateElapsedTime;
+
 protected:
 	// variables
 	//현재 wave 정보
@@ -64,8 +69,8 @@ protected:
 	int32 CurrentWave;
 
 	// 게임 시작부터 흐른 시간
-	//UPROPERTY(BlueprintReadOnly, Category = "Timer")
-	//float ElapsedTime;
+	UPROPERTY(BlueprintReadOnly, Category = "Timer")
+	float MyElapsedTime;
 
 	// 타이머 콜백 간격
 	UPROPERTY(VisibleAnywhere, Category = "Test")

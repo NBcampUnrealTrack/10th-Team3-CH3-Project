@@ -6,7 +6,7 @@
 ADietGameState::ADietGameState()
 {
 	CurrentWave = 0;
-	ElapsedTime = 0.0f;
+	MyElapsedTime = 0.0f;
 	TimeInterval = 1.0f;
 	WaveInterval = 10.0f;
 	MaxGameTime = 60.0f;
@@ -44,17 +44,19 @@ void ADietGameState::StopTimer()
 void ADietGameState::TickTimer()
 {
 	//Todo: 시간이 두배로 증가하는 원인 파악
-	ElapsedTime += 0.5f;	// [임시조치]시간이 두배로 증가해서 0.5씩 증가하게 해둠
-	//Todo: 로그 찍을 때 %f로 하면 오류가 발생하는지 알아보기
-	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %d"), ElapsedTime);
-	if (ElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
+	MyElapsedTime += 1.0f;	// [임시조치]시간이 두배로 증가해서 0.5씩 증가하게 해둠
+	
+	UpdateElapsedTime.Broadcast(MyElapsedTime);
+
+	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
+	if (MyElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
 	{
 		CurrentWave++;
 		OnWaveIncrease.Broadcast(CurrentWave);
 		//테스트용
 		UE_LOG(LogTemp, Log, TEXT("[DietGameState]Wave 증가. 현재 Wave: %d"), CurrentWave);
 	}
-	if (ElapsedTime >= MaxGameTime)
+	if (MyElapsedTime >= MaxGameTime)
 	{
 		OnTimeUp.Broadcast();
 		GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
