@@ -11,7 +11,7 @@
 #include "System/DietGameState.h"
 
  #include "Player/PlayerStatComponent.h"
- #include "System/DietGameState.h"
+ #include "Player/AttackComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
