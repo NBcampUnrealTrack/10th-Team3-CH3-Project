@@ -62,12 +62,16 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 
-		//이동속도 초기화
-		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		if (StatComponent)
 		{
-			if (StatComponent)
+			// 이벤트 구독 추가
+			StatComponent->OnMoveSpeedChanged.AddDynamic(this, &APlayerCharacter::HandleMoveSpeedChanged);
+			StatComponent->OnFullnessChanged.AddDynamic(this, &APlayerCharacter::HandleFullnessChanged);
+
+			// 초기 이동 속도 적용
+			if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
 			{
-				MoveComp->MaxWalkSpeed = StatComponent->GetMoveSpeed();
+				MoveComp->MaxWalkSpeed = StatComponent->GetEffectiveMoveSpeed();
 			}
 		}
 
@@ -123,7 +127,6 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	UE_LOG(LogTemp, Warning, TEXT("Look called: %s"), *LookAxisVector.ToString());
 	if (!Controller)
 	{
 		return;
@@ -134,6 +137,27 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 	//상하
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void APlayerCharacter::HandleFullnessChanged(float NewFullness, float MaxFullnessValue)
+{
+	// 포만감이 변경되어 임계값을 넘어가면 이동속도 변경
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		if (StatComponent)
+		{
+			MoveComp->MaxWalkSpeed = StatComponent->GetEffectiveMoveSpeed();
+		}
+	}
+}
+
+//변경된 이동속도를 캐릭터 무브먼트 컴포넌트에 적용
+void APlayerCharacter::HandleMoveSpeedChanged(float NewEffectiveSpeed)
+{
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		MoveComp->MaxWalkSpeed = NewEffectiveSpeed;
+	}
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
