@@ -7,6 +7,7 @@
 #include "System/EnemyDataRow.h"
 #include "Player/PlayerCharacter.h"
 #include "Enemy/EnemySpawner.h"
+#include "Player/PlayerStatComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
@@ -71,6 +72,36 @@ void ADietGameMode::BeginPlay()
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] SpawnerRef is null"));
 	}
 
+	// GameMode가 아닌 다른 곳에서 this를 캡처하는건 위험할 수 있음.
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+
+		// SetTimerForNextTick() 함수 : 모든 객체의 BeginPlay()가 끝나고 실행됨
+		// SetTimerForNextTick() 이걸 GameMode::BeginPlay 에 넣어라
+		// (주의) 이걸 여러곳에서 호출한다면?
+		// Race condition 발생 가능 -> 팀원과 사전에 조율해야됨
+		//   -> 게임 인스턴스의 이벤트 버스로 해결 가능
+
+		// 게임종료 델리게이트 구독
+		APawn* Player = CachedDietGameState->GetPlayerRef().Get();
+		if (Player == nullptr)
+		{
+			UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlyaerRef is null"));
+		}
+		else
+		{
+			UPlayerStatComponent* StatComp = Player->FindComponentByClass<UPlayerStatComponent>();
+			if (StatComp != nullptr)
+			{
+				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent binding success"));
+				StatComp->OnFullnessMax.AddDynamic(this, &ADietGameMode::HandleGameOver);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent is null"));
+			}
+		}
+	});
 	StartLevel();
 }
 
@@ -82,7 +113,6 @@ void ADietGameMode::StartLevel()
 		return;
 	}
 	CachedDietGameState->StartTimer();
-	NextWave(1);
 }
 
 void ADietGameMode::EndLevel(bool bWin)
@@ -161,7 +191,8 @@ void ADietGameMode::HandleTimeUp()
 	EndLevel(true);
 }
 
-void ADietGameMode::HandlePlayerDefeat()
+void ADietGameMode::HandleGameOver()
 {
-	//Todo PlayerStatComponent--Deligate 사용해 구현 예정
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Player Defeat"));
+	EndLevel(false);
 }

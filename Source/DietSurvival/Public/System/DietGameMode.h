@@ -51,7 +51,7 @@ public:
 
 	//플레이어 포만감 최대 시 호출
 	UFUNCTION()
-	void HandlePlayerDefeat(); //todo 함수 이름 변경
+	void HandleGameOver(); //todo 함수 이름 변경
 
 private:
 	// variables

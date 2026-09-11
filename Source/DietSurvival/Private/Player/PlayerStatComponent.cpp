@@ -44,7 +44,7 @@ void UPlayerStatComponent::AddFullness(float Amount)
 	if (Fullness >= MaxFullness)
 	{
 		bIsGameOver = true;
-		OnGameOver.Broadcast();
+		OnFullnessMax.Broadcast();
 	}
 }
 

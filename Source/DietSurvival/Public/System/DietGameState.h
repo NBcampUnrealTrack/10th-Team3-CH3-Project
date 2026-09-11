@@ -60,7 +60,7 @@ public:
 protected:
 	// variables
 	//현재 wave 정보
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Test")
 	int32 CurrentWave;
 
 	// 게임 시작부터 흐른 시간
@@ -68,15 +68,15 @@ protected:
 	//float ElapsedTime;
 
 	// 타이머 콜백 간격
-	UPROPERTY(EditDefaultsOnly, Category = "Timer")
+	UPROPERTY(VisibleAnywhere, Category = "Test")
 	float TimeInterval;
 
 	// 다음 웨이브로 넘어가는 간격
-	UPROPERTY(EditDefaultsOnly, Category = "Wave")
+	UPROPERTY(EditDefaultsOnly, Category = "Test")
 	float WaveInterval;
 
 	// 게임 진행 시간(승리 조건)
-	UPROPERTY(EditDefaultsOnly, Category = "Timer")
+	UPROPERTY(EditDefaultsOnly, Category = "Test")
 	float MaxGameTime;
 
 	//플레이어 캐릭터 참조 포인터
