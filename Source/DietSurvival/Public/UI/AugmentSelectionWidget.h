@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Augment")
 	TSubclassOf<UAugmentCardWidget> CardWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Augment")
+	FMargin CardPadding = FMargin(40.f, 0.f);
+
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<UAugmentCardWidget>> ActiveCards;
