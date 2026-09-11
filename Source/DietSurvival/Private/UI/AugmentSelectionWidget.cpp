@@ -5,6 +5,11 @@
 
 void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
 {
+	if (!CardContainer || !CardWidgetClass)
+	{
+		return;
+	}
+
 	CardContainer->ClearChildren();
 	ActiveCards.Reset();
 
