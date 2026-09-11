@@ -41,7 +41,11 @@ void UPoolObjectComponent::SetPool(APoolBase* NewPool)
 
 void UPoolObjectComponent::ReturnToPool()
 {
-	if (!Pool) return;
+	if (!Pool) {
+		UE_LOG(LogTemp, Warning,
+			TEXT("UPoolObjectComponent::ReturnToPool, Pool is Null"));
+		return;
+	}
 	Pool->Release(this);
 }
 

@@ -30,9 +30,9 @@ ADietEnemyBase::ADietEnemyBase()
 	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
-	if (PoolObjectComponent) {
-		PoolObjectComponent->OnRelease();
-	}
+
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -133,6 +133,8 @@ void ADietEnemyBase::BeginPlay()
 
 void ADietEnemyBase::HandleDeath()
 {
+	UE_LOG(LogTemp, Warning,
+		TEXT("ADietEnemyBase::HandleDeath, %s"), *GetNameSafe(this));
 	StopAI();
 
 	if (ControllerLastAttacked) {
@@ -152,6 +154,10 @@ void ADietEnemyBase::HandleDeath()
 
 	if (PoolObjectComponent) {
 		PoolObjectComponent->ReturnToPool();
+	}
+	else {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::HandleDeath, PoolObjectComponent is Null"));
 	}
 }
 
