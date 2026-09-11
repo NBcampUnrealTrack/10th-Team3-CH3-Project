@@ -168,7 +168,12 @@ void ADietGameMode::HandleWaveIncrease(int32 Wave)
 			UPlayerStatComponent* StatComp = Player->FindComponentByClass<UPlayerStatComponent>();
 			if (StatComp != nullptr)
 			{
+				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent binding success"));
 				StatComp->OnGameOver.AddDynamic(this, &ADietGameMode::HandleGameOver);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent is null"));
 			}
 		}
 	}
