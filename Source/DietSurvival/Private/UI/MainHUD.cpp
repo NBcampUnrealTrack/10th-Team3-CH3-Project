@@ -99,10 +99,7 @@ void AMainHUD::HideAugmentSelect()
 	AugmentSelectWidget = nullptr;
 
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
-	if (!UGameplayStatics::IsGamePaused(GetWorld()))
-	{
-		SetUIInputMode(false);
-	}
+	SetUIInputMode(false);
 }
 
 void AMainHUD::ShowResult(bool bWin)
@@ -133,7 +130,10 @@ void AMainHUD::HideResult()
 	ResultWidget->RemoveFromParent();
 	ResultWidget = nullptr;
 
-	SetUIInputMode(false);
+	if (!UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		SetUIInputMode(false);
+	}
 }
 
 void AMainHUD::SetUIInputMode(bool bUIOnly)
