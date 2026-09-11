@@ -98,7 +98,10 @@ void AMainHUD::HideAugmentSelect()
 	AugmentSelectWidget = nullptr;
 
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
-	SetUIInputMode(false);
+	if (!UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		SetUIInputMode(false);
+	}
 }
 
 void AMainHUD::ShowResult(bool bWin)
@@ -198,16 +201,19 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AMainHUD::HandleExpChanged(int32 CurrentExp, int32 MaxExp)
 {
+	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetExp(CurrentExp, MaxExp);
 }
 
 void AMainHUD::HandleLevelUp(int32 NewLevel)
 {
+	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetLevel(NewLevel);
 }
 
 void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 {
+	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
 }
 

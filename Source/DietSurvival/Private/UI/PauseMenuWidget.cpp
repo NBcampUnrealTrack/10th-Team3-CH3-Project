@@ -13,7 +13,13 @@ void UPauseMenuWidget::NativeConstruct()
 
 void UPauseMenuWidget::HandleResumeClicked()
 {
-	if (AMainHUD* HUD = Cast<AMainHUD>(GetOwningPlayer()->GetHUD()))
+	APlayerController* PC = GetOwningPlayer();
+	if (!PC)
+	{
+		return;
+	}
+
+	if (AMainHUD* HUD = Cast<AMainHUD>(PC->GetHUD()))
 	{
 		HUD->HidePauseMenu();
 	}
