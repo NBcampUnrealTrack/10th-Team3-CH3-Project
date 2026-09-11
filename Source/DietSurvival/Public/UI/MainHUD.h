@@ -11,6 +11,8 @@ class UPlayerStatComponent;
 class UAugmentSelectionWidget;
 class UResultWidget;
 class ADietGameState;
+class APlayerCharacter;
+class UAttackComponent;
 
 UENUM()
 enum class EUILayer : uint8
@@ -65,6 +67,15 @@ protected:
 
 	void RefreshTimer();
 
+	UFUNCTION()
+	void HandleInvincibilityChanged(bool bIsNowInvincible);
+
+	UFUNCTION()
+	void HandleGameOver();
+
+	UFUNCTION()
+	void HandleAttackHit(AActor* HitActor, float DamageAmount);
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
 
@@ -99,5 +110,11 @@ protected:
 	TObjectPtr<ADietGameState> CachedGameState;
 
 	FTimerHandle TimerRefreshHandle;
+
+	UPROPERTY()
+	TObjectPtr<APlayerCharacter> CachedPlayerCharacter;
+
+	UPROPERTY()
+	TObjectPtr<UAttackComponent> CachedAttackComp;
 
 };

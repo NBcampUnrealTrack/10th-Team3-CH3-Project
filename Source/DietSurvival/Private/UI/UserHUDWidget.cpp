@@ -1,6 +1,7 @@
 ﻿#include "UI/UserHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 
 void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 {
@@ -55,4 +56,15 @@ void UUserHUDWidget::PlayHitMarker()
 void UUserHUDWidget::PlayKillConfirm()
 {
 	PlayAnimation(KillConfirmAnim);
+}
+
+
+void UUserHUDWidget::PlayHitFlash()
+{
+	PlayAnimation(HitFlashAnim);
+}
+
+void UUserHUDWidget::SetFullnessWarning(bool bShow)
+{
+	FullnessWarningBorder->SetVisibility(bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
