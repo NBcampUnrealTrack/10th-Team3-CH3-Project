@@ -1,6 +1,7 @@
 ﻿#include "UI/UserHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 
 void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 {
@@ -11,10 +12,10 @@ void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 	FullnessBar->SetPercent(Ratio);
 }
 
-void UUserHUDWidget::SetExp(int32 CurrentExp, int32 MaxExp)
+void UUserHUDWidget::SetExp(float CurrentExp, float MaxExp)
 {
 	const float Ratio = (MaxExp > 0)
-		? FMath::Clamp(static_cast<float>(CurrentExp) / MaxExp, 0.f, 1.f)
+		? FMath::Clamp(CurrentExp / MaxExp, 0.f, 1.f)
 		: 0.f;
 
 	ExpBar->SetPercent(Ratio);
@@ -55,4 +56,15 @@ void UUserHUDWidget::PlayHitMarker()
 void UUserHUDWidget::PlayKillConfirm()
 {
 	PlayAnimation(KillConfirmAnim);
+}
+
+
+void UUserHUDWidget::PlayHitFlash()
+{
+	PlayAnimation(HitFlashAnim);
+}
+
+void UUserHUDWidget::SetFullnessWarning(bool bShow)
+{
+	FullnessWarningBorder->SetVisibility(bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }

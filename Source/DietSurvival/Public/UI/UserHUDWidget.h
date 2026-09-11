@@ -6,6 +6,7 @@
 
 class UProgressBar;
 class UTextBlock;
+class UBorder;
 class UWidgetAnimation;
 
 UCLASS()
@@ -15,7 +16,7 @@ class DIETSURVIVAL_API UUserHUDWidget : public UUserWidget
 
 public:
 	void SetFullness(float CurrentFullness, float MaxFullness);
-	void SetExp(int32 CurrentExp, int32 MaxExp);
+	void SetExp(float CurrentExp, float MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
 	void SetWave(int32 Wave);
@@ -24,6 +25,8 @@ public:
 
 	void PlayHitMarker();
 	void PlayKillConfirm();
+	void PlayHitFlash();
+	void SetFullnessWarning(bool bShow);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -47,9 +50,15 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> KillCountText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> FullnessWarningBorder;
+
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HitMarkerAnim;
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> KillConfirmAnim;
+
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HitFlashAnim;
 };
