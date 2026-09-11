@@ -28,10 +28,6 @@ APoolBase* APoolManager::AddPool(TSubclassOf<AActor> PoolObjectClass, int32 Pool
 		return *ExistingPool;
 	}
 
-	if (PoolsMap.Contains(ObjectClass)) {
-		return PoolsMap[ObjectClass];
-	}
-
 	AActor* TestActor = Cast<AActor>(ObjectClass->GetDefaultObject());
 	if (!TestActor) {
 		return nullptr;
