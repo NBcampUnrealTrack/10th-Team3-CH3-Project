@@ -167,7 +167,7 @@ void ADietGameMode::HandleWaveIncrease(int32 Wave)
 			if (StatComp != nullptr)
 			{
 				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent binding success"));
-				StatComp->OnGameOver.AddDynamic(this, &ADietGameMode::HandleGameOver);
+				StatComp->OnFullnessMax.AddDynamic(this, &ADietGameMode::HandleGameOver);
 			}
 			else
 			{

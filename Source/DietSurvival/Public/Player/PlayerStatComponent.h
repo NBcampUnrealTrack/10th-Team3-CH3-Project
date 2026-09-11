@@ -8,7 +8,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFullnessChanged, float, Fullness, float, MaxFullness);
 
 // 포만감이 최대치에 도달해 게임오버가 됐을 때 브로드캐스트 (게임모드에서 구독)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessGameOver);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessMax);
 
 UENUM(BlueprintType)
 enum class EPlayerStatType : uint8
@@ -57,7 +57,7 @@ public:
 
 	// 포만감이 최대치에 도달해 게임오버가 되었을 때 호출됨
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Fullness")
-	FOnFullnessGameOver OnGameOver;
+	FOnFullnessMax OnFullnessMax;
 
 	// 포만감을 Amount만큼 증가. 0~MaxFullness 범위로 클램프됨
 	UFUNCTION(BlueprintCallable, Category = "Stat|Fullness")
