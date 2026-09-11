@@ -184,5 +184,14 @@ void ADietEnemyBase::AttackToTarget(AActor* Target)
 		this,
 		UDamageType::StaticClass()
 	);
+
+	StopAI();
+	if (PoolObjectComponent) {
+		PoolObjectComponent->ReturnToPool();
+	}
+	else {
+		UE_LOG(LogTemp, Warning,
+			TEXT("ADietEnemyBase::AttackToTarget, PoolObjectComponent is Null"));
+	}
 }
 
