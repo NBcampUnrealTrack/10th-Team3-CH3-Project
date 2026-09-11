@@ -19,7 +19,7 @@ protected:
 	void HandleLevelUp(int32 NewLevel);
 
 	UFUNCTION()
-	void HandleExpChanged(int32 CurrentExp, int32 MaxExp);
+	void HandleExpChanged(float CurrentExp, float MaxExp);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
 	void OnLevelDisplayUpdated(int32 NewLevel);

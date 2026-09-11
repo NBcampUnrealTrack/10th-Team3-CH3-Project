@@ -11,10 +11,10 @@ void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 	FullnessBar->SetPercent(Ratio);
 }
 
-void UUserHUDWidget::SetExp(int32 CurrentExp, int32 MaxExp)
+void UUserHUDWidget::SetExp(float CurrentExp, float MaxExp)
 {
 	const float Ratio = (MaxExp > 0)
-		? FMath::Clamp(static_cast<float>(CurrentExp) / MaxExp, 0.f, 1.f)
+		? FMath::Clamp(CurrentExp / MaxExp, 0.f, 1.f)
 		: 0.f;
 
 	ExpBar->SetPercent(Ratio);
