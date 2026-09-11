@@ -83,8 +83,6 @@ void ADietGameMode::StartLevel()
 		return;
 	}
 	CachedDietGameState->StartTimer();
-	//Todo 첫 번째 웨이브 호출 시점 변경하기
-	NextWave(1);
 }
 
 void ADietGameMode::EndLevel(bool bWin)

@@ -5,7 +5,7 @@
 
 ADietGameState::ADietGameState()
 {
-	CurrentWave = 1;
+	CurrentWave = 0;
 	ElapsedTime = 0.0f;
 	TimeInterval = 1.0f;
 	WaveInterval = 10.0f;
@@ -47,7 +47,7 @@ void ADietGameState::TickTimer()
 	ElapsedTime += 0.5f;	// [임시조치]시간이 두배로 증가해서 0.5씩 증가하게 해둠
 	//Todo: 로그 찍을 때 %f로 하면 오류가 발생하는지 알아보기
 	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %d"), ElapsedTime);
-	if (ElapsedTime >= WaveInterval * CurrentWave)
+	if (ElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
 	{
 		CurrentWave++;
 		OnWaveIncrease.Broadcast(CurrentWave);
