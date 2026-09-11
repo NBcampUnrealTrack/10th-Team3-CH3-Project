@@ -188,10 +188,9 @@ void AMainHUD::BindDelegates()
 	{
 		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->OnUpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 
 		HandleWaveIncrease(CachedGameState->GetCurrentWave());
-		RefreshTimer();
-		GetWorldTimerManager().SetTimer(TimerRefreshHandle, this, &AMainHUD::RefreshTimer, 1.f, true);
 	}
 }
 
@@ -214,8 +213,8 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->OnUpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 	}
-	GetWorldTimerManager().ClearTimer(TimerRefreshHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -245,12 +244,11 @@ void AMainHUD::HandleWaveIncrease(int32 CurrentWave)
 	UserHUDWidget->SetWave(CurrentWave);
 }
 
-void AMainHUD::RefreshTimer()
+void AMainHUD::HandleElapsedTimeUpdated(float ElapsedSeconds)
 {
-	if (!UserHUDWidget || !CachedGameState) { return; }
-	UserHUDWidget->SetTimer(CachedGameState->GetElapsedTime());
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetTimer(ElapsedSeconds);
 }
-
 
 void AMainHUD::HandleInvincibilityChanged(bool bIsNowInvincible)
 {

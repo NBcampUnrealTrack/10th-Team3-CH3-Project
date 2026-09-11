@@ -71,7 +71,8 @@ protected:
 	UFUNCTION()
 	void HandleWaveIncrease(int32 CurrentWave);
 
-	void RefreshTimer();
+	UFUNCTION()
+	void HandleElapsedTimeUpdated(float ElapsedSeconds);
 
 	UFUNCTION()
 	void HandleInvincibilityChanged(bool bIsNowInvincible);
@@ -117,8 +118,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ADietGameState> CachedGameState;
-
-	FTimerHandle TimerRefreshHandle;
 
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> CachedPlayerCharacter;
