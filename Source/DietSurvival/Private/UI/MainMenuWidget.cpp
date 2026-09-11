@@ -11,6 +11,11 @@ void UMainMenuWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HandleExitClicked);
 
 	APlayerController* PC = GetOwningPlayer();
+	if (!PC)
+	{
+		return;
+	}
+
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(TakeWidget());
 	PC->SetInputMode(InputMode);

@@ -5,6 +5,11 @@
 
 void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
 {
+	if (!CardContainer || !CardWidgetClass)
+	{
+		return;
+	}
+
 	CardContainer->ClearChildren();
 	ActiveCards.Reset();
 
@@ -17,7 +22,7 @@ void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>
 		Card->OnCardClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleCardClicked);
 
 		UHorizontalBoxSlot* HorizonSlot = CardContainer->AddChildToHorizontalBox(Card);
-		HorizonSlot->SetPadding(FMargin(12.f, 0.f));
+		HorizonSlot->SetPadding(CardPadding);
 		HorizonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
 		HorizonSlot->SetVerticalAlignment(VAlign_Center);
 		ActiveCards.Add(Card);
