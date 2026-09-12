@@ -57,9 +57,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HitFlashVignette;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> FullnessVignette;
-
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HitMarkerAnim;
 
@@ -70,25 +67,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Vignette")
 	float HitFlashDecay = 8.f;
 
-	// 이 비율부터 포만감 경고 시작
+	// 포만감 0% / 100% 일 때 피격 비네트 세기
 	UPROPERTY(EditDefaultsOnly, Category = "Vignette")
-	float FullnessWarningStart = 0.5f;
-
-	// 경고 시작 시 / 최대 시 펄스 주기(Hz)
-	UPROPERTY(EditDefaultsOnly, Category = "Vignette")
-	float PulseRateMin = 0.8f;
+	float HitFlashMinIntensity = 0.3f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Vignette")
-	float PulseRateMax = 3.f;
+	float HitFlashMaxIntensity = 1.f;
 
 private:
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> HitFlashMID;
 
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> FullnessMID;
-
 	float HitFlashIntensity = 0.f;
 	float FullnessRatio = 0.f;
-	float PulsePhase = 0.f;
 };

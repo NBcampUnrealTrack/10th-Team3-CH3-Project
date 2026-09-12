@@ -14,7 +14,6 @@ void UUserHUDWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	HitFlashMID = HitFlashVignette->GetDynamicMaterial();
-	FullnessMID = FullnessVignette->GetDynamicMaterial();
 }
 
 void UUserHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -26,26 +25,6 @@ void UUserHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		HitFlashIntensity *= FMath::Exp(-HitFlashDecay * InDeltaTime);
 		if (HitFlashIntensity < 0.01f) { HitFlashIntensity = 0.f; }
 		HitFlashMID->SetScalarParameterValue(IntensityParam, HitFlashIntensity);
-	}
-
-	if (FullnessMID)
-	{
-		if (FullnessRatio < FullnessWarningStart)
-		{
-			FullnessMID->SetScalarParameterValue(IntensityParam, 0.f);
-			PulsePhase = 0.f;
-			return;
-		}
-
-		// 50%→0, 100%→1
-		const float T = FMath::GetMappedRangeValueClamped(FVector2D(FullnessWarningStart, 1.f), FVector2D(0.f, 1.f), FullnessRatio);
-		const float Rate = FMath::Lerp(PulseRateMin, PulseRateMax, T);
-		PulsePhase = FMath::Fmod(PulsePhase + InDeltaTime * Rate, 1.f);
-
-		// 심장박동: 빠르게 올라갔다 천천히 내려감
-		const float Beat = FMath::Pow(1.f - PulsePhase, 3.f);
-		const float Base = FMath::Lerp(0.25f, 1.f, T);
-		FullnessMID->SetScalarParameterValue(IntensityParam, Base * (0.35f + 0.65f * Beat));
 	}
 }
 
@@ -105,7 +84,7 @@ void UUserHUDWidget::PlayKillConfirm()
 
 void UUserHUDWidget::PlayHitFlash()
 {
-	HitFlashIntensity = 1.f;
+	HitFlashIntensity = FMath::Lerp(HitFlashMinIntensity, HitFlashMaxIntensity, FullnessRatio);
 }
 
 void UUserHUDWidget::SetFullnessWarning(float Ratio)
