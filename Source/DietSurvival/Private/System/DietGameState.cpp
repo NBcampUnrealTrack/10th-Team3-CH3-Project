@@ -9,7 +9,7 @@ ADietGameState::ADietGameState()
 	MyElapsedTime = 0.0f;
 	TimeInterval = 1.0f;
 	WaveInterval = 10.0f;
-	MaxGameTime = 60.0f;
+	MaxGameTime = 180.0f;
 }
 
 void ADietGameState::BeginPlay()
