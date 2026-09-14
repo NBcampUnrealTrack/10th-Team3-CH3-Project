@@ -47,7 +47,7 @@ void ADietGameState::TickTimer()
 	
 	UpdateElapsedTime.Broadcast(MyElapsedTime);
 
-	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
+	//UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
 	if (MyElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
 	{
 		CurrentWave++;
