@@ -57,11 +57,6 @@ void UUserHUDWidget::SetTimer(float ElapsedTime)
 	TimerText->SetText(FText::FromString(FString::Printf(TEXT("%02d:%02d"), TotalSeconds / 60, TotalSeconds % 60)));
 }
 
-void UUserHUDWidget::SetWave(int32 Wave)
-{
-	WaveText->SetText(FText::FromString(FString::Printf(TEXT("Wave %d"), Wave)));
-}
-
 void UUserHUDWidget::SetAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 {
 	AmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentAmmo, MaxAmmo)));

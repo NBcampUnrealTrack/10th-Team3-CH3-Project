@@ -20,7 +20,6 @@ public:
 	void SetExp(float CurrentExp, float MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
-	void SetWave(int32 Wave);
 	void SetAmmo(int32 CurrentAmmo, int32 MaxAmmo);
 	void SetKillCount(int32 Count);
 

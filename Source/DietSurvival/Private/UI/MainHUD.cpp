@@ -188,11 +188,9 @@ void AMainHUD::BindDelegates()
 	CachedGameState = GetWorld()->GetGameState<ADietGameState>();
 	if (CachedGameState)
 	{
-		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 
-		HandleWaveIncrease(CachedGameState->GetCurrentWave());
 	}
 }
 
@@ -213,7 +211,6 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (CachedGameState)
 	{
-		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
 		CachedGameState->OnTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 	}
@@ -238,12 +235,6 @@ void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
 	UserHUDWidget->SetFullnessWarning(MaxFullness > 0.f ? NewFullness / MaxFullness : 0.f);
-}
-
-void AMainHUD::HandleWaveIncrease(int32 CurrentWave)
-{
-	if (!UserHUDWidget) { return; }
-	UserHUDWidget->SetWave(CurrentWave);
 }
 
 void AMainHUD::HandleElapsedTimeUpdated(float ElapsedSeconds)
