@@ -27,5 +27,5 @@ protected:
 	TObjectPtr<UButton> ExitButton;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Menu")
-	FName GameLevelName = TEXT("L_UITestMap_LJM");
+	FName GameLevelName = TEXT("L_TestMap");
 };

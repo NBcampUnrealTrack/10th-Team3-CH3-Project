@@ -15,6 +15,8 @@ void AMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetUIInputMode(false);
+
 	ShowMainHUD();
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &AMainHUD::BindDelegates);
