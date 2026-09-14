@@ -79,6 +79,12 @@ protected:
 	void HandleAttackHit(AActor* HitActor, float DamageAmount);
 
 	UFUNCTION()
+	void HandleCurrentAmmoChanged(int32 CurrentAmmo);
+
+	UFUNCTION()
+	void HandleReloadStart();
+
+	UFUNCTION()
 	void HandleFullnessMax();
 
 	UFUNCTION()
