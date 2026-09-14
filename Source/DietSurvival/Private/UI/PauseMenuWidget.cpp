@@ -2,6 +2,7 @@
 #include "UI/MainHUD.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPauseMenuWidget::NativeConstruct()
 {
@@ -9,6 +10,7 @@ void UPauseMenuWidget::NativeConstruct()
 
 	ResumeButton->OnClicked.AddDynamic(this, &UPauseMenuWidget::HandleResumeClicked);
 	QuitButton->OnClicked.AddDynamic(this, &UPauseMenuWidget::HandleQuitClicked);
+	MainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuWidget::HandleMainMenuClicked);
 }
 
 void UPauseMenuWidget::HandleResumeClicked()
@@ -28,4 +30,10 @@ void UPauseMenuWidget::HandleResumeClicked()
 void UPauseMenuWidget::HandleQuitClicked()
 {
 	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
+}
+
+
+void UPauseMenuWidget::HandleMainMenuClicked()
+{
+	UGameplayStatics::OpenLevel(this, MainMenuLevelName);
 }
