@@ -43,12 +43,11 @@ void ADietGameState::StopTimer()
 //웨이브 증가와 제한 시간 조건 확인
 void ADietGameState::TickTimer()
 {
-	//Todo: 시간이 두배로 증가하는 원인 파악
-	MyElapsedTime += 1.0f;	// [임시조치]시간이 두배로 증가해서 0.5씩 증가하게 해둠
+	MyElapsedTime += 1.0f;
 	
 	UpdateElapsedTime.Broadcast(MyElapsedTime);
 
-	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
+	//UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
 	if (MyElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
 	{
 		CurrentWave++;
