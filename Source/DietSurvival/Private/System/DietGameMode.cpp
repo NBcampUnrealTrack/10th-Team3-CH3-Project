@@ -158,11 +158,7 @@ void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
 
 void ADietGameMode::NextWave(int32 Wave)
 {
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Next Wave: %d"), Wave);
-
-	//Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
-	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
-	FName RowName = FName(*RowNameString);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::NextWave] Wave %d Start!!"), Wave);
 
 	UDataTableSubsystem* DTS = UDataTableSubsystem::Get(this);
 	if (DTS == nullptr)
@@ -170,6 +166,18 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] DataTableSussystem is nullptr"));
 		return;
 	}
+
+	// Todo EnemyDataTable -- Row Name 고민 해보기 일단 임시로 E1, E2로 되어있음.
+	// 테이블로우가 더 없을 때는 마지막 몬스터 데이터를 넘겨주도록 설계
+	int32 RowCount = DTS->GetEnemyDataTable()->GetRowMap().Num();
+	if (RowCount < Wave)
+	{
+		Wave = RowCount;
+	}
+
+	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
+	FName RowName = FName(*RowNameString);
+
 	FEnemyDataRow* ED = DTS->GetEnemyRowByFName(RowName);
 	if (ED == nullptr)
 	{
@@ -182,7 +190,7 @@ void ADietGameMode::NextWave(int32 Wave)
 
 void ADietGameMode::HandleWaveIncrease(int32 Wave)
 {
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Wave Increased: %d"), Wave);
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleWaveIncrease] call NextWave(%d) "), Wave);
 	NextWave(Wave);
 }
 
