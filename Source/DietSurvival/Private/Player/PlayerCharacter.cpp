@@ -110,6 +110,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInput->BindAction(PauseAction, ETriggerEvent::Started, this, &APlayerCharacter::Pause);
 		}
+
+		if(ReloadAction)
+		{
+			EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &APlayerCharacter::Reload);
+		}
 	}
 }
 
@@ -153,6 +158,14 @@ void APlayerCharacter::Pause()
 	if (AMainHUD* HUD = PC->GetHUD<AMainHUD>())
 	{
 		HUD->ShowPauseMenu();
+	}
+}
+
+void APlayerCharacter::Reload()
+{
+	if (AttackComponent)
+	{
+		AttackComponent->ReloadAmmo();
 	}
 }
 

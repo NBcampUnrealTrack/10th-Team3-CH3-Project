@@ -78,6 +78,12 @@ void UAttackComponent::ScheduleNextAttack()
 
 void UAttackComponent::PerformAttack()
 {
+	//재장전 중이면 공격 X
+	if (bIsReloading)
+	{
+		return;
+	}
+
 	AActor* Owner = GetOwner();
 
 	if (Owner)
@@ -229,6 +235,12 @@ const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionL
 
 void UAttackComponent::ReloadAmmo()
 {
+	// 이미 최대 탄약이거나 재장전 중이면 재장전할 필요 없음
+	if (CurrentAmmo >= (CachedStatComponent? CachedStatComponent->GetMaxAmmo(): 1) || bIsReloading)
+	{
+		return;
+	}
+	bIsReloading = true;
 	OnReloadStart.Broadcast();
 
 	AActor* Owner = GetOwner();
@@ -259,5 +271,7 @@ void UAttackComponent::OnReloadFinished()
 
 	OnCurrentAmmoChanged.Broadcast(CurrentAmmo);
 
-	ScheduleNextAttack();
+	bIsReloading = false;
+
+	ScheduleNextAttack();	
 }

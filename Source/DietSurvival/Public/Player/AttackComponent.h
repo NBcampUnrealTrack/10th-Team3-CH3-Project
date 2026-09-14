@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 	void StopAutoAttack();
 
+	// 재장전 시작
+	void ReloadAmmo();
+
 	UPROPERTY(BlueprintAssignable, Category = "Attack")
 	FOnAttackHit OnAttackHit;
 
@@ -91,8 +94,6 @@ protected:
 	// 현재 AttackSpeed를 반영한 실제 공격 간격 계산	
 	float GetCurrentAttackInterval() const;
 
-	void ReloadAmmo();
-
 	void OnReloadFinished();
 
 	//방향 단계에 따라 발사 각도 목록을 계산해서 반환.
@@ -100,4 +101,7 @@ protected:
 
 	// 방향 단계(int) -> 그 단계의 각도 목록. 한 번 계산되면 게임이 끝날 때까지 재사용됨
 	TMap<int32, TArray<float>> CachedDirectionAngles;
+
+private:
+	bool bIsReloading = false;
 };
