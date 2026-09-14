@@ -13,8 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessMax);
 // 이동속도 변화 시 브로드캐스트 (플레이어에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMoveSpeedChanged, float, NewMoveSpeed);
 
-// 최대 탄약 변화 시 브로드캐스트 (UI에서 구독)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxAmmoChanged, int32, NewMaxAmmo);
+
 
 UENUM(BlueprintType)
 enum class EPlayerStatType : uint8
@@ -93,10 +92,6 @@ public:
 	// 이동속도 변화 시 호출됨 (플레이어에서 구독)
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Movement")
 	FOnMoveSpeedChanged OnMoveSpeedChanged;
-
-	// 최대 탄약 변화 시 호출됨 (UI에서 구독)
-	UPROPERTY(BlueprintAssignable, Category = "Stat|Combat")
-	FOnMaxAmmoChanged OnMaxAmmoChanged;
 
 	// 포만감을 Amount만큼 증가. 0~MaxFullness 범위로 클램프됨
 	UFUNCTION(BlueprintCallable, Category = "Stat|Fullness")
