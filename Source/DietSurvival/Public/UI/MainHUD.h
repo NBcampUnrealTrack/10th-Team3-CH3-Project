@@ -69,9 +69,6 @@ protected:
 	void HandleFullnessChanged(float NewFullness, float MaxFullness);
 
 	UFUNCTION()
-	void HandleWaveIncrease(int32 CurrentWave);
-
-	UFUNCTION()
 	void HandleElapsedTimeUpdated(float ElapsedSeconds);
 
 	UFUNCTION()

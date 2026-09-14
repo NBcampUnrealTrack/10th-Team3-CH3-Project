@@ -9,6 +9,7 @@
 #include "TimerManager.h"
 #include "Engine/Engine.h"
 #include "System/DietGameState.h"
+#include "UI/MainHUD.h"
 
  #include "Player/PlayerStatComponent.h"
  #include "Player/AttackComponent.h"
@@ -104,6 +105,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		}
+
+		if (PauseAction)
+		{
+			EnhancedInput->BindAction(PauseAction, ETriggerEvent::Started, this, &APlayerCharacter::Pause);
+		}
 	}
 }
 
@@ -137,6 +143,17 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 	//상하
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void APlayerCharacter::Pause()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC) { return; }
+
+	if (AMainHUD* HUD = PC->GetHUD<AMainHUD>())
+	{
+		HUD->ShowPauseMenu();
+	}
 }
 
 void APlayerCharacter::HandleFullnessChanged(float NewFullness, float MaxFullnessValue)
