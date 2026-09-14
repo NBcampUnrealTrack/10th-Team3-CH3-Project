@@ -1,7 +1,32 @@
 ﻿#include "UI/UserHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Components/Border.h"
+#include "Components/Image.h"
+#include "Materials/MaterialInstanceDynamic.h"
+
+namespace
+{
+	const FName IntensityParam(TEXT("Intensity"));
+}
+
+void UUserHUDWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	HitFlashMID = HitFlashVignette->GetDynamicMaterial();
+}
+
+void UUserHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (HitFlashMID && HitFlashIntensity > 0.f)
+	{
+		HitFlashIntensity *= FMath::Exp(-HitFlashDecay * InDeltaTime);
+		if (HitFlashIntensity < 0.01f) { HitFlashIntensity = 0.f; }
+		HitFlashMID->SetScalarParameterValue(IntensityParam, HitFlashIntensity);
+	}
+}
 
 void UUserHUDWidget::SetFullness(float CurrentFullness, float MaxFullness)
 {
@@ -34,7 +59,6 @@ void UUserHUDWidget::SetTimer(float ElapsedTime)
 
 void UUserHUDWidget::SetWave(int32 Wave)
 {
-	if (!WaveText) { return; }
 	WaveText->SetText(FText::FromString(FString::Printf(TEXT("Wave %d"), Wave)));
 }
 
@@ -58,13 +82,12 @@ void UUserHUDWidget::PlayKillConfirm()
 	PlayAnimation(KillConfirmAnim);
 }
 
-
 void UUserHUDWidget::PlayHitFlash()
 {
-	PlayAnimation(HitFlashAnim);
+	HitFlashIntensity = FMath::Lerp(HitFlashMinIntensity, HitFlashMaxIntensity, FullnessRatio);
 }
 
-void UUserHUDWidget::SetFullnessWarning(bool bShow)
+void UUserHUDWidget::SetFullnessWarning(float Ratio)
 {
-	FullnessWarningBorder->SetVisibility(bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	FullnessRatio = Ratio;
 }
