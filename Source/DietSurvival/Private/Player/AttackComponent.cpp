@@ -228,6 +228,8 @@ const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionL
 
 void UAttackComponent::ReloadAmmo()
 {
+	OnReloadStart.Broadcast();
+
 	AActor* Owner = GetOwner();
 	if (!Owner)
 	{

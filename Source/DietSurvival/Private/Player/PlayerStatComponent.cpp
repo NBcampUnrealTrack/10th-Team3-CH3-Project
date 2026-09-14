@@ -92,6 +92,7 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 
 	case EPlayerStatType::MaxAmmo:
 		MaxAmmo += FMath::RoundToInt(Amount);
+		OnMaxAmmoChanged.Broadcast(MaxAmmo);
 		break;
 
 	case EPlayerStatType::Fullness:
