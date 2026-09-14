@@ -23,6 +23,7 @@ enum class EPlayerStatType : uint8
 	AttackRange,
 	AttackDirection,
 	MoveFullnessDecayPerSecond,
+	MaxAmmo,
 	Fullness,
 	MaxFullness
 };
@@ -139,6 +140,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true", ClampMin = "1"))
 	int32 AttackDirection = 1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
+	int32 MaxAmmo = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
+	float ReloadTime = 2.f;
+
 public:
 	//---------Getter, Setter-----------
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")
@@ -168,6 +175,16 @@ public:
 	int32 GetAttackDirection() const { return AttackDirection; }
 	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
 	void SetAttackDirection(int32 NewCount) { AttackDirection = FMath::Max(NewCount, 1);}
+
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	int32 GetMaxAmmo() const { return MaxAmmo; }
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	void SetMaxAmmo(int32 NewMaxAmmo) { MaxAmmo = FMath::Max(NewMaxAmmo, 1); }
+
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	float GetReloadTime() const { return ReloadTime; }
+	UFUNCTION(BlueprintCallable, Category = "Stat|Combat")
+	void SetReloadTime(float NewReloadTime) { ReloadTime = FMath::Max(NewReloadTime, 0.f); }
 
 	//--------스탯 업그레이드--------
 	UFUNCTION(BlueprintCallable, Category = "Stat|Upgrade")

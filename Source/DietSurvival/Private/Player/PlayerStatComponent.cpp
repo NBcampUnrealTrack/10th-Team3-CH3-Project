@@ -90,6 +90,10 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 		MoveFullnessDecayPerSecond += Amount;
 		break;
 
+	case EPlayerStatType::MaxAmmo:
+		MaxAmmo += FMath::RoundToInt(Amount);
+		break;
+
 	case EPlayerStatType::Fullness:
 		AddFullness(Amount);
 		break;
@@ -99,8 +103,6 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 		// 최대치가 바뀌면 비율(UI 게이지 등)이 달라지므로 다시 알려줌(Broadcast)
 		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
 		break;
-
-	
 
 	default:
 		break;
