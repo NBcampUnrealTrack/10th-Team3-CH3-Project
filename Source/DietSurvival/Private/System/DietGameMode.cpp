@@ -54,7 +54,7 @@ void ADietGameMode::BeginPlay()
 	CachedDietGameState = GetGameState<ADietGameState>();
 	if (CachedDietGameState == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::BeginPlay] GameStateRef is null"));
 		return;
 	}
 	CachedDietGameState->OnWaveIncrease.AddDynamic(this, &ADietGameMode::HandleWaveIncrease);
@@ -69,7 +69,7 @@ void ADietGameMode::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] SpawnerRef is null"));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::BeginPlay] SpawnerRef is null"));
 	}
 
 	// GameMode가 아닌 다른 곳에서 this를 캡처하는건 위험할 수 있음.
@@ -86,19 +86,19 @@ void ADietGameMode::BeginPlay()
 		APawn* Player = CachedDietGameState->GetPlayerRef().Get();
 		if (Player == nullptr)
 		{
-			UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlyaerRef is null"));
+			UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::BeginPlay] PlyaerRef is null"));
 		}
 		else
 		{
 			UPlayerStatComponent* StatComp = Player->FindComponentByClass<UPlayerStatComponent>();
 			if (StatComp != nullptr)
 			{
-				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent binding success"));
+				UE_LOG(LogTemp, Log, TEXT("[DietGameMode::BeginPlay] StatComponent binding success"));
 				StatComp->OnFullnessMax.AddDynamic(this, &ADietGameMode::HandleGameOver);
 			}
 			else
 			{
-				UE_LOG(LogTemp, Log, TEXT("[DietGameMode] StatComponent is null"));
+				UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::BeginPlay] StatComponent is null"));
 			}
 		}
 	});
@@ -109,7 +109,7 @@ void ADietGameMode::StartLevel()
 {
 	if (CachedDietGameState == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] GameStateRef is null"));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::StartLevel] GameStateRef is null"));
 		return;
 	}
 	CachedDietGameState->StartTimer();
@@ -124,19 +124,19 @@ void ADietGameMode::EndLevel(bool bWin)
 	if (CachedEnemySpawner != nullptr)
 	{
 		CachedEnemySpawner->SpawnStop();
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] SpawnStop called"));
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode::EndLevel] SpawnStop called"));
 	}
 
 	//종료 조건 추가 시 DietGameState 유효성 검사 추가 검토하기
 	CachedDietGameState->StopTimer();
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::EndLevel] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
 void ADietGameMode::CommandSpawn(float InSpawnDuration, const FEnemyDataRow& MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CachedEnemySpawner is nullptr "));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::CommandSpawn] CachedEnemySpawner is nullptr "));
 		return;
 	}
 
@@ -148,12 +148,12 @@ void ADietGameMode::CommandSpawn(const FEnemyDataRow& MonsterRow)
 {
 	if (CachedEnemySpawner == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] CachedEnemySpawner is nullptr "));
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode::CommandSpawn] CachedEnemySpawner is nullptr "));
 		return;
 	}
 
 	CachedEnemySpawner->SetSpawnMonster(MonsterRow);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] call SetSpawnMonster() "));
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::CommandSpawn] call SetSpawnMonster() "));
 }
 
 void ADietGameMode::NextWave(int32 Wave)
@@ -163,7 +163,7 @@ void ADietGameMode::NextWave(int32 Wave)
 	UDataTableSubsystem* DTS = UDataTableSubsystem::Get(this);
 	if (DTS == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] DataTableSussystem is nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::NextWave] DataTableSussystem is nullptr"));
 		return;
 	}
 
@@ -172,16 +172,16 @@ void ADietGameMode::NextWave(int32 Wave)
 	int32 RowCount = DTS->GetEnemyDataTable()->GetRowMap().Num();
 	if (RowCount < Wave)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::NextWave] Wave count exceeded the data row count EnemyDataRow: E%d"), RowCount);
 		Wave = RowCount;
 	}
-
 	FString RowNameString = FString::Printf(TEXT("E%d"), Wave);
 	FName RowName = FName(*RowNameString);
 
 	FEnemyDataRow* ED = DTS->GetEnemyRowByFName(RowName);
 	if (ED == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("[DietGameMode::NextWave] EnemyDataRow is nullptr"));
 		return;
 	}
 	SpawnDuration = ED->SpawnInterval;
