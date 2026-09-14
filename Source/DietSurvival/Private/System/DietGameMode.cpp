@@ -176,6 +176,7 @@ void ADietGameMode::NextWave(int32 Wave)
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] EnemyDataRow is nullptr"));
 		return;
 	}
+	SpawnDuration = ED->SpawnInterval;
 	CommandSpawn(SpawnDuration, *ED);
 }
 
