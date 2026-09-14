@@ -139,9 +139,7 @@ void UAugmentSelectionComponent::StartSelection()
 
 	// 랜덤한 증강 최대 3개 뽑기
 	CachedCandidates.Reset();
-	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
-	CachedCandidates = PS->AugmentManager->SelectRandomAugments();
-
+	CachedCandidates = CachedPS->AugmentManager->SelectRandomAugments();
 	if (CachedCandidates.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
