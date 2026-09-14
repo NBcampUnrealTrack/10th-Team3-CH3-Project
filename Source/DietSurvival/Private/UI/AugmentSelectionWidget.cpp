@@ -2,6 +2,7 @@
 #include "UI/AugmentCardWidget.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Button.h"
 
 void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
 {
@@ -29,6 +30,13 @@ void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>
 	}
 }
 
+void UAugmentSelectionWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	RerollButton->OnClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleRerollClicked);
+}
+
 void UAugmentSelectionWidget::HandleCardClicked(FName AugmentFName)
 {
 	// 중복 클릭 방지. 모든 카드 비활성화.
@@ -38,4 +46,11 @@ void UAugmentSelectionWidget::HandleCardClicked(FName AugmentFName)
 	}
 
 	OnAugmentChosen.Broadcast(AugmentFName);
+}
+
+void UAugmentSelectionWidget::HandleRerollClicked()
+{
+	// 리롤 여러 번 누르는 상황 방지.
+	RerollButton->SetIsEnabled(false);
+	OnRerollPressed.Broadcast();
 }
