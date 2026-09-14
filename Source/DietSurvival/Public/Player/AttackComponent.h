@@ -55,11 +55,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack|Debug", meta = (AllowPrivateAccess = "true"))
 	bool bDrawDebugTrace = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack|Debug", meta = (AllowPrivateAccess = "true"))
+	int32 CurrentAmmo = 0;
+
 	// 매번 GetOwner()->FindComponentByClass()를 호출하지 않도록 BeginPlay에서 캐싱
 	UPROPERTY()
 	TObjectPtr<UPlayerStatComponent> CachedStatComponent;
 
 	FTimerHandle AttackTimerHandle;
+
+	FTimerHandle ReloadTimerHandle;
 
 	//한 방향으로 라인트레이스 1회 발사 + 데미지 적용 
 	void FireTraceInDirection(const FVector& Start, const FRotator& BaseViewRotation, float YawOffset, float Range);
@@ -72,6 +77,10 @@ protected:
 
 	// 현재 AttackSpeed를 반영한 실제 공격 간격 계산	
 	float GetCurrentAttackInterval() const;
+
+	void ReloadAmmo();
+
+	void OnReloadFinished();
 
 	//방향 단계에 따라 발사 각도 목록을 계산해서 반환.
 	const TArray<float>& GetActiveDirectionAngles(int32 DirectionLevel);

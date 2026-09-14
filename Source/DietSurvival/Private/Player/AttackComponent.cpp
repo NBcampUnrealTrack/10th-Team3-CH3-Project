@@ -30,6 +30,8 @@ void UAttackComponent::BeginPlay()
 		}
 	}
 
+	CurrentAmmo = CachedStatComponent ? CachedStatComponent->GetMaxAmmo() : 1;
+
 	StartAutoAttack();
 }
 
@@ -107,8 +109,20 @@ void UAttackComponent::PerformAttack()
 		}
 	}
 
-	// 다음 공격을 최신 AttackSpeed 기준으로 다시 스케줄
-	ScheduleNextAttack();
+	// 현재 탄알 수 감소
+	CurrentAmmo--;
+
+	// 탄알이 다 떨어졌으면 재장전 후 바로 다음 공격 수행.
+	if (CurrentAmmo <= 0)
+	{
+		ReloadAmmo();
+	}
+	else
+	{
+		// 다음 공격을 최신 AttackSpeed 기준으로 다시 스케줄
+		ScheduleNextAttack();
+	}
+
 }
 
 //지정된 한 방향으로 라인트레이스 1회
@@ -210,4 +224,34 @@ const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionL
 	// 계산 결과를 캐시에 저장. TMap::Add는 저장된 값 자체의 참조를 돌려주므로,
 	// 그 참조를 그대로 반환하면 매번 새로 복사할 필요 없이 캐시된 데이터를 바로 가리키게 됨
 	return CachedDirectionAngles.Add(ClampedLevel, MoveTemp(NewAngles));
+}
+
+void UAttackComponent::ReloadAmmo()
+{
+	AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	Owner->GetWorldTimerManager().SetTimer(
+		ReloadTimerHandle,
+		this,
+		&UAttackComponent::OnReloadFinished,
+		CachedStatComponent ? CachedStatComponent->GetReloadTime() : 1.f,
+		false
+	);	
+}
+
+void UAttackComponent::OnReloadFinished()
+{
+	if (CachedStatComponent)
+	{
+		CurrentAmmo = CachedStatComponent->GetMaxAmmo();
+	}
+	else
+	{
+		CurrentAmmo = 1; // 기본값
+	}
+	ScheduleNextAttack();
 }
