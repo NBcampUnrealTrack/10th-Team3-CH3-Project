@@ -10,6 +10,11 @@ class UPlayerStatComponent;
 //적에게 공격 적중했을 때 방송(UI에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackHit, AActor*, HitActor, float, DamageAmount);
 
+// 재장전 시작 시 브로드캐스트 (UI에서 구독)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadStart);
+
+// 현재 탄약 변화 시 브로드캐스트 (UI에서 구독)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentAmmoChanged, int32, NewCurrentAmmo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DIETSURVIVAL_API UAttackComponent : public UActorComponent
@@ -33,6 +38,14 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Attack")
 	FOnAttackHit OnAttackHit;
+
+	// 재장전 시작 시 호출됨 (UI에서 구독)
+	UPROPERTY(BlueprintAssignable, Category = "Attack")
+	FOnReloadStart OnReloadStart;
+
+	// 현재 탄약 변화 시 호출됨 (UI에서 구독)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Combat")
+	FOnCurrentAmmoChanged OnCurrentAmmoChanged;
 
 protected:
 	// StatComponent를 못 찾았을 때 쓸 기본 공격 간격(혹시나)

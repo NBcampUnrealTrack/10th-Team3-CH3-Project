@@ -111,6 +111,7 @@ void UAttackComponent::PerformAttack()
 
 	// 현재 탄알 수 감소
 	CurrentAmmo--;
+	OnCurrentAmmoChanged.Broadcast(CurrentAmmo);
 
 	// 탄알이 다 떨어졌으면 재장전 후 바로 다음 공격 수행.
 	if (CurrentAmmo <= 0)
@@ -228,6 +229,8 @@ const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionL
 
 void UAttackComponent::ReloadAmmo()
 {
+	OnReloadStart.Broadcast();
+
 	AActor* Owner = GetOwner();
 	if (!Owner)
 	{
@@ -253,5 +256,8 @@ void UAttackComponent::OnReloadFinished()
 	{
 		CurrentAmmo = 1; // 기본값
 	}
+
+	OnCurrentAmmoChanged.Broadcast(CurrentAmmo);
+
 	ScheduleNextAttack();
 }

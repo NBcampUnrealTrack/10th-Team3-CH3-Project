@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFullnessMax);
 // 이동속도 변화 시 브로드캐스트 (플레이어에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMoveSpeedChanged, float, NewMoveSpeed);
 
+
+
 UENUM(BlueprintType)
 enum class EPlayerStatType : uint8
 {
