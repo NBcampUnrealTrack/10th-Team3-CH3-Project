@@ -11,8 +11,7 @@ void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>
 		return;
 	}
 
-	CardContainer->ClearChildren();
-	ActiveCards.Reset();
+	ClearContainer();
 
 	for (const auto& [Name, Level] : Augments)
 	{
@@ -28,6 +27,12 @@ void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>
 		HorizonSlot->SetVerticalAlignment(VAlign_Center);
 		ActiveCards.Add(Card);
 	}
+}
+
+void UAugmentSelectionWidget::ClearContainer()
+{
+	CardContainer->ClearChildren();
+	ActiveCards.Reset();
 }
 
 void UAugmentSelectionWidget::NativeConstruct()

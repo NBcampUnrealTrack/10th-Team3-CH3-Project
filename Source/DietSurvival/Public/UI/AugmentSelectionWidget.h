@@ -19,6 +19,8 @@ class DIETSURVIVAL_API UAugmentSelectionWidget : public UUserWidget
 public:
 	void InitializeCards(const TArray<TTuple<FName, int32>>& Augments);
 
+	void ClearContainer();
+
 	UPROPERTY(BlueprintAssignable, Category = "Augment")
 	FOnAugmentChosenSignature OnAugmentChosen;
 
