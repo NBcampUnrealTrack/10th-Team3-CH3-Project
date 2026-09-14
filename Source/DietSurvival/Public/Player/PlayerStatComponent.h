@@ -65,6 +65,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Fullness", meta = (AllowPrivateAccess = "true"))
 	float MaxFullness = 100.f;
 
+	// 이동 중 포만감 감소량
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Fullness", meta = (AllowPrivateAccess = "true"))
+	float MoveFullnessDecayPerSecond = 1.f;
+
+	// 속도가 이 값을 넘어야 포만감 감소를 적용함
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Fullness", meta = (AllowPrivateAccess = "true"))
+	float MovingSpeedThreshold = 10.f;
+
 	// 게임오버 여부
 	bool bIsGameOver = false;
 

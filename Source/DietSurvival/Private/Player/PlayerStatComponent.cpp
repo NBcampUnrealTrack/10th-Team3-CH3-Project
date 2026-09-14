@@ -21,6 +21,18 @@ void UPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	{
 		return;
 	}
+
+	if (MoveFullnessDecayPerSecond != 0.f)
+	{
+		if (const AActor* Owner = GetOwner())
+		{
+			const float CurrentSpeed = Owner->GetVelocity().Size();
+			if (CurrentSpeed > MovingSpeedThreshold)
+			{
+				AddFullness(-MoveFullnessDecayPerSecond * DeltaTime);
+			}
+		}
+	}
 }
 
 void UPlayerStatComponent::AddFullness(float Amount)
