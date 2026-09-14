@@ -45,9 +45,6 @@ protected:
 	TObjectPtr<UTextBlock> TimerText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> WaveText;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
 
 	UPROPERTY(meta = (BindWidget))
