@@ -10,6 +10,7 @@ class ADietPlayerState;
 class UPlayerStatComponent;
 class UAugmentSelectionWidget;
 class UResultWidget;
+class UDamageNumberWidget;
 class ADietGameState;
 class APlayerCharacter;
 class UAttackComponent;
@@ -83,6 +84,8 @@ protected:
 	UFUNCTION()
 	void HandleTimeUp();
 
+	void ShowDamageNumber(AActor* HitActor, float Damage);
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
 
@@ -94,6 +97,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UResultWidget> ResultWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UDamageNumberWidget> DamageNumberWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;

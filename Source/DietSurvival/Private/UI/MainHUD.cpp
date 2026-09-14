@@ -10,6 +10,7 @@
 #include "System/DietGameState.h"
 #include "Player/PlayerCharacter.h"
 #include "Player/AttackComponent.h"
+#include "UI/DamageNumberWidget.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -253,6 +254,20 @@ void AMainHUD::HandleAttackHit(AActor* HitActor, float DamageAmount)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->PlayHitMarker();
+	ShowDamageNumber(HitActor, DamageAmount);
+}
+
+void AMainHUD::ShowDamageNumber(AActor* HitActor, float Damage)
+{
+	APlayerController* PC = GetOwningPlayerController();
+	if (!PC || !HitActor || !DamageNumberWidgetClass) { return; }
+
+	UDamageNumberWidget* Widget = CreateWidget<UDamageNumberWidget>(PC, DamageNumberWidgetClass);
+	if (!Widget) { return; }
+
+	Widget->AttachToActor(HitActor);
+	Widget->AddToViewport(static_cast<int32>(EUILayer::DamageNumber));
+	Widget->SetDamage(Damage);
 }
 
 

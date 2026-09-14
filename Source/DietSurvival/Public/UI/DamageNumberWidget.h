@@ -14,11 +14,18 @@ class DIETSURVIVAL_API UDamageNumberWidget : public UUserWidget
 
 public:
 	void SetDamage(float Damage);
+	void AttachToActor(AActor* Target);
 
 protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageText;
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FloatUpAnim;
+
+private:
+	TWeakObjectPtr<AActor> TrackedActor;
 };
