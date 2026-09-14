@@ -4,6 +4,20 @@
 #include "Components/ActorComponent.h"
 #include "AugmentManagerComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FAugmentData
+{
+	GENERATED_BODY();
+
+public:
+	int32 CurrentLevel;
+	int32 MaxLevel;
+	float Weight;
+
+public:
+	FAugmentData();
+	FAugmentData(int32 InCurrentLevel, int32 InMaxLevel, float InWeight);
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API UAugmentManagerComponent : public UActorComponent
@@ -16,7 +30,7 @@ public:
 	// AugmentsMap에서 최대 증강 레벨에 도달하지 않은 랜덤한 증강을 최대 3개 뽑아서 반환
 	TArray<TTuple<FName, int32>> SelectRandomAugments();
 
-	// 증간 레벨을 1 증가시킴
+	// 증강 레벨을 1 증가시킴
 	void AugmentLevelUp(FName ChosenAugmentFName);
 
 protected:
@@ -27,5 +41,5 @@ protected:
 	TWeakObjectPtr<UDataTable> AugmentsData;
 
 	// 플레이어의 증강 정보를 저장. 예) [ AttackAugment, {CurrentLevel: 2, MaxLevel: 10} ]
-	TMap<FName, TArray<int32>> AugmentsMap;
+	TMap<FName, FAugmentData> AugmentsMap;
 };
