@@ -28,6 +28,9 @@ protected:
 	UFUNCTION()
 	void TryBindToLevelUp();
 
+	UFUNCTION()
+	void Reroll();
+
 private:
 	void StartSelection();
 	void FinishSelection();

@@ -105,6 +105,31 @@ void UAugmentSelectionComponent::TryBindToLevelUp()
 	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
 }
 
+void UAugmentSelectionComponent::Reroll()
+{
+	if (ActiveWidgetInstance)
+	{
+		// 증강 선택 풀 삭제
+		ActiveWidgetInstance->ClearContainer();
+
+		// 새로 랜덤한 증강 최대 3개 뽑기
+		CachedCandidates.Reset();
+		CachedCandidates = CachedPS->AugmentManager->SelectRandomAugments();
+		if (CachedCandidates.Num() == 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
+			return;
+		}
+		for (const auto& [Name, Level] : CachedCandidates)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("증강: %s"), *Name.ToString());
+		}
+
+		// 새로운 증강 풀로 컨테이너 초기화
+		ActiveWidgetInstance->InitializeCards(CachedCandidates);
+	}
+}
+
 void UAugmentSelectionComponent::StartSelection()
 {
 	APlayerController* PC = GetOwningController();
@@ -114,9 +139,7 @@ void UAugmentSelectionComponent::StartSelection()
 
 	// 랜덤한 증강 최대 3개 뽑기
 	CachedCandidates.Reset();
-	ADietPlayerState* PS = PC->GetPlayerState<ADietPlayerState>();
-	CachedCandidates = PS->AugmentManager->SelectRandomAugments();
-
+	CachedCandidates = CachedPS->AugmentManager->SelectRandomAugments();
 	if (CachedCandidates.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("받아온 증강 없음."));
@@ -131,6 +154,7 @@ void UAugmentSelectionComponent::StartSelection()
 	ActiveWidgetInstance = CreateWidget<UAugmentSelectionWidget>(PC, SelectionWidgetClass);
 	ActiveWidgetInstance->InitializeCards(CachedCandidates);
 	ActiveWidgetInstance->OnAugmentChosen.AddDynamic(this, &UAugmentSelectionComponent::HandleAugmentChosen);
+	ActiveWidgetInstance->OnRerollPressed.AddDynamic(this, &UAugmentSelectionComponent::Reroll);
 	ActiveWidgetInstance->AddToViewport();
 
 	// 정지, 입력모드

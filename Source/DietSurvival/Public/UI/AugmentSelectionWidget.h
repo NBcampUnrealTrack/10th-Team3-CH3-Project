@@ -6,6 +6,10 @@
 
 class UHorizontalBox;
 class UAugmentCardWidget;
+class UButton;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAugmentChosenSignature, FName, ChosenAugmentId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRerollPressedSignature);
 
 UCLASS()
 class DIETSURVIVAL_API UAugmentSelectionWidget : public UUserWidget
@@ -15,17 +19,28 @@ class DIETSURVIVAL_API UAugmentSelectionWidget : public UUserWidget
 public:
 	void InitializeCards(const TArray<TTuple<FName, int32>>& Augments);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAugmentChosenSignature, FName, ChosenAugmentId);
+	void ClearContainer();
 
 	UPROPERTY(BlueprintAssignable, Category = "Augment")
 	FOnAugmentChosenSignature OnAugmentChosen;
 
+	UPROPERTY(BlueprintAssignable, Category = "Augment")
+	FOnRerollPressedSignature OnRerollPressed;
+
 protected:
+	virtual void NativeConstruct() override;
+
 	UFUNCTION()
 	void HandleCardClicked(FName AugmentFName);
 
+	UFUNCTION()
+	void HandleRerollClicked();
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> CardContainer;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> RerollButton;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Augment")
 	TSubclassOf<UAugmentCardWidget> CardWidgetClass;
