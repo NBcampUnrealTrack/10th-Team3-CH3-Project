@@ -34,6 +34,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShowFractionalDigit = false;
 
+	// 해당 증강의 가중치. 등장할 확률과 관련됨.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PickWeight;
+
 	// 자동으로 AugmentFName의 값을 RowName으로 채움.
 	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
 };

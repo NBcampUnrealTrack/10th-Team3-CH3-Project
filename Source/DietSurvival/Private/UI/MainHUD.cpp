@@ -257,6 +257,19 @@ void AMainHUD::HandleAttackHit(AActor* HitActor, float DamageAmount)
 	ShowDamageNumber(HitActor, DamageAmount);
 }
 
+void AMainHUD::HandleCurrentAmmoChanged(int32 CurrentAmmo)
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetAmmo(CurrentAmmo);
+	UserHUDWidget->FinishReload();
+}
+
+void AMainHUD::HandleReloadStart()
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->StartReload();
+}
+
 void AMainHUD::ShowDamageNumber(AActor* HitActor, float Damage)
 {
 	APlayerController* PC = GetOwningPlayerController();
@@ -295,6 +308,8 @@ void AMainHUD::BindPawnDelegates(APawn* Pawn)
 	if (CachedAttackComp)
 	{
 		CachedAttackComp->OnAttackHit.AddDynamic(this, &AMainHUD::HandleAttackHit);
+		CachedAttackComp->OnCurrentAmmoChanged.AddDynamic(this, &AMainHUD::HandleCurrentAmmoChanged);
+		CachedAttackComp->OnReloadStart.AddDynamic(this, &AMainHUD::HandleReloadStart);
 	}
 }
 
@@ -316,6 +331,8 @@ void AMainHUD::UnbindPawnDelegates()
 	if (CachedAttackComp)
 	{
 		CachedAttackComp->OnAttackHit.RemoveDynamic(this, &AMainHUD::HandleAttackHit);
+		CachedAttackComp->OnCurrentAmmoChanged.RemoveDynamic(this, &AMainHUD::HandleCurrentAmmoChanged);
+		CachedAttackComp->OnReloadStart.RemoveDynamic(this, &AMainHUD::HandleReloadStart);
 		CachedAttackComp = nullptr;
 	}
 }

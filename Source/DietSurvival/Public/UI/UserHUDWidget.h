@@ -20,9 +20,10 @@ public:
 	void SetExp(float CurrentExp, float MaxExp);
 	void SetLevel(int32 Level);
 	void SetTimer(float ElapsedTime);
-	void SetAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	void SetAmmo(int32 CurrentAmmo);
 	void SetKillCount(int32 Count);
-
+	void StartReload();
+	void FinishReload();
 	void PlayHitMarker();
 	void PlayKillConfirm();
 	void PlayHitFlash();
@@ -51,6 +52,9 @@ protected:
 	TObjectPtr<UTextBlock> KillCountText;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> ReloadBar;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HitFlashVignette;
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -70,10 +74,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Vignette")
 	float HitFlashMaxIntensity = 1.f;
 
+	// 재장전 바가 차는 시간(초). AttackComponent의 장전 시간과 맞춤
+	UPROPERTY(EditDefaultsOnly, Category = "Reload")
+	float ReloadDuration = 2.f;
+
 private:
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> HitFlashMID;
 
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> ReloadMID;
+
 	float HitFlashIntensity = 0.f;
 	float FullnessRatio = 0.f;
+	bool bReloading = false;
+	float ReloadElapsed = 0.f;
 };

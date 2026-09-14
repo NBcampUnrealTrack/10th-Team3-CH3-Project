@@ -29,7 +29,7 @@ void UAugmentManagerComponent::BeginPlay()
 
 		for (const auto Augment : AllAugments)
 		{
-			AugmentsMap.Add(Augment->AugmentFName, TArray<int32>({ 0, Augment->MaxAugmentLevel }));
+			AugmentsMap.Add(Augment->AugmentFName, FAugmentData(0, Augment->MaxAugmentLevel, Augment->PickWeight));
 		}
 
 		// Test
@@ -37,9 +37,9 @@ void UAugmentManagerComponent::BeginPlay()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Map 초기화 안 됨"));
 		}
-		for (const auto& [Name, Levels] : AugmentsMap)
+		for (const auto& [Name, Data] : AugmentsMap)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d"), *Name.ToString(), Levels[0], Levels[1]);
+			UE_LOG(LogTemp, Warning, TEXT("%s - 현재 레벨: %d, 최대 레벨: %d, 가중치: %.0f"), *Name.ToString(), Data.CurrentLevel, Data.MaxLevel, Data.Weight);
 		}
 	}
 	else
@@ -55,15 +55,15 @@ void UAugmentManagerComponent::AugmentLevelUp(FName ChosenAugmentFName)
 {
 	if (AugmentsMap.Contains(ChosenAugmentFName))
 	{
-		TArray<int32>& Levels = AugmentsMap[ChosenAugmentFName];
-		Levels[0]++;   // 증강 레벨 +1
-		if (Levels[0] != Levels[1])
+		FAugmentData& Data = AugmentsMap[ChosenAugmentFName];
+		Data.CurrentLevel++;   // 증강 레벨 +1
+		if (Data.CurrentLevel != Data.MaxLevel)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s 증강 레벨업: Lv.%d"), *ChosenAugmentFName.ToString(), Levels[0]);
+			UE_LOG(LogTemp, Warning, TEXT("%s 증강 레벨업: Lv.%d"), *ChosenAugmentFName.ToString(), Data.CurrentLevel);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s 증강 최대 레벨 도달: Lv.%d"), *ChosenAugmentFName.ToString(), Levels[0]);
+			UE_LOG(LogTemp, Warning, TEXT("%s 증강 최대 레벨 도달: Lv.%d"), *ChosenAugmentFName.ToString(), Data.CurrentLevel);
 		}
 	}
 	else
@@ -74,23 +74,61 @@ void UAugmentManagerComponent::AugmentLevelUp(FName ChosenAugmentFName)
 
 TArray<TTuple<FName, int32>> UAugmentManagerComponent::SelectRandomAugments()
 {
-	TArray<TTuple<FName, int32>> Candidates;
-	for (const auto& [Name, Levels] : AugmentsMap)
+	TArray<TTuple<FName, FAugmentData>> Candidates;
+	TArray<TTuple<FName, int32>> ResultArray;
+
+	// 최대 레벨에 도달하지 않은 증강만 Candidates에 추가.
+	for (const auto& [Name, Data] : AugmentsMap)
 	{
-		int32 CurrentLevel = Levels[0];
-		int32 MaxLevel = Levels[1];
-		if (CurrentLevel < MaxLevel)
+		if (Data.CurrentLevel < Data.MaxLevel)
 		{
-			Candidates.Add(MakeTuple(Name, CurrentLevel));
+			Candidates.Add(MakeTuple(Name, Data));
 		}
 	}
 	Algo::RandomShuffle(Candidates);
 
+	// 선택 가능한 증강이 3개 이하면 그대로 반환
 	if (Candidates.Num() <= 3)
 	{
-		return Candidates;
+		for (const auto& [Name, Data] : Candidates)
+		{
+			ResultArray.Add(MakeTuple(Name, Data.CurrentLevel));
+		}
+		return ResultArray;
 	}
-	TArray<TTuple<FName, int32>> Selection;
-	Selection.Append(&Candidates[0], 3);
-	return Selection;
+
+	// 선택 가능한 증강이 4개 이상이면 가중치에 기반해 선택
+	for (int32 i = 0; i < 3 && 0 < Candidates.Num(); i++)
+	{
+		float WeightSum = 0.f;
+		for (const auto& [Name, Data] : Candidates)
+		{
+			WeightSum += Data.Weight;
+		}
+		if (FMath::IsNearlyZero(WeightSum)) { break; }
+
+		float RandomNumber = FMath::RandRange(0.f, WeightSum);
+		float ChanceAccumulate = 0.f;
+		for (int32 Index = 0; Index < Candidates.Num(); Index++)
+		{
+			ChanceAccumulate += Candidates[Index].Get<1>().Weight;
+			if (RandomNumber <= ChanceAccumulate)
+			{
+				ResultArray.Add(MakeTuple(Candidates[Index].Get<0>(), Candidates[Index].Get<1>().CurrentLevel));
+				Candidates.RemoveAt(Index);
+				break;
+			}
+		}
+	}
+	return ResultArray;
+}
+
+FAugmentData::FAugmentData()
+	: CurrentLevel(0), MaxLevel(0), Weight(0)
+{
+}
+
+FAugmentData::FAugmentData(int32 InCurrentLevel, int32 InMaxLevel, float InWeight)
+	: CurrentLevel(InCurrentLevel), MaxLevel(InMaxLevel), Weight(InWeight)
+{
 }
