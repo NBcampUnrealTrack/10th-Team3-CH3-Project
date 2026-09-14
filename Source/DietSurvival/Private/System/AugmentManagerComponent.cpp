@@ -97,7 +97,7 @@ TArray<TTuple<FName, int32>> UAugmentManagerComponent::SelectRandomAugments()
 		return ResultArray;
 	}
 
-	// 선택 가능한 증강이 4개 이상이면 가중치에 의해 선택
+	// 선택 가능한 증강이 4개 이상이면 가중치에 기반해 선택
 	for (int32 i = 0; i < 3 && 0 < Candidates.Num(); i++)
 	{
 		float WeightSum = 0.f;
@@ -105,6 +105,7 @@ TArray<TTuple<FName, int32>> UAugmentManagerComponent::SelectRandomAugments()
 		{
 			WeightSum += Data.Weight;
 		}
+		if (FMath::IsNearlyZero(WeightSum)) { break; }
 
 		float RandomNumber = FMath::RandRange(0.f, WeightSum);
 		float ChanceAccumulate = 0.f;
