@@ -22,6 +22,7 @@ enum class EPlayerStatType : uint8
 	AttackSpeed,
 	AttackRange,
 	AttackDirection,
+	MoveFullnessDecayPerSecond,
 	Fullness,
 	MaxFullness
 };

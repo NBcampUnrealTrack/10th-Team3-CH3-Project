@@ -78,6 +78,18 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 		AttackSpeed += Amount;
 		break;
 
+	case EPlayerStatType::AttackRange:
+		AttackRange += Amount;
+		break;
+
+	case EPlayerStatType::AttackDirection:
+		SetAttackDirection(AttackDirection + FMath::RoundToInt(Amount));
+		break;
+
+	case EPlayerStatType::MoveFullnessDecayPerSecond:
+		MoveFullnessDecayPerSecond += Amount;
+		break;
+
 	case EPlayerStatType::Fullness:
 		AddFullness(Amount);
 		break;
@@ -88,13 +100,7 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
 		break;
 
-	case EPlayerStatType::AttackRange:
-		AttackRange += Amount;
-		break;
-
-	case EPlayerStatType::AttackDirection:
-		SetAttackDirection(AttackDirection + FMath::RoundToInt(Amount));
-		break;
+	
 
 	default:
 		break;
