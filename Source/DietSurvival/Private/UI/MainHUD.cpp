@@ -310,6 +310,8 @@ void AMainHUD::BindPawnDelegates(APawn* Pawn)
 		CachedAttackComp->OnAttackHit.AddDynamic(this, &AMainHUD::HandleAttackHit);
 		CachedAttackComp->OnCurrentAmmoChanged.AddDynamic(this, &AMainHUD::HandleCurrentAmmoChanged);
 		CachedAttackComp->OnReloadStart.AddDynamic(this, &AMainHUD::HandleReloadStart);
+
+		HandleCurrentAmmoChanged(CachedStatComp->GetMaxAmmo());
 	}
 }
 
