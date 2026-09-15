@@ -59,6 +59,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EXP")
 	float ExpAbsorbRate = 5.f;
 
+	// 경험치가 많이 쌓이면 경험치 적용 속도를 빠르게
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float AbsorbRateMultiplier = 4.f;
+
+	// 경험치 배속을 적용할 threshold
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float ExpMultiplyThreshold = 2.f;
+
 	float PendingExp = 0.f;
 
 	// ----- 경험치 증가 테스트용 -----

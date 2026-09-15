@@ -62,6 +62,10 @@ void ADietPlayerState::Tick(float DeltaTime)
 
 	// 이번 프레임에서 적용할 경험치 계산
 	float TickExp = ExpAbsorbRate * DeltaTime;
+	if (ExpAbsorbRate * ExpMultiplyThreshold < PendingExp)
+	{
+		TickExp *= (PendingExp / (ExpAbsorbRate * ExpMultiplyThreshold)) * AbsorbRateMultiplier;
+	}
 	TickExp = FMath::Min(TickExp, PendingExp);
 
 	if (FMath::IsNearlyZero(TickExp) || TickExp <= 0) { return; }
