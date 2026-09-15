@@ -40,7 +40,7 @@ protected:
 
 	void LevelUp();
 
-	float CalculateTickExp(float DeltaTime);
+	void ManageExp(float DeltaTime);
 
 	virtual void BeginPlay() override;
 

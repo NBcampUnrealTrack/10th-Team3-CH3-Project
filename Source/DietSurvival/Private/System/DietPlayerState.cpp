@@ -38,25 +38,8 @@ void ADietPlayerState::LevelUp()
 	OnLevelUp.Broadcast(Level);
 }
 
-float ADietPlayerState::CalculateTickExp(float DeltaTime)
+void ADietPlayerState::ManageExp(float DeltaTime)
 {
-	float TickExp = ExpAbsorbRate * DeltaTime;
-	if (PendingExp < TickExp) { return PendingExp; }
-
-
-	return 0.0f;
-}
-
-void ADietPlayerState::BeginPlay()
-{
-	Super::BeginPlay();
-	//GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
-}
-
-void ADietPlayerState::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 	// 적용할 경험치가 없다면 return
 	if (FMath::IsNearlyZero(PendingExp) || PendingExp <= 0.f) { return; }
 
@@ -69,6 +52,20 @@ void ADietPlayerState::Tick(float DeltaTime)
 	if (FMath::IsNearlyZero(TickExp) || TickExp <= 0) { return; }
 	PendingExp -= TickExp;
 	ApplyExp(TickExp);
+}
+
+void ADietPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	//GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
+}
+
+void ADietPlayerState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// 경험치 관련
+	ManageExp(DeltaTime);
 }
 
 void ADietPlayerState::TestGainExp()
