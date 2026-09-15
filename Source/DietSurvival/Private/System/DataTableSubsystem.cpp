@@ -53,6 +53,12 @@ FEnemyDataRow* UDataTableSubsystem::GetEnemyRowByFName(FName EnemyFName)
 	return FoundRow;
 }
 
+FText UDataTableSubsystem::GetAugmentUIName(FName AugmentFName)
+{
+	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentUIName"));
+	return FoundRow->AugmentUIName;
+}
+
 float UDataTableSubsystem::GetAugmentDelta(FName AugmentFName, int32 AugmentLevel)
 {
 	FAugmentsDataRow* FoundRow = AugmentDataTable->FindRow<FAugmentsDataRow>(AugmentFName, TEXT("Subsystem: GetAugmentDelta"));

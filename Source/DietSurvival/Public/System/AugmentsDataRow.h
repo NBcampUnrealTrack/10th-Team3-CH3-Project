@@ -14,6 +14,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FName AugmentFName;
 
+	// UI에 표시할 해당 증강의 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText AugmentUIName;
+
 	// 해당 증강의 최대 레벨. DeltaPerAugmentLevel의 길이와 같아야 함.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxAugmentLevel;

@@ -33,6 +33,9 @@ public:
 	UDataTable* GetEnemyDataTable();
 
 	FEnemyDataRow* GetEnemyRowByFName(FName EnemyFName);
+
+	FText GetAugmentUIName(FName AugmentFName);
+
 	// 증강의 해당 레벨에서의 능력치 상승량 반환
 	float GetAugmentDelta(FName AugmentFName, int32 AugmentLevel);
 
