@@ -24,7 +24,7 @@ void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 		FText Delta = FText::AsNumber(StatAmount, &NumberFormat);
 
 		FText AugmentDescription = FText::Format(Description, Delta);
-		OnCardDataReady(FText::FromName(InAugmentFName), AugmentDescription);
+		OnCardDataReady(Subsystem->GetAugmentUIName(InAugmentFName), AugmentDescription);
 	}
 }
 
