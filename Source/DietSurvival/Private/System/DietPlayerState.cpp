@@ -61,11 +61,9 @@ void ADietPlayerState::Tick(float DeltaTime)
 	if (FMath::IsNearlyZero(PendingExp) || PendingExp <= 0.f) { return; }
 
 	// 이번 프레임에서 적용할 경험치 계산
-	float TickExp = ExpAbsorbRate * DeltaTime;
-	if (ExpAbsorbRate * ExpMultiplyThreshold < PendingExp)
-	{
-		TickExp *= (PendingExp / (ExpAbsorbRate * ExpMultiplyThreshold)) * AbsorbRateMultiplier;
-	}
+	// 적용해야할 경험치가 많이 쌓여있다면 경험치 적용 속도 빠르게
+	const float Multiplier = FMath::Clamp((PendingExp / ExpAbsorbRate), 1.f, MaxAbsorbRateMultiplier);
+	float TickExp = ExpAbsorbRate * DeltaTime * Multiplier;
 	TickExp = FMath::Min(TickExp, PendingExp);
 
 	if (FMath::IsNearlyZero(TickExp) || TickExp <= 0) { return; }
