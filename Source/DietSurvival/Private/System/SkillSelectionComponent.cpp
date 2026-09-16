@@ -59,11 +59,13 @@ void USkillSelectionComponent::StartSelection()
 	UE_LOG(LogTemp, Warning, TEXT("받아온 스킬 목록"));
 	for (const auto& [Name, Level] : CachedCandidates)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s, Current level: %d"), Name, Level);
+		UE_LOG(LogTemp, Warning, TEXT("%s, Current level: %d"), *Name.ToString(), Level);
 	}
+
+	FinishSelection();
 }
 
 void USkillSelectionComponent::FinishSelection()
 {
-
+	bIsSelecting = false;
 }

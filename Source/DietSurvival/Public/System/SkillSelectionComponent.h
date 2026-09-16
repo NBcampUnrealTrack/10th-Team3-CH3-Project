@@ -14,12 +14,13 @@ class DIETSURVIVAL_API USkillSelectionComponent : public UActorComponent
 public:
 	USkillSelectionComponent();
 
+	// 테스트를 위해 public으로. 테스트 끝나면 protected로 옮겨야 함.
+	UFUNCTION()
+	void HandleSkillUp();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
-
-	UFUNCTION(exec)
-	void HandleSkillUp();
 
 	UFUNCTION()
 	void HandleSkillChosen(FName ChosenSkillFName);
