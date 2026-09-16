@@ -6,6 +6,7 @@
 
 struct FAugmentsDataRow;
 struct FEnemyDataRow;
+struct FSkillDeltaRow;
 enum class EPlayerStatType : uint8;
 
 UCLASS()
@@ -51,6 +52,12 @@ public:
 
 	// ----- 스킬 증강 관련 -----
 	UDataTable* GetSkillDataTable();
+
+	FText& GetSkillUIName(FName SkillFName) const;
+
+	FSkillDeltaRow& GetSkillDeltaRow(FName SkillFName, int32 Level) const;
+
+	FText GetSkillDescription(FName SkillFName, int32 Index) const;
 
 public:
 	// functions
