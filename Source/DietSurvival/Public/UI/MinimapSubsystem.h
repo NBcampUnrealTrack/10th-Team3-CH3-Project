@@ -15,9 +15,12 @@ public:
 	void Register(UMinimapTrackComponent* Component);
 	void Unregister(UMinimapTrackComponent* Component);
 
-	const TArray<TObjectPtr<UMinimapTrackComponent>>& GetTracked() const { return Tracked; }
+	const TSet<TObjectPtr<UMinimapTrackComponent>>& GetTracked();
 
 private:
 	UPROPERTY()
-	TArray<TObjectPtr<UMinimapTrackComponent>> Tracked;
+	TSet<TObjectPtr<UMinimapTrackComponent>> Tracked;
+
+	UPROPERTY()
+	TSet<TObjectPtr<UMinimapTrackComponent>> PendingRemove;
 };
