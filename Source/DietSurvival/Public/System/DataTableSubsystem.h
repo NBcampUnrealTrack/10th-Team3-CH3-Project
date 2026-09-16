@@ -25,14 +25,18 @@ public:
 public:
 	// getters
 
-	// TWeakObjectPtr<UDataTable>로 받아서 사용
-	UDataTable* GetAugmentDataTable();
-
-	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
+	// ----- 몬스터 스폰 관련 -----
 
 	UDataTable* GetEnemyDataTable();
 
 	FEnemyDataRow* GetEnemyRowByFName(FName EnemyFName);
+
+	// ----- 스탯 증강 관련 -----
+
+	// TWeakObjectPtr<UDataTable>로 받아서 사용
+	UDataTable* GetAugmentDataTable();
+
+	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
 
 	FText GetAugmentUIName(FName AugmentFName);
 
@@ -44,6 +48,8 @@ public:
 	EPlayerStatType GetAugmentStatType(FName AugmentFName);
 
 	bool IsAugmentShowFractionalDigit(FName AugmentFName);
+
+	// ----- 스킬 증강 관련 -----
 
 public:
 	// functions
