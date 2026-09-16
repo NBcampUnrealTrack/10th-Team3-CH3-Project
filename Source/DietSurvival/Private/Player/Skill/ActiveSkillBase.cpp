@@ -8,7 +8,7 @@ bool UActiveSkillBase::TryActivate()
 	{
 		return false;
 	}
-	
+
 	// 마지막 발동 시간을 갱신
 	if (const UWorld* World = OwnerCharacter->GetWorld())
 	{
