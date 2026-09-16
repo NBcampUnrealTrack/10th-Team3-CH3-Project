@@ -5,6 +5,7 @@
 #include "SkillSelectionComponent.generated.h"
 
 class ADietPlayerState;
+class USkillSelectionWidget;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API USkillSelectionComponent : public UActorComponent
@@ -36,6 +37,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPS;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Skill")
+	TSubclassOf<USkillSelectionWidget> SelectionWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<USkillSelectionWidget> ActiveWidgetInstance;
 
 	TArray<TTuple<FName, int32>> CachedCandidates;
 	int32 PendingSkillUpCount = 0;

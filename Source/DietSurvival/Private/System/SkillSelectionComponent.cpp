@@ -1,6 +1,7 @@
 ﻿#include "System/SkillSelectionComponent.h"
 #include "System/DietPlayerState.h"
 #include "System/SkillManagerComponent.h"
+#include "UI/SkillSelectionWidget.h"
 
 USkillSelectionComponent::USkillSelectionComponent()
 {
@@ -40,7 +41,13 @@ void USkillSelectionComponent::HandleSkillUp()
 
 void USkillSelectionComponent::HandleSkillChosen(FName ChosenSkillFName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s 스킬 선택."), *ChosenSkillFName.ToString());
+
+	// 임시로 스킬 레벨 증가만.
 	CachedPS->SkillManager->SkillLevelUp(ChosenSkillFName);
+
+	CachedCandidates.Reset();
+	FinishSelection();
 }
 
 void USkillSelectionComponent::TryBindToSkillUp()
@@ -52,20 +59,57 @@ void USkillSelectionComponent::TryBindToSkillUp()
 
 void USkillSelectionComponent::StartSelection()
 {
+	APlayerController* PC = GetOwningController();
+	if (!PC || bIsSelecting) { return; }
+
 	bIsSelecting = true;
+
+	// 최대 레벨에 도달하지 않은 스킬 목록 가져오기
 	CachedCandidates.Reset();
 	CachedCandidates = CachedPS->SkillManager->GetSkillList();
 
 	UE_LOG(LogTemp, Warning, TEXT("받아온 스킬 목록"));
+	if (CachedCandidates.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("받아온 스킬 목록 없음."));
+		return;
+	}
 	for (const auto& [Name, Level] : CachedCandidates)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s, Current level: %d"), *Name.ToString(), Level);
 	}
+	
+	// 위젯 관련
+	ActiveWidgetInstance = CreateWidget<USkillSelectionWidget>(PC, SelectionWidgetClass);
+	ActiveWidgetInstance->InitializeCards(CachedCandidates);
+	ActiveWidgetInstance->OnSkillChosen.AddDynamic(this, &USkillSelectionComponent::HandleSkillChosen);
+	ActiveWidgetInstance->AddToViewport();
 
-	FinishSelection();
+	// 정지, 입력모드
+	PC->SetPause(true);
+	PC->SetInputMode(FInputModeUIOnly());
+	PC->bShowMouseCursor = true;
 }
 
 void USkillSelectionComponent::FinishSelection()
 {
+	APlayerController* PC = GetOwningController();
+	if (!PC) { return; }
+
+	if (ActiveWidgetInstance)
+	{
+		ActiveWidgetInstance->RemoveFromParent();
+		ActiveWidgetInstance = nullptr;
+	}
+
+	PC->bShowMouseCursor = false;
+	PC->SetInputMode(FInputModeGameOnly());
+	PC->SetPause(false);
 	bIsSelecting = false;
+
+	if (PendingSkillUpCount > 0)
+	{
+		PendingSkillUpCount--;
+		StartSelection();
+	}
 }
