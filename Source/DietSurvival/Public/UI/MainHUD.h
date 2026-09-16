@@ -14,6 +14,7 @@ class UDamageNumberWidget;
 class ADietGameState;
 class APlayerCharacter;
 class UAttackComponent;
+class UMinimapWidget;
 
 UENUM()
 enum class EUILayer : uint8
@@ -107,6 +108,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UDamageNumberWidget> DamageNumberWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UMinimapWidget> MinimapWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;
 
@@ -118,6 +122,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UResultWidget> ResultWidget;
+
+	UPROPERTY()
+	TObjectPtr<UMinimapWidget> MinimapWidget;
 
 	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPlayerState;

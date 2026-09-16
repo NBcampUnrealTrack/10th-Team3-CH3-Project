@@ -3,6 +3,7 @@
 
 #include "Pool/PoolObjectComponent.h"
 #include "Pool/PoolBase.h"
+#include "UI/MinimapTrackComponent.h"
 
 // Sets default values for this component's properties
 UPoolObjectComponent::UPoolObjectComponent()
@@ -17,6 +18,7 @@ void UPoolObjectComponent::OnAcquire(bool bIsNeedTick)
 	Owner->SetActorHiddenInGame(false);
 	Owner->SetActorEnableCollision(true);
 	Owner->SetActorTickEnabled(bIsNeedTick);
+	if (UMinimapTrackComponent* Track = Owner->FindComponentByClass<UMinimapTrackComponent>()) { Track->SetTracked(true); }
 }
 
 void UPoolObjectComponent::OnRelease()
@@ -26,6 +28,7 @@ void UPoolObjectComponent::OnRelease()
 	Owner->SetActorHiddenInGame(true);
 	Owner->SetActorEnableCollision(false);
 	Owner->SetActorTickEnabled(false);
+	if (UMinimapTrackComponent* Track = Owner->FindComponentByClass<UMinimapTrackComponent>()) { Track->SetTracked(false); }
 }
 
 bool UPoolObjectComponent::IsInPool() const
