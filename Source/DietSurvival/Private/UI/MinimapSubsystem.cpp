@@ -2,10 +2,21 @@
 
 void UMinimapSubsystem::Register(UMinimapTrackComponent* Component)
 {
-	Tracked.AddUnique(Component);
+	PendingRemove.Remove(Component);
+	Tracked.Add(Component);
 }
 
 void UMinimapSubsystem::Unregister(UMinimapTrackComponent* Component)
 {
-	Tracked.RemoveSwap(Component);
+	PendingRemove.Add(Component);
+}
+
+const TSet<TObjectPtr<UMinimapTrackComponent>>& UMinimapSubsystem::GetTracked()
+{
+	for (UMinimapTrackComponent* Component : PendingRemove)
+	{
+		Tracked.Remove(Component);
+	}
+	PendingRemove.Reset();
+	return Tracked;
 }

@@ -10,6 +10,7 @@ class UBehaviorTree;
 class ADietAIController;
 class UHealthComponent;
 class UPoolObjectComponent;
+class UMinimapTrackComponent;
 
 struct FEnemyDataRow;
 
@@ -49,6 +50,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
+	void HandlePoolActive(bool bIsActive);
+
+	UFUNCTION()
 	virtual void HandleDeath();
 
 	UFUNCTION()
@@ -69,6 +73,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<UMinimapTrackComponent> MinimapTrackComponent;
+
 	UPROPERTY()
 	TObjectPtr<ADietAIController> DietAIController;
 	UPROPERTY()
