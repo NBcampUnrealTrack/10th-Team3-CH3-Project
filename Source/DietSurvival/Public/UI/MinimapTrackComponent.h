@@ -5,8 +5,6 @@
 #include "UI/MinimapStyleData.h"
 #include "MinimapTrackComponent.generated.h"
 
-class UPoolObjectComponent;
-
 UCLASS(ClassGroup = (UI), meta = (BlueprintSpawnableComponent))
 class DIETSURVIVAL_API UMinimapTrackComponent : public UActorComponent
 {
@@ -28,8 +26,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Minimap")
 	bool bTracked = true;
-
-private:
-	UPROPERTY()
-	TObjectPtr<UPoolObjectComponent> PoolObject;
 };
