@@ -24,7 +24,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void HandleCardClicked(FName AugmentFName);
+	void HandleCardClicked(FName SkillFName);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> CardContainer;
