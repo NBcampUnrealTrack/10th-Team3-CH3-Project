@@ -41,8 +41,10 @@ void USkillCardWidget::SetupCard(FName InSkillFName, int32 InSkillLevel)
 			}
 		}
 		FText FinalDescription = FText::Format(Description, Args);
-
-		NameText->SetText(DTSubsystem->GetSkillUIName(InSkillFName));
+		FText SkillName = FText::FromString(
+			DTSubsystem->GetSkillUIName(InSkillFName).ToString() +
+			FString::Printf(TEXT(" Lv.%d"), InSkillLevel + 1));
+		NameText->SetText(SkillName);
 		DescriptionText->SetText(FinalDescription);
 	}
 }
