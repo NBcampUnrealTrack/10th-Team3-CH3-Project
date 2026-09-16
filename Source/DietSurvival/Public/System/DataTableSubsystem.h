@@ -49,6 +49,7 @@ public:
 	// functions
 
 	void LoadAugmentDataTable(UDataTable* InAugmentDataTable);
+	void LoadSkillDataTable(UDataTable* InSkillDataTable);
 	void LoadEnemyDataTable(UDataTable* InEnemyDataTable);
 
 private:
@@ -56,6 +57,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> AugmentDataTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> SkillDataTable;
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> EnemyDataTable;

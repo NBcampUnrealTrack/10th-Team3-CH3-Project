@@ -88,6 +88,11 @@ void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)
 	AugmentDataTable = InAugmentDataTable;
 }
 
+void UDataTableSubsystem::LoadSkillDataTable(UDataTable* InSkillDataTable)
+{
+	SkillDataTable = InSkillDataTable;
+}
+
 void UDataTableSubsystem::LoadEnemyDataTable(UDataTable* InEnemyDataTable)
 {
 	EnemyDataTable = InEnemyDataTable;
