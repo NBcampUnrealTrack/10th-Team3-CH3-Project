@@ -9,8 +9,33 @@ USkillManagerComponent::USkillManagerComponent()
 	// ...
 }
 
+TArray<TTuple<FName, int32>> USkillManagerComponent::GetSkillList()
+{
+	TArray<TTuple<FName, int32>> ResultArray;
+	for (const auto& [Name, Data] : SkillMap)
+	{
+		if (Data.CurrentLevel < Data.MaxLevel)
+		{
+			ResultArray.Add(MakeTuple(Name, Data.CurrentLevel));
+		}
+	}
+	return ResultArray;
+}
 
-// Called when the game starts
+void USkillManagerComponent::SkillLevelUp(FName ChosenSkillFName)
+{
+	FSkillData& SkillData = SkillMap[ChosenSkillFName];
+	SkillData.CurrentLevel++;
+	if (SkillData.CurrentLevel != SkillData.MaxLevel)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s 스킬 레벨업: Lv.%d"), *ChosenSkillFName.ToString(), SkillData.CurrentLevel);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s 스킬 최대 레벨 도달: Lv.%d"), *ChosenSkillFName.ToString(), SkillData.CurrentLevel);
+	}
+}
+
 void USkillManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();

@@ -25,6 +25,12 @@ class DIETSURVIVAL_API USkillManagerComponent : public UActorComponent
 public:
 	USkillManagerComponent();
 
+	// 최대 레벨에 도달하지 않은 스킬을 반환
+	TArray<TTuple<FName, int32>> GetSkillList();
+
+	// 스킬 레벨을 1 증가시킴
+	void SkillLevelUp(FName ChosenSkillFName);
+
 protected:
 	virtual void BeginPlay() override;
 
