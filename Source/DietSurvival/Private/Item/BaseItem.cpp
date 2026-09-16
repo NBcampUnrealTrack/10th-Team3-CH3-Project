@@ -33,20 +33,21 @@ void ABaseItem::OnItemOverlap(AActor* OverlapActor)
 	UE_LOG(LogTemp, Log, TEXT("[BaseItem::OnItemOverlap] On item overlap by Player"));
 
 	ActivateItem(Player);
+	Destroy();
 }
 
 void ABaseItem::OnItemEndOverlap(AActor* OverlapActor)
 {
 }
 
-void ABaseItem::ActivateItem(AActor* Activator)
+void ABaseItem::ActivateItem(APawn* Activator)
 {
 	UE_LOG(LogTemp, Log, TEXT("[BaseItem::ActivateItem] call function"));
 }
 
 FName ABaseItem::GetItemType()
 {
-	return FName();
+	return FName("BaseItem");
 }
 
 void ABaseItem::HandleBeginOverlap(UPrimitiveComponent* OverlappedComponent,

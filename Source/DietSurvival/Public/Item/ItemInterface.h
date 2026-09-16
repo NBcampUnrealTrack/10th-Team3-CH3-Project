@@ -17,6 +17,6 @@ class DIETSURVIVAL_API IItemInterface
 public:
 	virtual void OnItemOverlap(AActor* OverlapActor) = 0;
 	virtual void OnItemEndOverlap(AActor* OverlapActor) = 0;
-	virtual void ActivateItem(AActor* Activator) = 0;
+	virtual void ActivateItem(APawn* Activator) = 0;
 	virtual FName GetItemType() = 0;
 };

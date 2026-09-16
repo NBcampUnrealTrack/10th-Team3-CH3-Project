@@ -23,7 +23,7 @@ protected:
 public:
 	virtual void OnItemOverlap(AActor* OverlapActor) override;
 	virtual void OnItemEndOverlap(AActor* OverlapActor) override;
-	virtual void ActivateItem(AActor* Activator) override;
+	virtual void ActivateItem(APawn* Activator) override;
 	virtual FName GetItemType() override;
 
 protected:

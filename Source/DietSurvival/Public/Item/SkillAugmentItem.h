@@ -8,5 +8,9 @@ UCLASS()
 class DIETSURVIVAL_API ASkillAugmentItem : public ABaseItem
 {
 	GENERATED_BODY()
-	
+
+
+public:
+	virtual void ActivateItem(APawn* Activator) override;
+	virtual FName GetItemType() override;
 };
