@@ -5,6 +5,7 @@
 #include "DietPlayerState.generated.h"
 
 class UAugmentManagerComponent;
+class USkillManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
@@ -26,8 +27,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
+	TObjectPtr<USkillManagerComponent> SkillManager;
 	
 	FORCEINLINE int32 GetCurrentLevel() { return Level; }
 
