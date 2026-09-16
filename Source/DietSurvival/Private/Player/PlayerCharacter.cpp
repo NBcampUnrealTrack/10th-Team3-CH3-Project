@@ -13,6 +13,7 @@
 
  #include "Player/PlayerStatComponent.h"
  #include "Player/AttackComponent.h"
+ #include "Player/Skill/SkillComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -46,6 +47,7 @@ APlayerCharacter::APlayerCharacter()
 	//컴포넌트 생성
 	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 }
 
 void APlayerCharacter::BeginPlay()

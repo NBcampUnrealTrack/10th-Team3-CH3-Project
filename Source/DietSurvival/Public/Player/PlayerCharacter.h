@@ -11,6 +11,7 @@ class UInputMappingContext;
 class UInputAction;
 class UPlayerStatComponent;
 class UAttackComponent;
+class USkillComponent;
 
 // 무적 상태 변화 시 브로드캐스트 (UI에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInvincibilityChanged, bool, bIsNowInvincible);
@@ -69,13 +70,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
 
-	//--------- 스탯 컴포넌트 ---------
+	//--------- 컴포넌트들 ---------
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPlayerStatComponent> StatComponent;
-
-	//--------- 어택 컴포넌트 ----------
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAttackComponent> AttackComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkillComponent> SkillComponent;
+	
 
 protected:
 	//---------- 입력 관련 ----------
@@ -93,6 +95,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
+
+	
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

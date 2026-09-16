@@ -7,6 +7,7 @@
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
 
+UFUNCTION(CallInEditor, Category = "Skill Test")
 void USkill_AreaAttack::Activate()
 {
 	APlayerCharacter* Owner = OwnerCharacter.Get();
