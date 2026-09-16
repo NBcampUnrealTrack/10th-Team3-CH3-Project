@@ -46,7 +46,4 @@ public:
 
 	// 자동으로 SkillFName, MaxSkillLevel의 값을 갱신.
 	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
-
-private:
-	int32 DescriptionNumber = 0;
 };
