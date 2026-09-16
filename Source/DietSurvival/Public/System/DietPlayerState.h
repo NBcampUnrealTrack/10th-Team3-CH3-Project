@@ -8,6 +8,7 @@ class UAugmentManagerComponent;
 class USkillManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillUpSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnLevelUpSignature OnLevelUp;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill")
+	FOnSkillUpSignature OnSkillUp;
 
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
