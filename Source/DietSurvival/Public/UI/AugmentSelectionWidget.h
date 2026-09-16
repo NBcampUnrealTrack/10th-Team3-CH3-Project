@@ -8,7 +8,7 @@ class UHorizontalBox;
 class UAugmentCardWidget;
 class UButton;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAugmentChosenSignature, FName, ChosenAugmentId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAugmentChosenSignature, FName, ChosenAugmentFName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRerollPressedSignature);
 
 UCLASS()
