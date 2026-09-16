@@ -22,6 +22,9 @@ public:
 	// 캐릭터가 Amount만큼의 경험치를 획득
 	void GainExp(int32 Amount);
 
+	UFUNCTION()
+	void GainSkillItem();
+
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnLevelUpSignature OnLevelUp;
 

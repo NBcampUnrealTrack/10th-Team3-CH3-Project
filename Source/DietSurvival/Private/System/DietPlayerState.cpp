@@ -18,6 +18,11 @@ void ADietPlayerState::GainExp(int32 Amount)
 	PendingExp += (float)Amount;
 }
 
+void ADietPlayerState::GainSkillItem()
+{
+	OnSkillUp.Broadcast();
+}
+
 void ADietPlayerState::ApplyExp(float Amount)
 {
 	Exp += Amount;
