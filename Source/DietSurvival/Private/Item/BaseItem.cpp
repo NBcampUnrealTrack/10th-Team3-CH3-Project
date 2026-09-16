@@ -39,6 +39,11 @@ void ABaseItem::OnItemEndOverlap(AActor* OverlapActor)
 {
 }
 
+void ABaseItem::ActivateItem(AActor* Activator)
+{
+	UE_LOG(LogTemp, Log, TEXT("[BaseItem::ActivateItem] call function"));
+}
+
 FName ABaseItem::GetItemType()
 {
 	return FName();
