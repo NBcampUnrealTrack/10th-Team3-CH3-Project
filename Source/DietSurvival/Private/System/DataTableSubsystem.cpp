@@ -83,6 +83,11 @@ bool UDataTableSubsystem::IsAugmentShowFractionalDigit(FName AugmentFName)
 	return FoundRow->bShowFractionalDigit;
 }
 
+UDataTable* UDataTableSubsystem::GetSkillDataTable()
+{
+	return SkillDataTable;
+}
+
 void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;

@@ -50,6 +50,7 @@ public:
 	bool IsAugmentShowFractionalDigit(FName AugmentFName);
 
 	// ----- 스킬 증강 관련 -----
+	UDataTable* GetSkillDataTable();
 
 public:
 	// functions
