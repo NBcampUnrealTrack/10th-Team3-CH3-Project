@@ -35,10 +35,15 @@ public:
 	// ------무적 시스템---------
 	//지금 무적인가?
 	UFUNCTION(BlueprintCallable, Category = "Invincibility")
-	bool IsInvincible() const { return bIsHitInvincible; }
+	bool IsInvincible() const { return bIsHitInvincible || bIsSkillInvincible; }
 
+	// 무적 상태가 바뀌었을 때 브로드캐스트되는 델리게이트
 	UPROPERTY(BlueprintAssignable, Category = "Invincibility")
 	FOnInvincibilityChanged OnInvincibilityChanged;
+
+	// 일정 시간 동안 무적 상태로 만드는 함수. 스킬에서 호출됨
+	UFUNCTION(BlueprintCallable, Category = "Invincibility")
+	void ActivateTemporaryInvincibility(float Duration);
 
 protected:
 	// 피격당했을 때 부여되는 무적 시간 (초) 
@@ -46,12 +51,16 @@ protected:
 	float HitInvincibilityDuration = 0.1f;
 
 	bool bIsHitInvincible = false;
+	bool bIsSkillInvincible = false;
 
 	FTimerHandle HitInvincibilityTimerHandle;
+	FTimerHandle SkillInvincibilityTimerHandle;
 
 	// 피격 시 내부적으로 호출 
 	void StartHitInvincibility();
 	void EndHitInvincibility();
+	// 스킬 무적 끝날 때 내부적으로 호출
+	void EndSkillInvincibility();
 
 public:
 	//---------- 카메라 컴포넌트 ----------

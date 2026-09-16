@@ -232,3 +232,33 @@ void APlayerCharacter::EndHitInvincibility()
 	bIsHitInvincible = false;
 	OnInvincibilityChanged.Broadcast(false);
 }
+
+void APlayerCharacter::ActivateTemporaryInvincibility(float Duration)
+{
+	bIsSkillInvincible = true;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 시작 (%.1f초)"), Duration);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, Duration, FColor::Cyan,
+			FString::Printf(TEXT("스킬 무적 ON (%.1f초)"), Duration));
+	}
+
+	GetWorldTimerManager().SetTimer(
+		SkillInvincibilityTimerHandle,
+		this,
+		&APlayerCharacter::EndSkillInvincibility,
+		Duration,
+		false
+	);
+}
+
+void APlayerCharacter::EndSkillInvincibility()
+{
+	bIsSkillInvincible = false;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 종료"));
+}
