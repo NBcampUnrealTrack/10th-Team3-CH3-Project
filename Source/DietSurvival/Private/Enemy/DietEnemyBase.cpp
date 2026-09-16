@@ -144,6 +144,7 @@ void ADietEnemyBase::HandleDeath()
 	if (ControllerLastAttacked) {
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
 		if (DietPlayerState) {
+			// Todo Exp 아이템으로 이관하기
 			DietPlayerState->GainExp(Exp);
 		}
 		else {
