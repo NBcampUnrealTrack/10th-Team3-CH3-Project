@@ -15,19 +15,15 @@ public:
 
 protected:
 	virtual void Activate() override;
-	virtual void OnLevelUp() override;
+	virtual void OnAcquired(const FSkillDeltaRow& DeltaRow) override;
+	virtual void OnLevelUp(const FSkillDeltaRow& DeltaRow) override;
 
 	// 데미지 판정 반경 (cm)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")
 	float Radius = 400.f;
 
-	// StatComponent의 AttackPower에 곱해질 배율
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")
-	float DamageMultiplier = 1.f;
-
-	// 레벨업마다 배율이 이만큼 증가
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")
-	float DamageMultiplierIncreasePerLevel = 0.5f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill")
+	float Damage = 0.f;
 
 	// 레벨업마다 반경이 이만큼 증가 (cm)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")

@@ -15,9 +15,21 @@ void USkill_Invincibility::Activate()
 	}
 }
 
-void USkill_Invincibility::OnLevelUp()
+void USkill_Invincibility::OnAcquired(const FSkillDeltaRow& DeltaRow)
 {
-	Super::OnLevelUp();
-	// 레벨업할 때마다 무적 지속시간이 늘어남
-	InvincibilityDuration += DurationIncreasePerLevel;
+	// 최초 획득 시 증강값이 곧 무적 지속 시간
+	if (DeltaRow.Row.IsValidIndex(0))
+	{
+		InvincibilityDuration = DeltaRow.Row[0];
+	}
+}
+
+void USkill_Invincibility::OnLevelUp(const FSkillDeltaRow& DeltaRow)
+{
+	Super::OnLevelUp(DeltaRow);
+
+	if (DeltaRow.Row.IsValidIndex(0))
+	{
+		InvincibilityDuration += DeltaRow.Row[0];
+	}
 }

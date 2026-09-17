@@ -1,6 +1,5 @@
 ﻿#include "Player/Skill/Skill_AreaAttack.h"
 #include "Player/PlayerCharacter.h"
-#include "Player/PlayerStatComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -38,22 +37,14 @@ void USkill_AreaAttack::Activate()
 		OverlappedActors
 	);
 
-	// 기본 공격력(StatComponent)에 광역기 배율을 곱해서 최종 데미지 계산
-	float BaseDamage = 10.f;
-	if (const UPlayerStatComponent* Stat = Owner->FindComponentByClass<UPlayerStatComponent>())
-	{
-		BaseDamage = Stat->GetAttackPower();
-	}
-	const float FinalDamage = BaseDamage * DamageMultiplier;
-
 	for (AActor* Target : OverlappedActors)
 	{
 		// AttackComponent와 동일하게 "Enemy" 태그로 적만 걸러냄
 		if (Target && Target->ActorHasTag(TEXT("Enemy")))
 		{
-			UGameplayStatics::ApplyDamage(Target, FinalDamage, Owner->GetInstigatorController(), Owner, UDamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(Target, Damage, Owner->GetInstigatorController(), Owner, UDamageType::StaticClass());
 
-			UE_LOG(LogTemp, Log, TEXT("[Skill_AreaAttack] %s에게 %.1f 데미지 적용"), *Target->GetName(), FinalDamage);
+			UE_LOG(LogTemp, Log, TEXT("[Skill_AreaAttack] %s에게 %.1f 데미지 적용"), *Target->GetName(), Damage);
 		}
 	}
 
@@ -63,11 +54,22 @@ void USkill_AreaAttack::Activate()
 #endif
 }
 
-void USkill_AreaAttack::OnLevelUp()
+void USkill_AreaAttack::OnAcquired(const FSkillDeltaRow& DeltaRow)
 {
-	Super::OnLevelUp();
+	// 최초 획득 시 증강값이 곧 베이스 데미지
+	if (DeltaRow.Row.IsValidIndex(0))
+	{
+		Damage = DeltaRow.Row[0];
+	}
+}
 
-	DamageMultiplier += DamageMultiplierIncreasePerLevel;
-	Radius += RadiusIncreasePerLevel;
-	Cooldown -= CooldownDecreasePerLevel;
+void USkill_AreaAttack::OnLevelUp(const FSkillDeltaRow& DeltaRow)
+{
+	Super::OnLevelUp(DeltaRow);
+
+	if (DeltaRow.Row.IsValidIndex(0))
+	{
+		Damage += DeltaRow.Row[0];
+	}
+
 }

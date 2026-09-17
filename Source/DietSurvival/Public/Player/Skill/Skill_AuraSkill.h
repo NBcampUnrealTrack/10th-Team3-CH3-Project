@@ -15,8 +15,8 @@ public:
 	USkill_AuraSkill();
 
 protected:
-	virtual void OnAcquired() override;
-	virtual void OnLevelUp() override;
+	virtual void OnAcquired(const FSkillDeltaRow& DeltaRow) override;
+	virtual void OnLevelUp(const FSkillDeltaRow& DeltaRow) override;
 
 	// 실제로 스폰할 오브 액터 클래스. 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|Aura")
@@ -30,24 +30,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|Aura")
 	float OrbitSpeed = 90.f;
 
-	// StatComponent의 AttackPower에 곱해질 배율 
+	// 데미지
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|Aura")
-	float DamageMultiplier = 1.f;
-
-	// 레벨업마다(매 레벨) 배율이 이만큼 증가 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|Aura")
-	float DamageMultiplierIncreasePerLevel = 0.3f;
-
-	// 오브가 몇 레벨마다 하나씩 늘어나는지 (기본: 3레벨마다) 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|Aura")
-	int32 LevelsPerExtraOrb = 3;
+	float Damage = 0.f;
 
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<AAuraOrbActor>> SpawnedOrbs;
-
-	// 현재 레벨 기준으로 있어야 할 오브 개수 계산 
-	int32 CalculateDesiredOrbCount() const;
 
 	// 오브를 하나 새로 스폰해서 SpawnedOrbs에 등록 
 	void SpawnOrb();

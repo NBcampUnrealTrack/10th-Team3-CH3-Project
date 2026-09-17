@@ -1,6 +1,5 @@
 ﻿#include "Player/Skill/AuraOrbActor.h"
 #include "Player/PlayerCharacter.h"
-#include "Player/PlayerStatComponent.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -62,15 +61,8 @@ void AAuraOrbActor::OnOrbOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		return;
 	}
 
-	// 데미지는 그 순간의 AttackPower를 기준으로 매번 새로 계산 (StatComponent 값이 바뀌어도 항상 최신 반영)
-	float BaseDamage = 10.f;
-	if (const UPlayerStatComponent* Stat = InOwner->FindComponentByClass<UPlayerStatComponent>())
-	{
-		BaseDamage = Stat->GetAttackPower();
-	}
-	const float FinalDamage = BaseDamage * DamageMultiplier;
+	// 증강에서 정해준 데미지로
+	UGameplayStatics::ApplyDamage(OtherActor, Damage, InOwner->GetInstigatorController(), InOwner, UDamageType::StaticClass());
 
-	UGameplayStatics::ApplyDamage(OtherActor, FinalDamage, InOwner->GetInstigatorController(), InOwner, UDamageType::StaticClass());
-
-	UE_LOG(LogTemp, Log, TEXT("[AuraOrbActor] %s에게 %.1f 데미지 적용 (오라 접촉)"), *OtherActor->GetName(), FinalDamage);
+	UE_LOG(LogTemp, Log, TEXT("[AuraOrbActor] %s에게 %.1f 데미지 적용 (오라 접촉)"), *OtherActor->GetName(), Damage);
 }
