@@ -7,47 +7,49 @@ USkill_AuraSkill::USkill_AuraSkill()
 	SkillName = TEXT("오라 스킬");
 }
 
-void USkill_AuraSkill::OnAcquired()
+void USkill_AuraSkill::OnAcquired(const FSkillDeltaRow& DeltaRow)
 {
-	// 최초 획득 시점(Level=1)에 필요한 개수만큼 오브를 스폰
-	const int32 DesiredCount = CalculateDesiredOrbCount();
-	for (int32 i = 0; i < DesiredCount; ++i)
+	if (DeltaRow.Row.IsValidIndex(0))
 	{
-		SpawnOrb();
+		Damage = DeltaRow.Row[0];
+	}
+
+	if (DeltaRow.Row.IsValidIndex(1))
+	{
+		for (int i = 0; i < DeltaRow.Row[1]; i++)
+		{
+			SpawnOrb();
+		}
 	}
 
 	RedistributeOrbAngles();
 	UpdateAllOrbDamage();
 }
 
-void USkill_AuraSkill::OnLevelUp()
+void USkill_AuraSkill::OnLevelUp(const FSkillDeltaRow& DeltaRow)
 {
-	Super::OnLevelUp();
+	Super::OnLevelUp(DeltaRow);
 
-	// 데미지 배율은 매 레벨 항상 증가
-	DamageMultiplier += DamageMultiplierIncreasePerLevel;
-
-	// 오브 개수는 LevelsPerExtraOrb(기본 3) 레벨마다 하나씩만 늘어남
-	const int32 DesiredCount = CalculateDesiredOrbCount();
-	while (SpawnedOrbs.Num() < DesiredCount)
+	if (DeltaRow.Row.IsValidIndex(0))
 	{
-		SpawnOrb();
+		Damage += DeltaRow.Row[0];
 	}
 
-	// 오브 개수가 이번에 늘었을 수도, 안 늘었을 수도 있지만
-	// 늘었을 경우를 대비해 항상 재배치 (안 늘었으면 각도 그대로 유지됨)
-	RedistributeOrbAngles();
+	// Row[1]이 있는 레벨에서만 구체 추가 (없으면 스폰 안 함)
+	if (DeltaRow.Row.IsValidIndex(1))
+	{
+		const int32 OrbsToAdd = FMath::RoundToInt(DeltaRow.Row[1]);
+		for (int32 i = 0; i < OrbsToAdd; ++i)
+		{
+			SpawnOrb();
+		}
+		if (OrbsToAdd > 0)
+		{
+			RedistributeOrbAngles();
+		}
+	}
+
 	UpdateAllOrbDamage();
-}
-
-int32 USkill_AuraSkill::CalculateDesiredOrbCount() const
-{
-	// 1레벨부터 오브 1개로 시작, LevelsPerExtraOrb(기본 3) 레벨마다 하나씩 추가됨
-	if (LevelsPerExtraOrb <= 0)
-	{
-		return 1;
-	}
-	return 1 + (Level / LevelsPerExtraOrb);
 }
 
 void USkill_AuraSkill::SpawnOrb()
@@ -103,7 +105,7 @@ void USkill_AuraSkill::UpdateAllOrbDamage()
 	{
 		if (Orb)
 		{
-			Orb->SetDamageMultiplier(DamageMultiplier);
+			Orb->SetDamage(Damage);
 		}
 	}
 }

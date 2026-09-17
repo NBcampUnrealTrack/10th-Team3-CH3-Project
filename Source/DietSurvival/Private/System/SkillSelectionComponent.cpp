@@ -1,7 +1,12 @@
 ﻿#include "System/SkillSelectionComponent.h"
 #include "System/DietPlayerState.h"
 #include "System/SkillManagerComponent.h"
+#include "System/DataTableSubsystem.h"
+
 #include "UI/SkillSelectionWidget.h"
+
+#include "Player/PlayerCharacter.h"
+#include "Player/Skill/SkillComponent.h"
 
 USkillSelectionComponent::USkillSelectionComponent()
 {
@@ -43,9 +48,39 @@ void USkillSelectionComponent::HandleSkillChosen(FName ChosenSkillFName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s 스킬 선택."), *ChosenSkillFName.ToString());
 
-	// 임시로 스킬 레벨 증가만.
-	CachedPS->SkillManager->SkillLevelUp(ChosenSkillFName);
+	if (UDataTableSubsystem* Subsystem = UDataTableSubsystem::Get(this))
+	{
+		// 선택한 증강의 현재 레벨 파악
+		int32 AugmentLevel = -1;
+		for (const auto& [Name, Level] : CachedCandidates)
+		{
+			if (Name == ChosenSkillFName)
+			{
+				AugmentLevel = Level;
+				break;
+			}
+		}
+		if (AugmentLevel == -1)
+		{
+			UE_LOG(LogTemp, Error, TEXT("큰일남. 증강 레벨을 알 수 없음."));
+		}
 
+		// 스킬 컴포넌트에 스킬 증강 적용
+		APlayerController* PC = GetOwningController();
+		if (APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn()))
+		{
+			Player->SkillComponent->AcquireOrUpgradeSkill(Subsystem->GetSkillClass(ChosenSkillFName), ChosenSkillFName, AugmentLevel);
+			if (CachedPS)
+			{
+				CachedPS->SkillManager->SkillLevelUp(ChosenSkillFName);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Possess중인 Pawn이 APlayerCharacter가 아님."));
+		}
+	}
+	
 	CachedCandidates.Reset();
 	FinishSelection();
 }
