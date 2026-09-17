@@ -96,12 +96,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CycleSkillSlotAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseSkillAction;
+
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Pause();
 	void Reload();
+	void OnCycleSkillSlot(const FInputActionValue& Value);
+	void OnUseSkillInput(const FInputActionValue& Value);
 
 	//StatComponent의 OnFullnessChanged 구독용
 	UFUNCTION()

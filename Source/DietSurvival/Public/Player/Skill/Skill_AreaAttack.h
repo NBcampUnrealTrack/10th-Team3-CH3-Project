@@ -10,6 +10,9 @@ class DIETSURVIVAL_API USkill_AreaAttack : public UActiveSkillBase
 {
 	GENERATED_BODY()
 
+public:
+	USkill_AreaAttack();
+
 protected:
 	virtual void Activate() override;
 	virtual void OnLevelUp() override;

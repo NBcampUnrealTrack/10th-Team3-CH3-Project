@@ -7,7 +7,12 @@
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
 
-UFUNCTION(CallInEditor, Category = "Skill Test")
+
+USkill_AreaAttack::USkill_AreaAttack()
+{
+	SkillName = TEXT("광역 스킬");
+}
+
 void USkill_AreaAttack::Activate()
 {
 	APlayerCharacter* Owner = OwnerCharacter.Get();
@@ -60,6 +65,8 @@ void USkill_AreaAttack::Activate()
 
 void USkill_AreaAttack::OnLevelUp()
 {
+	Super::OnLevelUp();
+
 	DamageMultiplier += DamageMultiplierIncreasePerLevel;
 	Radius += RadiusIncreasePerLevel;
 	Cooldown -= CooldownDecreasePerLevel;

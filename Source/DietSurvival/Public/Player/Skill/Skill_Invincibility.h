@@ -9,6 +9,9 @@ class DIETSURVIVAL_API USkill_Invincibility : public UActiveSkillBase
 {
 	GENERATED_BODY()
 
+public:
+	USkill_Invincibility();
+
 protected:
 	virtual void Activate() override;
 	virtual void OnLevelUp() override;

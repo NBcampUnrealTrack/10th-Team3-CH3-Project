@@ -31,7 +31,7 @@ public:
 
 protected:
 	// 스킬 레벨업 시 호출되는 가상 함수. 자식 클래스에서 오버라이드
-	virtual void OnLevelUp() {}
+	virtual void OnLevelUp() { }
 
 	// 스킬 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill")
