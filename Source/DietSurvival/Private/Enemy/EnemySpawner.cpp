@@ -8,6 +8,7 @@
 #include "Pool/PoolManager.h"
 #include "Enemy/DietEnemyBase.h"
 #include "System/DietGameState.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AEnemySpawner::AEnemySpawner()
@@ -49,11 +50,16 @@ void AEnemySpawner::BeginPlay()
 
 void AEnemySpawner::Initialize()
 {
-	if (!PoolManager) {
-		APoolManager* NewPoolManager = GetWorld()->SpawnActor<APoolManager>();
-		if (NewPoolManager) {
-			PoolManager = NewPoolManager;
-		}
+	TArray<AActor*> FoundPoolManagers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APoolManager::StaticClass(), FoundPoolManagers);
+
+	if (FoundPoolManagers.Num() > 0)
+	{
+		PoolManager = Cast<APoolManager>(FoundPoolManagers[0]);
+	}
+	else
+	{
+		PoolManager = GetWorld()->SpawnActor<APoolManager>();
 	}
 	if (!DietGameState) {
 		DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());

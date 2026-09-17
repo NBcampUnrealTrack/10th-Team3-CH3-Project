@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "System/EnemyDataRow.h"
 #include "System/DietPlayerState.h"
+#include "Item/ItemDropManager.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -146,10 +147,12 @@ void ADietEnemyBase::HandleDeath()
 	bIsDead = true;
 	StopAI();
 
+	UItemDropManager* DropManager = UItemDropManager::Get(this);
+
 	if (ControllerLastAttacked) {
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
-		if (DietPlayerState) {
-			DietPlayerState->GainExp(Exp);
+		if (DietPlayerState && DropManager) {
+			DropManager->RequestDrop(GetActorLocation());
 		}
 		else {
 			UE_LOG(LogTemp, Warning,
