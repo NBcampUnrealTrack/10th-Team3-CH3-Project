@@ -6,6 +6,7 @@
 
 struct FAugmentsDataRow;
 struct FEnemyDataRow;
+struct FSkillDeltaRow;
 enum class EPlayerStatType : uint8;
 
 UCLASS()
@@ -25,14 +26,18 @@ public:
 public:
 	// getters
 
-	// TWeakObjectPtr<UDataTable>로 받아서 사용
-	UDataTable* GetAugmentDataTable();
-
-	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
+	// ----- 몬스터 스폰 관련 -----
 
 	UDataTable* GetEnemyDataTable();
 
 	FEnemyDataRow* GetEnemyRowByFName(FName EnemyFName);
+
+	// ----- 스탯 증강 관련 -----
+
+	// TWeakObjectPtr<UDataTable>로 받아서 사용
+	UDataTable* GetAugmentDataTable();
+
+	FAugmentsDataRow* GetAugmentRowByFName(FName AugmentFName);
 
 	FText GetAugmentUIName(FName AugmentFName);
 
@@ -45,10 +50,20 @@ public:
 
 	bool IsAugmentShowFractionalDigit(FName AugmentFName);
 
+	// ----- 스킬 증강 관련 -----
+	UDataTable* GetSkillDataTable();
+
+	FText& GetSkillUIName(FName SkillFName) const;
+
+	FSkillDeltaRow& GetSkillDeltaRow(FName SkillFName, int32 Level) const;
+
+	FText GetSkillDescription(FName SkillFName, int32 Index) const;
+
 public:
 	// functions
 
 	void LoadAugmentDataTable(UDataTable* InAugmentDataTable);
+	void LoadSkillDataTable(UDataTable* InSkillDataTable);
 	void LoadEnemyDataTable(UDataTable* InEnemyDataTable);
 
 private:
@@ -56,6 +71,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> AugmentDataTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> SkillDataTable;
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> EnemyDataTable;

@@ -5,8 +5,10 @@
 #include "DietPlayerState.generated.h"
 
 class UAugmentManagerComponent;
+class USkillManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillUpSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
 
 UCLASS()
@@ -20,14 +22,23 @@ public:
 	// 캐릭터가 Amount만큼의 경험치를 획득
 	void GainExp(int32 Amount);
 
+	UFUNCTION()
+	void GainSkillItem();
+
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnLevelUpSignature OnLevelUp;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill")
+	FOnSkillUpSignature OnSkillUp;
 
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
+	TObjectPtr<USkillManagerComponent> SkillManager;
 	
 	FORCEINLINE int32 GetCurrentLevel() { return Level; }
 

@@ -1,5 +1,6 @@
 ﻿#include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
+#include "System/SkillManagerComponent.h"
 
 ADietPlayerState::ADietPlayerState()
 {
@@ -7,6 +8,7 @@ ADietPlayerState::ADietPlayerState()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AugmentManager = CreateDefaultSubobject<UAugmentManagerComponent>(TEXT("AugmentManager"));
+	SkillManager = CreateDefaultSubobject<USkillManagerComponent>(TEXT("SkillManager"));
 }
 
 void ADietPlayerState::GainExp(int32 Amount)
@@ -14,6 +16,11 @@ void ADietPlayerState::GainExp(int32 Amount)
 	if (Amount <= 0) return;
 
 	PendingExp += (float)Amount;
+}
+
+void ADietPlayerState::GainSkillItem()
+{
+	OnSkillUp.Broadcast();
 }
 
 void ADietPlayerState::ApplyExp(float Amount)

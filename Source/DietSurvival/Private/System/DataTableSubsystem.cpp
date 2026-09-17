@@ -1,6 +1,7 @@
 ﻿#include "System/DataTableSubsystem.h"
 #include "System/DietGameInstance.h"
 #include "System/AugmentsDataRow.h"
+#include "System/SkillDataRow.h"
 #include "System/EnemyDataRow.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
@@ -83,9 +84,42 @@ bool UDataTableSubsystem::IsAugmentShowFractionalDigit(FName AugmentFName)
 	return FoundRow->bShowFractionalDigit;
 }
 
+UDataTable* UDataTableSubsystem::GetSkillDataTable()
+{
+	return SkillDataTable;
+}
+
+FText& UDataTableSubsystem::GetSkillUIName(FName SkillFName) const
+{
+	FSkillDataRow* FoundRow = SkillDataTable->FindRow<FSkillDataRow>(SkillFName, TEXT("Subsystem: GetSkillUIName"));
+	return FoundRow->SkillUIName;
+}
+
+FSkillDeltaRow& UDataTableSubsystem::GetSkillDeltaRow(FName SkillFName, int32 Level) const
+{
+	FSkillDataRow* FoundRow = SkillDataTable->FindRow<FSkillDataRow>(SkillFName, TEXT("Subsystem: GetSkillDeltaRow"));
+	return FoundRow->DeltaPerSkillLevel[Level];
+}
+
+FText UDataTableSubsystem::GetSkillDescription(FName SkillFName, int32 Level) const
+{
+	FSkillDataRow* FoundRow = SkillDataTable->FindRow<FSkillDataRow>(SkillFName, TEXT("Subsystem: GetSkillDescriptionIndex"));
+	int32 Index = FoundRow->DescriptionIndex[Level];
+	if (0 <= Index && Index < FoundRow->Descriptions.Num())
+	{
+		return FoundRow->Descriptions[Index];
+	}
+	else { return FText::FromString(FString::Printf(TEXT("Invalid Index"))); }
+}
+
 void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)
 {
 	AugmentDataTable = InAugmentDataTable;
+}
+
+void UDataTableSubsystem::LoadSkillDataTable(UDataTable* InSkillDataTable)
+{
+	SkillDataTable = InSkillDataTable;
 }
 
 void UDataTableSubsystem::LoadEnemyDataTable(UDataTable* InEnemyDataTable)
