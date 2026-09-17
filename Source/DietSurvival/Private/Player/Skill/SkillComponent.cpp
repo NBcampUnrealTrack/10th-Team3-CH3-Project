@@ -4,6 +4,9 @@
 #include "Player/Skill/PassiveSkillBase.h"
 #include "Player/PlayerCharacter.h"
 
+#include "System/DataTableSubsystem.h"
+#include "System/SkillDataRow.h"
+
 USkillComponent::USkillComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -27,19 +30,31 @@ void USkillComponent::BeginPlay()
 	OnSelectedSlotChanged.Broadcast(SelectedSlotIndex);
 }
 
-USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> SkillClass)
+USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> SkillClass, FName SkillFName, int32 SkillLevel)
 {
 	if (!SkillClass)
 	{
 		return nullptr;
 	}
 
+	UDataTableSubsystem* DataTableSubsystem = UDataTableSubsystem::Get(this);
+
+	//DT 미등록 시
+	if (!DataTableSubsystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SkillComponent] DataTableSubsystem을 찾을 수 없음"));
+		return nullptr;
+	}
+
+	// 스킬 이름과 레벨에 맞는 데이터 가져옴
+	const FSkillDeltaRow& DeltaRow = DataTableSubsystem->GetSkillDeltaRow(SkillFName, SkillLevel);
+
 	// 이미 보유 중이면 새로 만들지 않고 레벨업만
 	for (USkillBase* Owned : OwnedSkills)
 	{
 		if (Owned && Owned->GetClass() == SkillClass)
 		{
-			Owned->LevelUpSkill();
+			Owned->LevelUpSkill(DeltaRow);
 
 			// 레벨 표시 갱신을 위해 어느 슬롯에 있는지 찾아서 알림
 			const int32 ActiveIndex = SkillSlots.IndexOfByKey(Owned);
@@ -85,6 +100,8 @@ USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> Skill
 	NewSkill->InitializeSkill(OwnerCharacter);
 	OwnedSkills.Add(NewSkill);
 
+	NewSkill->OnAcquired(DeltaRow);
+
 	if (bIsActiveSkill)
 	{
 		SkillSlots[TargetSlot] = NewSkill;
@@ -93,13 +110,6 @@ USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> Skill
 	else
 	{
 		PassiveSlots[TargetSlot] = NewSkill;
-
-		// 패시브는 최초 획득 시점에 지속 효과 시작
-		if (UPassiveSkillBase* Passive = Cast<UPassiveSkillBase>(NewSkill))
-		{
-			Passive->OnAcquired();
-		}
-
 		OnPassiveSlotChanged.Broadcast(TargetSlot, NewSkill);
 	}
 
