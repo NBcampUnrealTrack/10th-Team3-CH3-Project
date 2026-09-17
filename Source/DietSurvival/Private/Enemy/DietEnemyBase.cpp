@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Enemy/Component/HealthComponent.h"
 #include "Pool/PoolObjectComponent.h"
+#include "UI/MinimapTrackComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/EnemyDataRow.h"
 #include "System/DietPlayerState.h"
@@ -31,6 +32,10 @@ ADietEnemyBase::ADietEnemyBase()
 	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+	PoolObjectComponent->OnPoolActiveChanged.AddDynamic(this, &ADietEnemyBase::HandlePoolActive);
+
+	MinimapTrackComponent = CreateDefaultSubobject<UMinimapTrackComponent>("MinimapTrack");
+	MinimapTrackComponent->SetTracked(false);
 
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
@@ -200,5 +205,10 @@ void ADietEnemyBase::AttackToTarget(AActor* Target)
 		UE_LOG(LogTemp, Warning,
 			TEXT("ADietEnemyBase::AttackToTarget, PoolObjectComponent is Null"));
 	}
+}
+
+void ADietEnemyBase::HandlePoolActive(bool bIsActive)
+{
+	MinimapTrackComponent->SetTracked(bIsActive);
 }
 

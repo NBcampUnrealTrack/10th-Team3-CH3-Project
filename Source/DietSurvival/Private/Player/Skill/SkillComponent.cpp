@@ -1,0 +1,205 @@
+﻿#include "Player/Skill/SkillComponent.h"
+#include "Player/Skill/SkillBase.h"
+#include "Player/Skill/ActiveSkillBase.h"
+#include "Player/Skill/PassiveSkillBase.h"
+#include "Player/PlayerCharacter.h"
+
+USkillComponent::USkillComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+
+	SkillSlots.SetNum(MaxSkillSlots);
+	PassiveSlots.SetNum(MaxPassiveSlots);
+}
+
+void USkillComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	APlayerCharacter* OwnerCharacter = Cast<APlayerCharacter>(GetOwner());
+	if (!OwnerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SkillComponent] Owner가 PlayerCharacter가 아님"));
+		return;
+	}
+
+	// 초기 상태 브로드캐스트
+	OnSelectedSlotChanged.Broadcast(SelectedSlotIndex);
+}
+
+USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> SkillClass)
+{
+	if (!SkillClass)
+	{
+		return nullptr;
+	}
+
+	// 이미 보유 중이면 새로 만들지 않고 레벨업만
+	for (USkillBase* Owned : OwnedSkills)
+	{
+		if (Owned && Owned->GetClass() == SkillClass)
+		{
+			Owned->LevelUpSkill();
+
+			// 레벨 표시 갱신을 위해 어느 슬롯에 있는지 찾아서 알림
+			const int32 ActiveIndex = SkillSlots.IndexOfByKey(Owned);
+			if (ActiveIndex != INDEX_NONE)
+			{
+				OnSkillSlotChanged.Broadcast(ActiveIndex, Owned);
+			}
+			else
+			{
+				const int32 PassiveIndex = PassiveSlots.IndexOfByKey(Owned);
+				if (PassiveIndex != INDEX_NONE)
+				{
+					OnPassiveSlotChanged.Broadcast(PassiveIndex, Owned);
+				}
+			}
+			return Owned;
+		}
+	}
+
+	APlayerCharacter* OwnerCharacter = Cast<APlayerCharacter>(GetOwner());
+	if (!OwnerCharacter)
+	{
+		return nullptr;
+	}
+
+	const bool bIsActiveSkill = SkillClass->IsChildOf(UActiveSkillBase::StaticClass());
+	const int32 TargetSlot = bIsActiveSkill ? FindFirstEmptySlot() : FindFirstEmptyPassiveSlot();
+
+	// 해당 종류 슬롯이 꽉 찼으면 획득 자체를 취소
+	if (TargetSlot == INDEX_NONE)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SkillComponent] %s 슬롯이 가득 참. 획득 취소: %s"),
+			bIsActiveSkill ? TEXT("액티브") : TEXT("패시브"), *SkillClass->GetName());
+		return nullptr;
+	}
+
+	USkillBase* NewSkill = NewObject<USkillBase>(this, SkillClass);
+	if (!NewSkill)
+	{
+		return nullptr;
+	}
+
+	NewSkill->InitializeSkill(OwnerCharacter);
+	OwnedSkills.Add(NewSkill);
+
+	if (bIsActiveSkill)
+	{
+		SkillSlots[TargetSlot] = NewSkill;
+		OnSkillSlotChanged.Broadcast(TargetSlot, NewSkill);
+	}
+	else
+	{
+		PassiveSlots[TargetSlot] = NewSkill;
+
+		// 패시브는 최초 획득 시점에 지속 효과 시작
+		if (UPassiveSkillBase* Passive = Cast<UPassiveSkillBase>(NewSkill))
+		{
+			Passive->OnAcquired();
+		}
+
+		OnPassiveSlotChanged.Broadcast(TargetSlot, NewSkill);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[SkillComponent] %s 스킬 최초 획득: %s (슬롯 %d)"),
+		bIsActiveSkill ? TEXT("액티브") : TEXT("패시브"),
+		*NewSkill->GetSkillName().ToString(), TargetSlot + 1);
+
+	return NewSkill;
+}
+
+void USkillComponent::SetSelectedSlot(int32 NewIndex)
+{
+	if (!SkillSlots.IsValidIndex(NewIndex) || NewIndex == SelectedSlotIndex)
+	{
+		return;
+	}
+
+	SelectedSlotIndex = NewIndex;
+	OnSelectedSlotChanged.Broadcast(SelectedSlotIndex);
+}
+
+void USkillComponent::CycleSelectedSlot(int32 Direction)
+{
+	if (Direction == 0 || MaxSkillSlots <= 0)
+	{
+		return;
+	}
+
+	// 음수 나머지를 피하려고 MaxSkillSlots를 한 번 더해서 모듈로
+	const int32 Step = (Direction > 0) ? 1 : -1;
+	const int32 NewIndex = (SelectedSlotIndex + Step + MaxSkillSlots) % MaxSkillSlots;
+
+	SetSelectedSlot(NewIndex);
+}
+
+bool USkillComponent::TryActivateSelectedSlot()
+{
+	return TryActivateSkill(SelectedSlotIndex);
+}
+
+bool USkillComponent::TryActivateSkill(int32 SlotIndex)
+{
+	if (!SkillSlots.IsValidIndex(SlotIndex))
+	{
+		return false;
+	}
+
+	// 빈 슬롯에서 클릭한 경우는 조용히 실패 (로그 도배 방지)
+	UActiveSkillBase* ActiveSkill = Cast<UActiveSkillBase>(SkillSlots[SlotIndex]);
+	if (!ActiveSkill)
+	{
+		return false;
+	}
+
+	const bool bSuccess = ActiveSkill->TryActivate();
+
+	if (!bSuccess)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[SkillComponent] %s 발동 실패 (쿨타임 %.1f초 남음)"),
+			*ActiveSkill->GetSkillName().ToString(), ActiveSkill->GetRemainingCooldown());
+	}
+
+	return bSuccess;
+}
+
+USkillBase* USkillComponent::GetSkillInSlot(int32 SlotIndex) const
+{
+	return SkillSlots.IsValidIndex(SlotIndex) ? SkillSlots[SlotIndex] : nullptr;
+}
+
+USkillBase* USkillComponent::GetPassiveInSlot(int32 SlotIndex) const
+{
+	return PassiveSlots.IsValidIndex(SlotIndex) ? PassiveSlots[SlotIndex] : nullptr;
+}
+
+bool USkillComponent::IsSlotEmpty(int32 SlotIndex) const
+{
+	return GetSkillInSlot(SlotIndex) == nullptr;
+}
+
+int32 USkillComponent::FindFirstEmptySlot() const
+{
+	for (int32 i = 0; i < SkillSlots.Num(); ++i)
+	{
+		if (SkillSlots[i] == nullptr)
+		{
+			return i;
+		}
+	}
+	return INDEX_NONE;
+}
+
+int32 USkillComponent::FindFirstEmptyPassiveSlot() const
+{
+	for (int32 i = 0; i < PassiveSlots.Num(); ++i)
+	{
+		if (PassiveSlots[i] == nullptr)
+		{
+			return i;
+		}
+	}
+	return INDEX_NONE;
+}

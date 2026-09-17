@@ -11,6 +11,7 @@
 #include "Player/PlayerCharacter.h"
 #include "Player/AttackComponent.h"
 #include "UI/DamageNumberWidget.h"
+#include "UI/MinimapWidget.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -42,6 +43,12 @@ void AMainHUD::ShowMainHUD()
 	}
 
 	UserHUDWidget->AddToViewport(static_cast<int32>(EUILayer::HUD));
+
+	if (MinimapWidgetClass)
+	{
+		MinimapWidget = CreateWidget<UMinimapWidget>(GetOwningPlayerController(), MinimapWidgetClass);
+		if (MinimapWidget) { MinimapWidget->AddToViewport(static_cast<int32>(EUILayer::HUD)); }
+	}
 }
 
 void AMainHUD::ShowPauseMenu()

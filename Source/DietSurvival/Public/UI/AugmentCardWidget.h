@@ -25,7 +25,7 @@ protected:
 	UFUNCTION()
 	void HandleButtonClicked();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Augment")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Diet")
 	void OnCardDataReady(const FText& AugmentName, const FText& Description);
 
 	UPROPERTY(meta = (BindWidget))

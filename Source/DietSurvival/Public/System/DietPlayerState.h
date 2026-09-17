@@ -5,8 +5,10 @@
 #include "DietPlayerState.generated.h"
 
 class UAugmentManagerComponent;
+class USkillManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillUpSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
 
 UCLASS()
@@ -20,14 +22,23 @@ public:
 	// 캐릭터가 Amount만큼의 경험치를 획득
 	void GainExp(int32 Amount);
 
+	UFUNCTION()
+	void GainSkillItem();
+
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnLevelUpSignature OnLevelUp;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill")
+	FOnSkillUpSignature OnSkillUp;
 
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
+	TObjectPtr<USkillManagerComponent> SkillManager;
 	
 	FORCEINLINE int32 GetCurrentLevel() { return Level; }
 
@@ -40,7 +51,7 @@ protected:
 
 	void LevelUp();
 
-	float CalculateTickExp(float DeltaTime);
+	void ManageExp(float DeltaTime);
 
 	virtual void BeginPlay() override;
 
@@ -58,6 +69,10 @@ protected:
 	// 초당 적용할 경험치
 	UPROPERTY(EditDefaultsOnly, Category = "EXP")
 	float ExpAbsorbRate = 5.f;
+
+	// 경험치가 많이 쌓이면 경험치 적용 속도를 빠르게
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float MaxAbsorbRateMultiplier = 10.f;
 
 	float PendingExp = 0.f;
 
