@@ -1,4 +1,6 @@
 ﻿#include "Player/PlayerCharacter.h"
+#include "Player/Skill/Skill_Invincibility.h"
+#include "Player/Skill/Skill_AreaAttack.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -13,6 +15,7 @@
 
  #include "Player/PlayerStatComponent.h"
  #include "Player/AttackComponent.h"
+ #include "Player/Skill/SkillComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -46,6 +49,7 @@ APlayerCharacter::APlayerCharacter()
 	//컴포넌트 생성
 	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -115,6 +119,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &APlayerCharacter::Reload);
 		}
+
+		if (CycleSkillSlotAction)
+		{
+			EnhancedInput->BindAction(CycleSkillSlotAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnCycleSkillSlot);
+		}
+
+		if (UseSkillAction)
+		{
+			EnhancedInput->BindAction(UseSkillAction, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillInput);
+		}
 	}
 }
 
@@ -166,6 +180,31 @@ void APlayerCharacter::Reload()
 	if (AttackComponent)
 	{
 		AttackComponent->ReloadAmmo();
+	}
+}
+
+void APlayerCharacter::OnCycleSkillSlot(const FInputActionValue& Value)
+{
+	if (!SkillComponent)
+	{
+		return;
+	}
+
+	const float AxisValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(AxisValue))
+	{
+		return;
+	}
+
+	SkillComponent->CycleSelectedSlot(AxisValue > 0.f ? 1 : -1);
+}
+
+void APlayerCharacter::OnUseSkillInput(const FInputActionValue& Value)
+{
+	if (SkillComponent)
+	{
+		// 선택된 슬롯이 비어있으면 그냥 실패 처리됨
+		SkillComponent->TryActivateSelectedSlot();
 	}
 }
 
@@ -231,4 +270,34 @@ void APlayerCharacter::EndHitInvincibility()
 {
 	bIsHitInvincible = false;
 	OnInvincibilityChanged.Broadcast(false);
+}
+
+void APlayerCharacter::ActivateTemporaryInvincibility(float Duration)
+{
+	bIsSkillInvincible = true;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 시작 (%.1f초)"), Duration);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, Duration, FColor::Cyan,
+			FString::Printf(TEXT("스킬 무적 ON (%.1f초)"), Duration));
+	}
+
+	GetWorldTimerManager().SetTimer(
+		SkillInvincibilityTimerHandle,
+		this,
+		&APlayerCharacter::EndSkillInvincibility,
+		Duration,
+		false
+	);
+}
+
+void APlayerCharacter::EndSkillInvincibility()
+{
+	bIsSkillInvincible = false;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 종료"));
 }
