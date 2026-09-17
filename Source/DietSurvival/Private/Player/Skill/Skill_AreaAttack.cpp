@@ -71,5 +71,4 @@ void USkill_AreaAttack::OnLevelUp(const FSkillDeltaRow& DeltaRow)
 	{
 		Damage += DeltaRow.Row[0];
 	}
-
 }
