@@ -147,7 +147,6 @@ void ADietEnemyBase::HandleDeath()
 	if (ControllerLastAttacked) {
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
 		if (DietPlayerState && DropManager) {
-			// Todo Exp 아이템으로 이관하기
 			DropManager->RequestDrop(GetActorLocation());
 		}
 		else {
