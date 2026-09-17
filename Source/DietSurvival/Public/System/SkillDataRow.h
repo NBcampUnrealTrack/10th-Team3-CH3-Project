@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Player/Skill/SkillBase.h"
 #include "SkillDataRow.generated.h"
+
+class USkillBase;
 
 // DeltaPerSkillLevel의 원소로 사용할 배열을 감싸는 구조체.
 USTRUCT(BlueprintType)

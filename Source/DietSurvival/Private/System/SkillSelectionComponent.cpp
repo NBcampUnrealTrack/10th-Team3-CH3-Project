@@ -69,7 +69,7 @@ void USkillSelectionComponent::HandleSkillChosen(FName ChosenSkillFName)
 		APlayerController* PC = GetOwningController();
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn()))
 		{
-			Player->SkillComponent->AcquireOrUpgradeSkill(Subsystem->GetSkillClass(ChosenSkillFName));
+			Player->SkillComponent->AcquireOrUpgradeSkill(Subsystem->GetSkillClass(ChosenSkillFName), ChosenSkillFName, AugmentLevel);
 			if (CachedPS)
 			{
 				CachedPS->SkillManager->SkillLevelUp(ChosenSkillFName);

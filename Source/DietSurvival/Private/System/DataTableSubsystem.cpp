@@ -3,6 +3,7 @@
 #include "System/AugmentsDataRow.h"
 #include "System/SkillDataRow.h"
 #include "System/EnemyDataRow.h"
+#include "Player/Skill/SkillBase.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
