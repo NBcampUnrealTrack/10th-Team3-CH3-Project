@@ -45,6 +45,7 @@ void ABaseItem::OnItemOverlap(AActor* OverlapActor)
 
 	if (PoolObjectComponent)
 	{
+		UE_LOG(LogTemp, Log, TEXT("[BaseItem::OnItemOverlap] Item Return to pool"));
 		PoolObjectComponent->ReturnToPool();
 	}
 	
