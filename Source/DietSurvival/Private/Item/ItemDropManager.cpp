@@ -48,18 +48,15 @@ void UItemDropManager::Initialize(FSubsystemCollectionBase& Collection)
 	static const FString DigestiveItemPath = TEXT("/Game/Blueprints/Items/BP_DigestiveItem.BP_DigestiveItem_C");
 	static const FString SkillAugmentItemPath = TEXT("/Game/Blueprints/Items/BP_SkillAugmentItem.BP_SkillAugmentItem_C");
 	///Script/Engine.Material'/Game/Materials/M_DigestiveItem.M_DigestiveItem'
+	///Script/Engine.Blueprint'/Game/Blueprints/Items/BP_DigestiveItem.BP_DigestiveItem'
 
 	ExpItemClass = StaticLoadClass(AExpItem::StaticClass(), nullptr, *ExpItemPath);
-	if (ExpItemClass == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[ItemDropManager] Failed to load ExpItemClass at path: %s"), *ExpItemPath);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("[ItemDropManager] Successfully loaded ExpItemClass"));
-	}
 	DigestiveItemClass = StaticLoadClass(ADigestiveItem::StaticClass(), nullptr, *DigestiveItemPath);
 	SkillAugmentItemClass = StaticLoadClass(ASkillAugmentItem::StaticClass(), nullptr, *SkillAugmentItemPath);
+	if (ExpItemClass == nullptr || DigestiveItemClass == nullptr || SkillAugmentItemClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ItemDropManager] Failed to load any item Class"));
+	}
 	///Script/Engine.Blueprint'/Game/Blueprints/Test/BP_ExpItem.BP_ExpItem'
 
 
@@ -97,42 +94,48 @@ void UItemDropManager::RequestDrop(FVector SpawnLocation)
 		UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] PoolManager is nullptr"));
 		return;
 	}
+
+	const float ScatterRadius = 30.0f;
+
 	// Exp는 무조건 드랍
-	AActor* ExpItemActor = CachedPoolManager->GetPoolOjbect(ExpItemClass);
-	if (ExpItemActor != nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] Drop Exp"));
-		ExpItemActor->SetActorLocation(SpawnLocation);
-		UPoolObjectComponent* Comp = ExpItemActor->FindComponentByClass<UPoolObjectComponent>();
-		if (Comp != nullptr)
-		{
-			UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] OnAcquire call"));
-			Comp->OnAcquire();
-		}
-	}
+	SpawnItemFromPool(ExpItemClass, SpawnLocation, TEXT("Exp"));
 
 	// 임시. Todo 프로젝트 세팅에서 확률값 수정할 수 있도록 변경하기
 	const float DigestiveDropChance = 30.0f;
 	if (FMath::FRandRange(0.0f, 100.0f) < DigestiveDropChance)
 	{
-		AActor* DigestiveItemActor = CachedPoolManager->GetPoolOjbect(DigestiveItemClass);
-		if (DigestiveItemActor != nullptr)
-		{
-			UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] Drop Digestive"));
-			DigestiveItemActor->SetActorLocation(SpawnLocation);
-		}
+		SpawnItemFromPool(DigestiveItemClass, SpawnLocation, TEXT("Digestive"));
 	}
 
-	// 임시. Todo 프로젝트 세팅에서 확률값 수정할 수 있도록 변경하기
 	const float SkillAugmentDropChance = 20.0f;
 	if (FMath::FRandRange(0.0f, 100.0f) < SkillAugmentDropChance)
 	{
-		AActor* SkillItemActor = CachedPoolManager->GetPoolOjbect(SkillAugmentItemClass);
-		if (SkillItemActor != nullptr)
-		{
-			UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] Drop SkillAugment"));
-			SkillItemActor->SetActorLocation(SpawnLocation);
-		}
+		SpawnItemFromPool(SkillAugmentItemClass, SpawnLocation, TEXT("SkillAugment"));
+	}
+}
+
+void UItemDropManager::SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName)
+{
+	if (ItemClass == nullptr || CachedPoolManager == nullptr)
+	{
+		return;
 	}
 
+	AActor* NewItemActor = CachedPoolManager->GetPoolOjbect(ItemClass);
+	if (NewItemActor == nullptr)
+	{
+		return;
+	}
+
+	const float ScatterRadius = 30.0f;
+	FVector RandomOffset(FMath::FRandRange(-ScatterRadius, ScatterRadius), FMath::FRandRange(-ScatterRadius, ScatterRadius), 0.0f);
+	NewItemActor->SetActorLocation(BaseLocation + RandomOffset);
+
+	UPoolObjectComponent* Comp = NewItemActor->FindComponentByClass<UPoolObjectComponent>();
+	if (Comp != nullptr)
+	{
+		Comp->OnAcquire();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] Drop %s"), *ItemName);
 }

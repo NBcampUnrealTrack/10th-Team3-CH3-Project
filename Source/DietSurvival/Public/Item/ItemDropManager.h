@@ -28,6 +28,9 @@ public:
 	void RequestDrop(FVector SpawnLocation);
 
 private:
+	void SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName);
+
+private:
 	// variables
 	UPROPERTY()
 	TObjectPtr<APoolManager> CachedPoolManager;
