@@ -44,9 +44,10 @@ void UItemDropManager::Initialize(FSubsystemCollectionBase& Collection)
 		return;
 	}
 	// 임시. Todo 프로젝트 세팅에서 접근할 수 있도록 변경하기
-	static const FString ExpItemPath = TEXT("/Game/Blueprints/Test/BP_ExpItem.BP_ExpItem_C");
-	static const FString DigestiveItemPath = TEXT("/Game/Blueprints/Test/BP_DigestiveItem.BP_DigestiveItem_C");
-	static const FString SkillAugmentItemPath = TEXT("/Game/Blueprints/Test/BP_SkillAugmentItem.BP_SkillAugmentItem_C");
+	static const FString ExpItemPath = TEXT("/Game/Blueprints/Items/BP_ExpItem.BP_ExpItem_C");
+	static const FString DigestiveItemPath = TEXT("/Game/Blueprints/Items/BP_DigestiveItem.BP_DigestiveItem_C");
+	static const FString SkillAugmentItemPath = TEXT("/Game/Blueprints/Items/BP_SkillAugmentItem.BP_SkillAugmentItem_C");
+	///Script/Engine.Material'/Game/Materials/M_DigestiveItem.M_DigestiveItem'
 
 	ExpItemClass = StaticLoadClass(AExpItem::StaticClass(), nullptr, *ExpItemPath);
 	if (ExpItemClass == nullptr)
