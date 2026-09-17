@@ -10,6 +10,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UPoolObjectComponent;
+class UProjectileMovementComponent;
 
 UCLASS()
 class DIETSURVIVAL_API ABaseItem : public AActor, public IItemInterface
@@ -29,8 +30,18 @@ public:
 	virtual FName GetItemType() override;
 
 protected:
+
+	// 충돌 감지용 콜리전
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
 	TObjectPtr<USphereComponent> CollisionSphere;
+
+	// 자석 감지 콜리전
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> MagnetSphere;
+
+	// 추적용 콜리전
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> ItemMesh;
