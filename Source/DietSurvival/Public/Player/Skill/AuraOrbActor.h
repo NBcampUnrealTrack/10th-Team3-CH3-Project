@@ -23,11 +23,11 @@ public:
 	// 스킬이 스폰 직후 한 번 호출해서 기본 설정을 넣어줌 
 	void InitializeOrb(APlayerCharacter* InOwner, float InOrbitRadius, float InOrbitSpeed, float InBaseAngleOffset);
 
-	// 레벨업 등으로 데미지 배율이 바뀔 때 스킬이 호출 
-	void SetDamageMultiplier(float NewMultiplier) { DamageMultiplier = NewMultiplier; }
-
 	// 오브 개수가 바뀌어 재배치할 때 스킬이 호출 (균등 간격 재계산용) 
 	void SetBaseAngleOffset(float NewOffset) { BaseAngleOffset = NewOffset; }
+
+	// 레벨업으로 데미지 증가할 때
+	void SetDamage(float NewDamage) { Damage = NewDamage; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura", meta = (AllowPrivateAccess = "true"))
@@ -43,5 +43,5 @@ protected:
 	float OrbitRadius = 200.f;
 	float OrbitSpeed = 90.f;      // 초당 회전 각도(도)
 	float BaseAngleOffset = 0.f;  // 여러 오브가 겹치지 않고 균등하게 퍼지도록 각자 다른 시작 각도를 가짐
-	float DamageMultiplier = 1.f;
+	float Damage = 0.f;
 };

@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "SkillDataRow.generated.h"
 
+class USkillBase;
+
 // DeltaPerSkillLevel의 원소로 사용할 배열을 감싸는 구조체.
 USTRUCT(BlueprintType)
 struct FSkillDeltaRow
@@ -27,6 +29,10 @@ public:
 	// UI에 표시할 해당 스킬의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText SkillUIName;
+
+	// 스킬의 StaticClass. 예) Skill_AuraSkill
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<USkillBase> SkillClass;
 
 	// 해당 스킬의 최대 레벨. DeltaPerSkillLevel의 길이와 맞도록 자동 갱신.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

@@ -3,6 +3,7 @@
 #include "System/AugmentsDataRow.h"
 #include "System/SkillDataRow.h"
 #include "System/EnemyDataRow.h"
+#include "Player/Skill/SkillBase.h"
 
 UDataTableSubsystem* UDataTableSubsystem::Get(const UObject* WorldContext)
 {
@@ -110,6 +111,12 @@ FText UDataTableSubsystem::GetSkillDescription(FName SkillFName, int32 Level) co
 		return FoundRow->Descriptions[Index];
 	}
 	else { return FText::FromString(FString::Printf(TEXT("Invalid Index"))); }
+}
+
+TSubclassOf<USkillBase> UDataTableSubsystem::GetSkillClass(FName SkillFName) const
+{
+	FSkillDataRow* FoundRow = SkillDataTable->FindRow<FSkillDataRow>(SkillFName, TEXT("Subsystem: GetSkillClass"));
+	return FoundRow->SkillClass;
 }
 
 void UDataTableSubsystem::LoadAugmentDataTable(UDataTable* InAugmentDataTable)

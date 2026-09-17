@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "System/SkillDataRow.h"
 #include "SkillBase.generated.h"
+
 
 class APlayerCharacter;
 
@@ -20,9 +22,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Skill")
 	FName GetSkillName() const { return SkillName; }
 
+	virtual void OnAcquired(const FSkillDeltaRow& DeltaRow) {}
+
 	// 스킬 레벨업
 	UFUNCTION(BlueprintCallable, Category = "Skill")
-	void LevelUpSkill();
+	void LevelUpSkill(const FSkillDeltaRow& DeltaRow);
 
 	// 스킬 레벨 반환
 	UFUNCTION(BlueprintPure, Category = "Skill")
@@ -31,7 +35,7 @@ public:
 
 protected:
 	// 스킬 레벨업 시 호출되는 가상 함수. 자식 클래스에서 오버라이드
-	virtual void OnLevelUp() { }
+	virtual void OnLevelUp(const FSkillDeltaRow& DeltaRow) { }
 
 	// 스킬 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill")
