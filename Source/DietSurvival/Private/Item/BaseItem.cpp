@@ -2,7 +2,10 @@
 
 
 #include "Item/BaseItem.h"
+#include "Pool/PoolObjectComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Player/PlayerCharacter.h"
 
 ABaseItem::ABaseItem()
 {
@@ -11,6 +14,11 @@ ABaseItem::ABaseItem()
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	RootComponent = CollisionSphere;
 	CollisionSphere->SetSphereRadius(50.0f);
+
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh->SetupAttachment(RootComponent);
+
+	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
 
 }
 
@@ -25,7 +33,7 @@ void ABaseItem::BeginPlay()
 
 void ABaseItem::OnItemOverlap(AActor* OverlapActor)
 {
-	APawn* Player = Cast<APawn>(OverlapActor);
+	APawn* Player = Cast<APlayerCharacter>(OverlapActor);
 	if (Player == nullptr)
 	{
 		return;
@@ -33,7 +41,13 @@ void ABaseItem::OnItemOverlap(AActor* OverlapActor)
 	UE_LOG(LogTemp, Log, TEXT("[BaseItem::OnItemOverlap] On item overlap by Player"));
 
 	ActivateItem(Player);
-	Destroy();
+
+
+	if (PoolObjectComponent)
+	{
+		PoolObjectComponent->ReturnToPool();
+	}
+	
 }
 
 void ABaseItem::OnItemEndOverlap(AActor* OverlapActor)

@@ -8,6 +8,8 @@
 #include "BaseItem.generated.h"
 
 class USphereComponent;
+class UStaticMeshComponent;
+class UPoolObjectComponent;
 
 UCLASS()
 class DIETSURVIVAL_API ABaseItem : public AActor, public IItemInterface
@@ -29,6 +31,14 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
 	TObjectPtr<USphereComponent> CollisionSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> ItemMesh;
+
+	UPROPERTY()
+	TObjectPtr<UPoolObjectComponent> PoolObjectComponent;
+
+
 
 private:
 	UFUNCTION()
