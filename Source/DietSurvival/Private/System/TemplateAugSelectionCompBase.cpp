@@ -1,6 +1,7 @@
 ﻿#include "System/TemplateAugSelectionCompBase.h"
 #include "System/DietPlayerState.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/SkillSelectionWidget.h" // 템플릿화 하면 템플릿 헤더로 대체
 
 UTemplateAugSelectionCompBase::UTemplateAugSelectionCompBase()
 {
@@ -61,6 +62,7 @@ void UTemplateAugSelectionCompBase::StartSelection()
 	bIsSelecting = true;
 
 	// 증강 선택지 가져오기
+	CachedCandidates.Reset();
 	LoadCandidates();
 	if (CachedCandidates.Num() == 0)
 	{
@@ -73,7 +75,7 @@ void UTemplateAugSelectionCompBase::StartSelection()
 	}
 
 	// 위젯 관련
-	ActiveWidgetInstance = CreateWidget<UUserWidget>(PC, SelectionWidgetClass);
+	ActiveWidgetInstance = CreateWidget<USkillSelectionWidget>(PC, SelectionWidgetClass);
 	InitializeSelectionWidget();
 	ActiveWidgetInstance->AddToViewport();
 
