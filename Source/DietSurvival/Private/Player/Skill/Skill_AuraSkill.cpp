@@ -16,13 +16,16 @@ void USkill_AuraSkill::OnAcquired(const FSkillDeltaRow& DeltaRow)
 
 	if (DeltaRow.Row.IsValidIndex(1))
 	{
-		for (int i = 0; i < DeltaRow.Row[1]; i++)
+		const int32 OrbsToAdd = FMath::RoundToInt(DeltaRow.Row[1]);
+		for (int32 i = 0; i < OrbsToAdd; ++i)
 		{
 			SpawnOrb();
 		}
+		if (OrbsToAdd > 0)
+		{
+			RedistributeOrbAngles();
+		}
 	}
-
-	RedistributeOrbAngles();
 	UpdateAllOrbDamage();
 }
 
