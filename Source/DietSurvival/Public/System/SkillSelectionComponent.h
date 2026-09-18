@@ -8,7 +8,7 @@
 class ADietPlayerState;
 class USkillSelectionWidget;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(DietSurvival), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API USkillSelectionComponent : public UTemplateAugSelectionCompBase
 {
 	GENERATED_BODY()

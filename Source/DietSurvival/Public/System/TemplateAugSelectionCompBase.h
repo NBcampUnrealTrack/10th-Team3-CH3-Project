@@ -38,6 +38,7 @@ protected:
 
 	void StartSelection();
 	void FinishSelection();
+	void HandlePending();
 
 	FORCEINLINE APlayerController* GetOwningController() const { return Cast<APlayerController>(GetOwner()); }
 

@@ -108,6 +108,17 @@ void UTemplateAugSelectionCompBase::FinishSelection()
 	}
 }
 
+void UTemplateAugSelectionCompBase::HandlePending()
+{
+	// 한 번에 스킬 아이템을 2개 이상 획득해 OnSkillUp이 여러 번 Broadcast 될 수도 있음.
+	PendingAugmentCount++;
+	if (!bIsSelecting)
+	{
+		PendingAugmentCount--;
+		StartSelection();
+	}
+}
+
 void UTemplateAugSelectionCompBase::LoadCandidates() {
 
 }
