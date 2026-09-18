@@ -30,19 +30,21 @@ void USkillComponent::BeginPlay()
 	OnSelectedSlotChanged.Broadcast(SelectedSlotIndex);
 }
 
-USkillBase* USkillComponent::AcquireOrUpgradeSkill(TSubclassOf<USkillBase> SkillClass, FName SkillFName, int32 SkillLevel)
+USkillBase* USkillComponent::AcquireOrUpgradeSkill(FName SkillFName, int32 SkillLevel)
 {
-	if (!SkillClass)
-	{
-		return nullptr;
-	}
-
 	UDataTableSubsystem* DataTableSubsystem = UDataTableSubsystem::Get(this);
 
 	//DT 미등록 시
 	if (!DataTableSubsystem)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[SkillComponent] DataTableSubsystem을 찾을 수 없음"));
+		return nullptr;
+	}
+
+	// 스킬 클래스 가져옴
+	TSubclassOf<USkillBase> SkillClass = DataTableSubsystem->GetSkillClass(SkillFName);
+	if (!SkillClass)
+	{
 		return nullptr;
 	}
 

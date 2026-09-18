@@ -55,7 +55,7 @@ public:
 
 	// 스킬을 획득하거나 이미 가지고 있는 스킬이면 레벨업
 	UFUNCTION(BlueprintCallable, Category = "Skill")
-	USkillBase* AcquireOrUpgradeSkill(TSubclassOf<USkillBase> SkillClass, FName SkillFName, int32 SkillLevel);
+	USkillBase* AcquireOrUpgradeSkill(FName SkillFName, int32 SkillLevel);
 
 	// 현재 선택된 슬롯 번호 (0-based)
 	UFUNCTION(BlueprintPure, Category = "Skill")
