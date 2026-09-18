@@ -133,6 +133,7 @@ void AMainHUD::ShowResult(bool bWin)
 
 	ResultWidget->AddToViewport(static_cast<int32>(EUILayer::PauseMenu));
 	ResultWidget->OnResultReady(bWin);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	SetUIInputMode(true);
 }
 
@@ -146,10 +147,8 @@ void AMainHUD::HideResult()
 	ResultWidget->RemoveFromParent();
 	ResultWidget = nullptr;
 
-	if (!UGameplayStatics::IsGamePaused(GetWorld()))
-	{
-		SetUIInputMode(false);
-	}
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	SetUIInputMode(false);
 }
 
 void AMainHUD::SetUIInputMode(bool bUIOnly)
