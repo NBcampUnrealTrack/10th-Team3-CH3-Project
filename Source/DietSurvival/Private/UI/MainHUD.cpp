@@ -8,7 +8,6 @@
 #include "UI/ResultWidget.h"
 #include "GameFramework/Pawn.h"
 #include "System/DietGameState.h"
-#include "Player/PlayerCharacter.h"
 #include "Player/AttackComponent.h"
 #include "UI/DamageNumberWidget.h"
 #include "UI/MinimapWidget.h"
@@ -243,18 +242,14 @@ void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
 	UserHUDWidget->SetFullnessWarning(MaxFullness > 0.f ? NewFullness / MaxFullness : 0.f);
+	if (NewFullness > LastFullness) { UserHUDWidget->PlayHitFlash(); }
+	LastFullness = NewFullness;
 }
 
 void AMainHUD::HandleElapsedTimeUpdated(float ElapsedSeconds)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetTimer(ElapsedSeconds);
-}
-
-void AMainHUD::HandleInvincibilityChanged(bool bIsNowInvincible)
-{
-	if (!UserHUDWidget || !bIsNowInvincible) { return; }
-	UserHUDWidget->PlayHitFlash();
 }
 
 void AMainHUD::HandleAttackHit(AActor* HitActor, float DamageAmount)
@@ -301,14 +296,8 @@ void AMainHUD::BindPawnDelegates(APawn* Pawn)
 	{
 		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
 		CachedStatComp->OnFullnessMax.AddDynamic(this, &AMainHUD::HandleFullnessMax);
-
+		LastFullness = CachedStatComp->GetFullness();
 		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
-	}
-
-	CachedPlayerCharacter = Cast<APlayerCharacter>(Pawn);
-	if (CachedPlayerCharacter)
-	{
-		CachedPlayerCharacter->OnInvincibilityChanged.AddDynamic(this, &AMainHUD::HandleInvincibilityChanged);
 	}
 
 	CachedAttackComp = Pawn->FindComponentByClass<UAttackComponent>();
@@ -329,12 +318,6 @@ void AMainHUD::UnbindPawnDelegates()
 		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
 		CachedStatComp->OnFullnessMax.RemoveDynamic(this, &AMainHUD::HandleFullnessMax);
 		CachedStatComp = nullptr;
-	}
-
-	if (CachedPlayerCharacter)
-	{
-		CachedPlayerCharacter->OnInvincibilityChanged.RemoveDynamic(this, &AMainHUD::HandleInvincibilityChanged);
-		CachedPlayerCharacter = nullptr;
 	}
 
 	if (CachedAttackComp)

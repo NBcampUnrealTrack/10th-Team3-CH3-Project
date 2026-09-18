@@ -12,7 +12,6 @@ class UAugmentSelectionWidget;
 class UResultWidget;
 class UDamageNumberWidget;
 class ADietGameState;
-class APlayerCharacter;
 class UAttackComponent;
 class UMinimapWidget;
 
@@ -74,9 +73,6 @@ protected:
 	void HandleElapsedTimeUpdated(float ElapsedSeconds);
 
 	UFUNCTION()
-	void HandleInvincibilityChanged(bool bIsNowInvincible);
-
-	UFUNCTION()
 	void HandleAttackHit(AActor* HitActor, float DamageAmount);
 
 	UFUNCTION()
@@ -136,9 +132,6 @@ protected:
 	TObjectPtr<ADietGameState> CachedGameState;
 
 	UPROPERTY()
-	TObjectPtr<APlayerCharacter> CachedPlayerCharacter;
-
-	UPROPERTY()
 	TObjectPtr<UAttackComponent> CachedAttackComp;
-
+	float LastFullness = 0.f;
 };
