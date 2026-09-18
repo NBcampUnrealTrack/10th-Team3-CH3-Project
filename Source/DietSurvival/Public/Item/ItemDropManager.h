@@ -25,10 +25,13 @@ public:
 public:
 	// functions
 	void Init();
-	void RequestDrop(FVector SpawnLocation);
+
+	// EnemyBase::OnEnemyDeath 바인딩(델리게이트)
+	UFUNCTION()
+	void RequestDrop(FVector SpawnLocation, int32 InExp);
 
 private:
-	void SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName);
+	AActor* SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName);
 
 private:
 	// variables
