@@ -6,7 +6,7 @@
 
 class ADietPlayerState;
 class UAugmentSelectionWidget;
-class USkillSelectionWidget;
+class UTemplateAugmentSelectionBase;
 
 UCLASS( ClassGroup=(DietSurvival), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API UTemplateAugSelectionCompBase : public UActorComponent
@@ -46,10 +46,10 @@ protected:
 	TObjectPtr<ADietPlayerState> CachedPS;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Augment")
-	TSubclassOf<USkillSelectionWidget> SelectionWidgetClass;
+	TSubclassOf<UTemplateAugmentSelectionBase> SelectionWidgetClass;
 
 	UPROPERTY()
-	TObjectPtr<USkillSelectionWidget> ActiveWidgetInstance;
+	TObjectPtr<UTemplateAugmentSelectionBase> ActiveWidgetInstance;
 
 	TArray<TTuple<FName, int32>> CachedCandidates;
 	int32 PendingAugmentCount = 0;

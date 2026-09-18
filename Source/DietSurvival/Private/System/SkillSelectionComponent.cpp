@@ -2,7 +2,7 @@
 #include "System/DietPlayerState.h"
 #include "System/SkillManagerComponent.h"
 
-#include "UI/SkillSelectionWidget.h"
+#include "UI/TemplateAugmentSelectionBase.h"
 
 #include "Player/PlayerCharacter.h"
 #include "Player/Skill/SkillComponent.h"
@@ -34,7 +34,7 @@ void USkillSelectionComponent::LoadCandidates()
 void USkillSelectionComponent::InitializeSelectionWidget()
 {
 	ActiveWidgetInstance->InitializeCards(CachedCandidates);
-	ActiveWidgetInstance->OnSkillChosen.AddDynamic(this, &USkillSelectionComponent::HandleAugmentChosen);
+	ActiveWidgetInstance->OnAugmentChosen.AddDynamic(this, &USkillSelectionComponent::HandleAugmentChosen);
 }
 
 void USkillSelectionComponent::ApplyAugment(FName AugmentFName, int32 Level) {

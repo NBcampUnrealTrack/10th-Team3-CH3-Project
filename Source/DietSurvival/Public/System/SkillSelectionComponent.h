@@ -5,9 +5,6 @@
 #include "Components/ActorComponent.h"
 #include "SkillSelectionComponent.generated.h"
 
-class ADietPlayerState;
-class USkillSelectionWidget;
-
 UCLASS( ClassGroup=(DietSurvival), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API USkillSelectionComponent : public UTemplateAugSelectionCompBase
 {

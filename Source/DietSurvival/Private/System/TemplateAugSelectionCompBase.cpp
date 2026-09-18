@@ -1,7 +1,7 @@
 ﻿#include "System/TemplateAugSelectionCompBase.h"
 #include "System/DietPlayerState.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/SkillSelectionWidget.h" // 템플릿화 하면 템플릿 헤더로 대체
+#include "UI/TemplateAugmentSelectionBase.h"
 
 UTemplateAugSelectionCompBase::UTemplateAugSelectionCompBase()
 {
@@ -75,7 +75,7 @@ void UTemplateAugSelectionCompBase::StartSelection()
 	}
 
 	// 위젯 관련
-	ActiveWidgetInstance = CreateWidget<USkillSelectionWidget>(PC, SelectionWidgetClass);
+	ActiveWidgetInstance = CreateWidget<UTemplateAugmentSelectionBase>(PC, SelectionWidgetClass);
 	InitializeSelectionWidget();
 	ActiveWidgetInstance->AddToViewport();
 
