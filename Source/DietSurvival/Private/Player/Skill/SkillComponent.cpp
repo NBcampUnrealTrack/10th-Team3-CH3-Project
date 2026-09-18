@@ -167,11 +167,15 @@ bool USkillComponent::TryActivateSkill(int32 SlotIndex)
 	}
 
 	const bool bSuccess = ActiveSkill->TryActivate();
-
+	if (bSuccess)
+	{
+		OnSkillSlotChanged.Broadcast(SlotIndex, ActiveSkill); // UI 갱신용
+	}
 	if (!bSuccess)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[SkillComponent] %s 발동 실패 (쿨타임 %.1f초 남음)"),
 			*ActiveSkill->GetSkillName().ToString(), ActiveSkill->GetRemainingCooldown());
+		
 	}
 
 	return bSuccess;
