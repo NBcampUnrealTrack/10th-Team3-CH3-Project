@@ -22,9 +22,8 @@ void UUserHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (bReloading)
+	if (bReloading && !GetWorld()->IsPaused())
 	{
-		// 일시중지 중 바 멈춤
 		ReloadElapsed += GetWorld()->GetDeltaSeconds();
 		if (ReloadMID) {
 			ReloadMID->SetScalarParameterValue(PercentParam, FMath::Clamp(ReloadElapsed / ReloadDuration, 0.f, 1.f));
