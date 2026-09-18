@@ -153,6 +153,7 @@ void ADietEnemyBase::HandleDeath()
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
 		if (DietPlayerState && DropManager) {
 			DropManager->RequestDrop(GetActorLocation());
+			OnEnemyDeathExp.Broadcast(Exp);
 		}
 		else {
 			UE_LOG(LogTemp, Warning,

@@ -14,6 +14,8 @@ class UMinimapTrackComponent;
 
 struct FEnemyDataRow;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathExp, int32, MyExp);
+
 UCLASS()
 class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
 {
@@ -35,6 +37,10 @@ public:
 	virtual void RunAI();
 
 	virtual void StopAI();
+
+	UPROPERTY(BlueprintAssignable, Category="Exp")
+	FOnEnemyDeathExp OnEnemyDeathExp;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
