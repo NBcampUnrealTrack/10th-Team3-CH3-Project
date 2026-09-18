@@ -8,6 +8,7 @@ struct FAugmentsDataRow;
 struct FEnemyDataRow;
 struct FSkillDeltaRow;
 enum class EPlayerStatType : uint8;
+class USkillBase;
 
 UCLASS()
 class DIETSURVIVAL_API UDataTableSubsystem : public UGameInstanceSubsystem
@@ -58,6 +59,8 @@ public:
 	FSkillDeltaRow& GetSkillDeltaRow(FName SkillFName, int32 Level) const;
 
 	FText GetSkillDescription(FName SkillFName, int32 Index) const;
+
+	TSubclassOf<USkillBase> GetSkillClass(FName SkillFName) const;
 
 public:
 	// functions
