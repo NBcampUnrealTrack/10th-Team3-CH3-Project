@@ -22,9 +22,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<USkillSelectionComponent> SkillSelectionComponent;
-
-public:
-	// Test
-	UFUNCTION(Exec)
-	void ExecHandleSkillUp();
 };
