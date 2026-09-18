@@ -52,6 +52,20 @@ ADietEnemyBase::ADietEnemyBase()
 	Tags.Add(FName("Enemy"));
 }
 
+// Called when the game starts or when spawned
+void ADietEnemyBase::BeginPlay()
+{
+	Super::BeginPlay();
+	UItemDropManager* DropManager = UItemDropManager::Get(this);
+	if (DropManager == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[EnemyBase] ItemDropManager is nullptr"));
+		return;
+	}
+	OnEnemyDeath.AddDynamic(DropManager, &UItemDropManager::RequestDrop);
+}
+
+
 void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 {
 	if (EnemyDataRow.Health == 0) return;
@@ -135,12 +149,6 @@ void ADietEnemyBase::StopAI()
 
 }
 
-// Called when the game starts or when spawned
-void ADietEnemyBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ADietEnemyBase::HandleDeath()
 {
 	if (bIsDead) return;
@@ -152,7 +160,8 @@ void ADietEnemyBase::HandleDeath()
 	if (ControllerLastAttacked) {
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
 		if (DietPlayerState && DropManager) {
-			DropManager->RequestDrop(GetActorLocation());
+			//DropManager->RequestDrop(GetActorLocation());
+			OnEnemyDeath.Broadcast(GetActorLocation(), Exp);
 		}
 		else {
 			UE_LOG(LogTemp, Warning,

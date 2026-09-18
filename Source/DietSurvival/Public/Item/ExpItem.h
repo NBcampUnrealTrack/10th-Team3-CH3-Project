@@ -4,6 +4,8 @@
 #include "Item/BaseItem.h"
 #include "ExpItem.generated.h"
 
+struct FEnemyDataRow;
+
 UCLASS()
 class DIETSURVIVAL_API AExpItem : public ABaseItem
 {
@@ -15,6 +17,7 @@ public:
 public:
 	virtual void ActivateItem(APawn* Activator) override;
 	virtual FName GetItemType() override;
+	void SetExp(int32 InExp) {ExpAmount = InExp;}
 
 private:
 	UPROPERTY(EditAnywhere, Category="Exp Amount")

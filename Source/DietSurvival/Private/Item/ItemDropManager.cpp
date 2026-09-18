@@ -79,7 +79,7 @@ void UItemDropManager::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UItemDropManager::RequestDrop(FVector SpawnLocation)
+void UItemDropManager::RequestDrop(FVector SpawnLocation, int32 InExp)
 {
 	if (!bPoolsInitialized)
 	{
@@ -98,7 +98,12 @@ void UItemDropManager::RequestDrop(FVector SpawnLocation)
 	const float ScatterRadius = 30.0f;
 
 	// Exp는 무조건 드랍
-	SpawnItemFromPool(ExpItemClass, SpawnLocation, TEXT("Exp"));
+	AActor* ExpItemActor = SpawnItemFromPool(ExpItemClass, SpawnLocation, TEXT("Exp"));
+	AExpItem* ExpItem = Cast<AExpItem>(ExpItemActor);
+	if (ExpItem != nullptr)
+	{
+		ExpItem->SetExp(InExp);
+	}
 
 	// 임시. Todo 프로젝트 세팅에서 확률값 수정할 수 있도록 변경하기
 	const float DigestiveDropChance = 30.0f;
@@ -114,23 +119,22 @@ void UItemDropManager::RequestDrop(FVector SpawnLocation)
 	}
 }
 
-void UItemDropManager::SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName)
+AActor* UItemDropManager::SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation, const FString& ItemName)
 {
 	if (ItemClass == nullptr || CachedPoolManager == nullptr)
 	{
-		return;
+		return nullptr;
 	}
 
 	AActor* NewItemActor = CachedPoolManager->GetPoolOjbect(ItemClass);
 	if (NewItemActor == nullptr)
 	{
-		return;
+		return nullptr;
 	}
 
 	const float ScatterRadius = 30.0f;
 	FVector RandomOffset(FMath::FRandRange(-ScatterRadius, ScatterRadius), FMath::FRandRange(-ScatterRadius, ScatterRadius), 0.0f);
 	NewItemActor->SetActorLocation(BaseLocation + RandomOffset);
-
 	UPoolObjectComponent* Comp = NewItemActor->FindComponentByClass<UPoolObjectComponent>();
 	if (Comp != nullptr)
 	{
@@ -138,4 +142,6 @@ void UItemDropManager::SpawnItemFromPool(UClass* ItemClass, FVector BaseLocation
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] Drop %s"), *ItemName);
+
+	return NewItemActor;
 }

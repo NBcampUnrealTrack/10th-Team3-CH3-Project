@@ -9,7 +9,7 @@ AExpItem::AExpItem()
 
 void AExpItem::ActivateItem(APawn* Activator)
 {
-	UE_LOG(LogTemp, Log, TEXT("[ExpItem] Activated by %s"), *Activator->GetName());
+	UE_LOG(LogTemp, Log, TEXT("[ExpItem] Activated by %s, Exp: %d"), *Activator->GetName(), ExpAmount);
 	ADietPlayerState* DietPlayerState = Activator->GetPlayerState<ADietPlayerState>();
 	if (DietPlayerState == nullptr)
 	{
