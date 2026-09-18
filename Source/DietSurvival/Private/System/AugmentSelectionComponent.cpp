@@ -4,6 +4,7 @@
 #include "System/DataTableSubsystem.h"
 
 #include "UI/TemplateAugmentSelectionBase.h"
+#include "UI/AugmentSelectionWidget.h"
 
 #include "Player/PlayerCharacter.h"
 #include "Player/PlayerStatComponent.h"
@@ -36,6 +37,10 @@ void UAugmentSelectionComponent::InitializeSelectionWidget()
 {
 	ActiveWidgetInstance->InitializeCards(CachedCandidates);
 	ActiveWidgetInstance->OnAugmentChosen.AddDynamic(this, &UAugmentSelectionComponent::HandleAugmentChosen);
+ 	if (UAugmentSelectionWidget* Instance = Cast<UAugmentSelectionWidget>(ActiveWidgetInstance))
+	{
+		Instance->OnRerollPressed.AddDynamic(this, &UAugmentSelectionComponent::HandleRerollPressed);
+	}
 }
 
 void UAugmentSelectionComponent::ApplyAugment(FName AugmentFName, int32 Level)
@@ -66,7 +71,7 @@ void UAugmentSelectionComponent::ApplyAugment(FName AugmentFName, int32 Level)
 	}
 }
 
-void UAugmentSelectionComponent::Reroll()
+void UAugmentSelectionComponent::HandleRerollPressed()
 {
 	if (ActiveWidgetInstance)
 	{

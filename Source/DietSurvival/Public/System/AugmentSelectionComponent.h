@@ -17,10 +17,12 @@ protected:
 	UFUNCTION()
 	void HandleLevelUp(int32 NewLevel);
 
+	UFUNCTION()
+	void HandleRerollPressed();
+
 	virtual void TryBindToDelegate() override;
 	virtual void LoadCandidates() override;
 	virtual void InitializeSelectionWidget() override;
 	virtual void ApplyAugment(FName AugmentFName, int32 Level) override;
 
-	void Reroll();
 };
