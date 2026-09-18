@@ -28,6 +28,31 @@ void UTemplateAugSelectionCompBase::EndPlay(const EEndPlayReason::Type Reason)
 	Super::EndPlay(Reason);
 }
 
+void UTemplateAugSelectionCompBase::HandleAugmentChosen(FName ChosenAugmentFName) {
+	// 선택한 증강의 현재 레벨 파악
+	int32 AugmentLevel = -1;
+	for (const auto& [Name, Level] : CachedCandidates)
+	{
+		if (Name == ChosenAugmentFName)
+		{
+			AugmentLevel = Level;
+			break;
+		}
+	}
+	if (AugmentLevel == -1)
+	{
+		UE_LOG(LogTemp, Error, TEXT("큰일남. 증강 레벨을 알 수 없음."));
+	}
+	ApplyAugment(ChosenAugmentFName, AugmentLevel);
+
+	CachedCandidates.Reset();
+	FinishSelection();
+}
+
+void UTemplateAugSelectionCompBase::TryBindToDelegate()
+{
+}
+
 void UTemplateAugSelectionCompBase::StartSelection()
 {
 	APlayerController* PC = GetOwningController();
@@ -74,9 +99,21 @@ void UTemplateAugSelectionCompBase::FinishSelection()
 	PC->SetPause(false);
 	bIsSelecting = false;
 
-	if (PendingLevelUpCount > 0)
+	if (PendingAugmentCount > 0)
 	{
-		PendingLevelUpCount--;
+		PendingAugmentCount--;
 		StartSelection();
 	}
+}
+
+void UTemplateAugSelectionCompBase::LoadCandidates() {
+
+}
+
+void UTemplateAugSelectionCompBase::InitializeSelectionWidget() {
+
+}
+
+void UTemplateAugSelectionCompBase::ApplyAugment(FName AugmentFName, int32 Level)
+{
 }
