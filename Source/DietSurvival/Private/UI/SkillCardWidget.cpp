@@ -6,7 +6,7 @@
 
 void USkillCardWidget::SetupCard(FName InSkillFName, int32 InSkillLevel)
 {
-	SkillFName = InSkillFName;
+	Super::SetupCard(InSkillFName, InSkillLevel);
 
 	if (UDataTableSubsystem* DTSubsystem = UDataTableSubsystem::Get(this))
 	{
@@ -47,19 +47,4 @@ void USkillCardWidget::SetupCard(FName InSkillFName, int32 InSkillLevel)
 		NameText->SetText(SkillName);
 		DescriptionText->SetText(FinalDescription);
 	}
-}
-
-void USkillCardWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	if (CardButton)
-	{
-		CardButton->OnClicked.AddDynamic(this, &USkillCardWidget::HandleButtonClicked);
-	}
-}
-
-void USkillCardWidget::HandleButtonClicked()
-{
-	OnCardClicked.Broadcast(SkillFName);
 }
