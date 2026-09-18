@@ -93,6 +93,11 @@ void USkillBarWidget::UnbindSkillComponent()
 void USkillBarWidget::HandleSkillSlotChanged(int32 SlotIndex, USkillBase* Skill)
 {
 	UpdateSlot(ActiveBox, ActiveSlotWidgets, SlotIndex, Skill);
+
+	if (CachedSkillComp)
+	{
+		HandleSelectedSlotChanged(CachedSkillComp->GetSelectedSlotIndex());
+	}
 }
 
 void USkillBarWidget::HandlePassiveSlotChanged(int32 SlotIndex, USkillBase* Skill)
