@@ -19,6 +19,26 @@ UItemDropManager* UItemDropManager::Get(const UObject* WorldContext)
 
 void UItemDropManager::Initialize(FSubsystemCollectionBase& Collection)
 {
+	Super::Initialize(Collection);
+
+	WorldInitDelegateHandle = FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UItemDropManager::OnWorldInitialized);
+}
+
+void UItemDropManager::Deinitialize()
+{
+	FWorldDelegates::OnPostWorldInitialization.Remove(WorldInitDelegateHandle);
+	Super::Deinitialize();
+}
+
+void UItemDropManager::OnWorldInitialized(UWorld* World, const UWorld::InitializationValues)
+{
+	Init();
+}
+
+void UItemDropManager::Init()
+{
+	bPoolsInitialized = false;
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -59,30 +79,20 @@ void UItemDropManager::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
-void UItemDropManager::Deinitialize()
-{
-	Super::Deinitialize();
-}
-
-void UItemDropManager::Init()
-{
-
-}
-
 void UItemDropManager::RequestDrop(FVector SpawnLocation, int32 InExp)
 {
+	if (CachedPoolManager == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] PoolManager is nullptr"));
+		return;
+	}
+
 	if (!bPoolsInitialized)
 	{
 		CachedPoolManager->AddPool(ExpItemClass, 10);
 		CachedPoolManager->AddPool(DigestiveItemClass, 10);
 		CachedPoolManager->AddPool(SkillAugmentItemClass, 10);
 		bPoolsInitialized = true;
-	}
-
-	if (CachedPoolManager == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[ItemDropManager::RequestDrop] PoolManager is nullptr"));
-		return;
 	}
 
 	const float ScatterRadius = 30.0f;

@@ -24,8 +24,6 @@ public:
 
 public:
 	// functions
-	void Init();
-
 	// EnemyBase::OnEnemyDeath 바인딩(델리게이트)
 	UFUNCTION()
 	void RequestDrop(FVector SpawnLocation, int32 InExp);
@@ -48,6 +46,10 @@ private:
 	TSubclassOf<ASkillAugmentItem> SkillAugmentItemClass;
 
 private:
+	void OnWorldInitialized(UWorld* World, const UWorld::InitializationValues);
+	void Init();
+
+	FDelegateHandle WorldInitDelegateHandle;
 	bool bPoolsInitialized = false;
 
 };
