@@ -57,26 +57,16 @@ void UItemDropManager::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[ItemDropManager] Failed to load any item Class"));
 	}
-	///Script/Engine.Blueprint'/Game/Blueprints/Test/BP_ExpItem.BP_ExpItem'
-
-
-	//if (ExpItemClass != nullptr)
-	//{
-	//	CachedPoolManager->AddPool(ExpItemClass, 10);
-	//}
-	//if (DigestiveItemClass != nullptr)
-	//{
-	//	CachedPoolManager->AddPool(DigestiveItemClass, 10);
-	//}
-	//if (SkillAugmentItemClass != nullptr)
-	//{
-	//	CachedPoolManager->AddPool(SkillAugmentItemClass, 10);
-	//}
 }
 
 void UItemDropManager::Deinitialize()
 {
 	Super::Deinitialize();
+}
+
+void UItemDropManager::Init()
+{
+
 }
 
 void UItemDropManager::RequestDrop(FVector SpawnLocation, int32 InExp)
