@@ -35,9 +35,10 @@ ABaseItem::ABaseItem()
 	ProjectileMovement->bAutoActivate = false;
 	ProjectileMovement->ProjectileGravityScale = 0.0f;
 	ProjectileMovement->bIsHomingProjectile = true;
-	ProjectileMovement->HomingAccelerationMagnitude = 2000.0f;
+	ProjectileMovement->HomingAccelerationMagnitude = 10000.0f;
 	ProjectileMovement->InitialSpeed = 500.0f;
 	ProjectileMovement->MaxSpeed = 800.0f;
+	ProjectileMovement->Friction = 2.0f;
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
 
