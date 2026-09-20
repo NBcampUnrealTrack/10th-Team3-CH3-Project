@@ -129,6 +129,23 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInput->BindAction(UseSkillAction, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillInput);
 		}
+
+		if (UseSkillSlot1Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot1Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot1);
+		}
+		if (UseSkillSlot2Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot2Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot2);
+		}
+		if (UseSkillSlot3Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot3Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot3);
+		}
+		if (UseSkillSlot4Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot4Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot4);
+		}
 	}
 }
 
@@ -206,6 +223,21 @@ void APlayerCharacter::OnUseSkillInput(const FInputActionValue& Value)
 		// 선택된 슬롯이 비어있으면 그냥 실패 처리됨
 		SkillComponent->TryActivateSelectedSlot();
 	}
+}
+
+void APlayerCharacter::OnUseSkillSlot1(const FInputActionValue& Value) { UseSkillSlotByNumber(0); }
+void APlayerCharacter::OnUseSkillSlot2(const FInputActionValue& Value) { UseSkillSlotByNumber(1); }
+void APlayerCharacter::OnUseSkillSlot3(const FInputActionValue& Value) { UseSkillSlotByNumber(2); }
+void APlayerCharacter::OnUseSkillSlot4(const FInputActionValue& Value) { UseSkillSlotByNumber(3); }
+
+void APlayerCharacter::UseSkillSlotByNumber(int32 SlotIndex)
+{
+	if (!SkillComponent)
+	{
+		return;
+	}
+	SkillComponent->SetSelectedSlot(SlotIndex);
+	SkillComponent->TryActivateSkill(SlotIndex);
 }
 
 void APlayerCharacter::HandleFullnessChanged(float NewFullness, float MaxFullnessValue)
