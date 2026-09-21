@@ -40,6 +40,23 @@ void ADietGameState::StopTimer()
 	GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
 }
 
+void ADietGameState::StartBossPhaseTimer()
+{
+	BossPhaseeRemainigTime = BossPhaseTimeLimit;
+	GetWorldTimerManager().SetTimer(
+		BossPhaseTimerHandle,
+		this,
+		&ADietGameState::TickBossPhaseTimer,
+		1.0f,
+		true
+	);
+}
+
+void ADietGameState::StopBossPhaseTimer()
+{
+	GetWorldTimerManager().ClearTimer(BossPhaseTimerHandle);
+}
+
 //웨이브 증가와 제한 시간 조건 확인
 void ADietGameState::TickTimer()
 {
@@ -60,6 +77,17 @@ void ADietGameState::TickTimer()
 		OnTimeUp.Broadcast();
 		GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
 		UE_LOG(LogTemp, Log, TEXT("[DietGameState]최대 시간 도달"));
+	}
+}
+
+void ADietGameState::TickBossPhaseTimer()
+{
+	BossPhaseeRemainigTime = FMath::Max(BossPhaseeRemainigTime - 1.0f, 0.f);
+
+	if (BossPhaseeRemainigTime <= 0.0f)
+	{
+		OnBossPhaseTimeUp.Broadcast();
+		StopBossPhaseTimer();
 	}
 }
 
