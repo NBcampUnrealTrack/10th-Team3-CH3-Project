@@ -12,6 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveIncerease, int32, CurrentWave
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeUp);
 //1초마다 브로드캐스트 하는 델리게이트
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateElapsedTime, float, InElapsedTime);
+//보스 페이즈 타이머 델리게이트
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossPhaseTimeUp);
 
 UCLASS()
 class DIETSURVIVAL_API ADietGameState : public AGameState
@@ -45,14 +47,21 @@ public:
 	// 타이머 종료 함수
 	void StopTimer();
 
+	void StartBossPhaseTimer();
+	void StopBossPhaseTimer();
+
+
 	// 타이머 조건 확인 함수 -- 웨이브, 종료 조건
 	UFUNCTION() 
 	void TickTimer();
 
+	UFUNCTION()
+	void TickBossPhaseTimer();
+
 	void SetPlayerRef(APawn* InPlayer);
 
 public:
-	// deligates
+	// delegates
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FOnWaveIncerease OnWaveIncrease;
 
@@ -61,6 +70,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FUpdateElapsedTime UpdateElapsedTime;
+
+	UPROPERTY(BlueprintAssignable, Category = "Timer")
+	FOnBossPhaseTimeUp OnBossPhaseTimeUp;
 
 protected:
 	// variables
@@ -86,9 +98,18 @@ protected:
 
 	//플레이어 캐릭터 참조 포인터
 	UPROPERTY()	//GC가 추적 하도록
-	TWeakObjectPtr<APawn> PlayerRef;	
+	TWeakObjectPtr<APawn> PlayerRef;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	float BossPhaseeRemainigTime = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	float BossPhaseTimeLimit = 60.0f;
 
 private:
 	// variables
 	FTimerHandle ElapsedTimerHandle;
+	FTimerHandle BossPhaseTimerHandle;
+
 };

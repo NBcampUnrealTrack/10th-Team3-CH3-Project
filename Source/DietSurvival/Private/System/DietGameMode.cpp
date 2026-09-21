@@ -6,8 +6,10 @@
 #include "System/DataTableSubsystem.h"
 #include "System/EnemyDataRow.h"
 #include "Player/PlayerCharacter.h"
-#include "Enemy/EnemySpawner.h"
 #include "Player/PlayerStatComponent.h"
+#include "Enemy/EnemySpawner.h"
+#include "Enemy/DietBossEnemy.h"
+#include "UI/MainHUD.h"
 #include "Kismet/GameplayStatics.h"
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
@@ -117,18 +119,13 @@ void ADietGameMode::StartLevel()
 
 void ADietGameMode::EndLevel(bool bWin)
 {
-	//todo
-		//플레이어 입력 정지
-		//UI출력
-
 	if (CachedEnemySpawner != nullptr)
 	{
 		CachedEnemySpawner->SpawnStop();
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode::EndLevel] SpawnStop called"));
 	}
 
-	//종료 조건 추가 시 DietGameState 유효성 검사 추가 검토하기
-	CachedDietGameState->StopTimer();
+	CachedDietGameState->StopBossPhaseTimer();
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::EndLevel] 게임 종료 플레이어 %s"), bWin ? TEXT("승리") : TEXT("패배"));
 }
 
@@ -196,12 +193,62 @@ void ADietGameMode::HandleWaveIncrease(int32 Wave)
 
 void ADietGameMode::HandleTimeUp()
 {
-	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Time Up!"));
-	EndLevel(true);
+	CachedDietGameState->StopTimer();
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleTimeUp] Time Up!, Spawn Boss"));
+
+	// 보스 소환
+	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, BossSpawnLocation, FRotator::ZeroRotator);
+	SpawnedBoss->SetActorHiddenInGame(false);
+	SpawnedBoss->SetActorEnableCollision(true);
+	SpawnedBoss->RunAI();
+	if(SpawnedBoss == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleTimeUp] Failed to spawn boss"));
+		return;
+	}
+
+	// 보스 사망 델리게이트 바인딩
+	SpawnedBoss->OnBossDeath.AddDynamic(this, &ADietGameMode::HandleBossDeath);
+
+	// 보스 타이머 시작
+	if (CachedDietGameState != nullptr)
+	{
+		CachedDietGameState->OnBossPhaseTimeUp.AddDynamic(this, &ADietGameMode::HandleBossPhaseTimeUp);
+		CachedDietGameState->StartBossPhaseTimer();
+	}
+
 }
 
 void ADietGameMode::HandleGameOver()
 {
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Player Defeat"));
+	EndLevel(false);
+}
+
+void ADietGameMode::HandleBossDeath()
+{
+
+	//todo 패배 로직도 통일해서 EndLevel로 이관하기
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (PC == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlayerController is nullptr"));
+		return;
+	}
+
+	AMainHUD* MainHUD = Cast<AMainHUD>(PC->GetHUD());
+	if (MainHUD == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] MainHUD is nullptr"));
+		return;
+	}
+
+	EndLevel(true);
+	MainHUD->ShowResult(true);
+}
+
+void ADietGameMode::HandleBossPhaseTimeUp()
+{
+	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleBossPhaseTimeUp] Boss phase Timeup"));
 	EndLevel(false);
 }

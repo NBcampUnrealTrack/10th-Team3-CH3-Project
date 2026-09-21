@@ -194,7 +194,7 @@ void AMainHUD::BindDelegates()
 	CachedGameState = GetWorld()->GetGameState<ADietGameState>();
 	if (CachedGameState)
 	{
-		CachedGameState->OnTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->OnBossPhaseTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 
 	}
@@ -217,7 +217,7 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (CachedGameState)
 	{
-		CachedGameState->OnTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->OnBossPhaseTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
 	}
 
@@ -340,5 +340,5 @@ void AMainHUD::HandleFullnessMax()
 
 void AMainHUD::HandleTimeUp()
 {
-	ShowResult(true);
+	ShowResult(false);
 }
