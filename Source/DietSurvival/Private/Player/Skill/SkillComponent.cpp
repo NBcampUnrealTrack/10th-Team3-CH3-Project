@@ -142,9 +142,18 @@ void USkillComponent::CycleSelectedSlot(int32 Direction)
 
 	// 음수 나머지를 피하려고 MaxSkillSlots를 한 번 더해서 모듈로
 	const int32 Step = (Direction > 0) ? 1 : -1;
-	const int32 NewIndex = (SelectedSlotIndex + Step + MaxSkillSlots) % MaxSkillSlots;
 
-	SetSelectedSlot(NewIndex);
+	// 빈 슬롯은 건너뜀. 한 바퀴 돌아도 찬 슬롯이 없으면 선택 유지
+	int32 NewIndex = SelectedSlotIndex;
+	for (int32 i = 0; i < MaxSkillSlots; ++i)
+	{
+		NewIndex = (NewIndex + Step + MaxSkillSlots) % MaxSkillSlots;
+		if (SkillSlots[NewIndex] != nullptr)
+		{
+			SetSelectedSlot(NewIndex);
+			return;
+		}
+	}
 }
 
 bool USkillComponent::TryActivateSelectedSlot()
