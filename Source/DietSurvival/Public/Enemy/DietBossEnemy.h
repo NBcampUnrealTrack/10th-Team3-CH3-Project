@@ -7,6 +7,8 @@
 #include "DietBossEnemy.generated.h"
 
 
+class ABossProjectile;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossDeath);
 
 UCLASS()
@@ -19,6 +21,13 @@ public:
 	FOnBossDeath OnBossDeath;
 
 	//Todo 보스 체력 설정 구현하기
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	void FireProjectileAt(FVector TargetLocation);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	TSubclassOf<ABossProjectile> ProjectileClass;
+
 protected:
 	virtual void HandleDeath() override;
 };
