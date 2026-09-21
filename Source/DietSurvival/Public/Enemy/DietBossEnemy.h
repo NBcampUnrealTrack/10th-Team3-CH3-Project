@@ -18,6 +18,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Boss")
 	FOnBossDeath OnBossDeath;
 
+	//Todo 보스 체력 설정 구현하기
 protected:
 	virtual void HandleDeath() override;
 };
