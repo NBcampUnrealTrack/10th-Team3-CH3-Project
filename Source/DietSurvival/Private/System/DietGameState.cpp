@@ -70,20 +70,20 @@ void ADietGameState::TickTimer()
 		CurrentWave++;
 		OnWaveIncrease.Broadcast(CurrentWave);
 		//테스트용
-		UE_LOG(LogTemp, Log, TEXT("[DietGameState]Wave 증가. 현재 Wave: %d"), CurrentWave);
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickTimer]Wave 증가. 현재 Wave: %d"), CurrentWave);
 	}
 	if (MyElapsedTime >= MaxGameTime)
 	{
 		OnTimeUp.Broadcast();
 		GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
-		UE_LOG(LogTemp, Log, TEXT("[DietGameState]최대 시간 도달"));
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickTimer]최대 시간 도달"));
 	}
 }
 
 void ADietGameState::TickBossPhaseTimer()
 {
 	BossPhaseeRemainigTime = FMath::Max(BossPhaseeRemainigTime - 1.0f, 0.f);
-
+	UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhase] 시간 감소. ElapsedTime: %.0f"), BossPhaseeRemainigTime);
 	if (BossPhaseeRemainigTime <= 0.0f)
 	{
 		OnBossPhaseTimeUp.Broadcast();
