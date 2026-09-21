@@ -84,3 +84,6 @@ DerivedDataCache/*
 
 # Prerequisites
 *.d
+
+# Fab assets
+Content/Fab/*
