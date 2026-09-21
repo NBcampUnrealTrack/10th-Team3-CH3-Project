@@ -13,7 +13,8 @@ ADietBossEnemy::ADietBossEnemy()
 
 void ADietBossEnemy::BeginPlay()
 {
-	FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
+	//Super::BeginPlay();
+	//FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
