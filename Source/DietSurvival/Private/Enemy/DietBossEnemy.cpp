@@ -3,10 +3,17 @@
 
 #include "Enemy/DietBossEnemy.h"
 #include "Boss/BossProjectile.h"
+#include "Enemy/Component/HealthComponent.h"
+
+ADietBossEnemy::ADietBossEnemy()
+{
+	HealthComponent->Initailize(BossMaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("[BossEnemy::BeginPlay] (test)fire !"));
+}
 
 void ADietBossEnemy::BeginPlay()
 {
-	FireProjectileAt(FVector(100.0f, 100.0f, 0.0f));
+	FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
@@ -21,6 +28,7 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 	ABossProjectile* Projectile = GetWorld()->SpawnActor<ABossProjectile>(ProjectileClass, SpawnLocation, FRotator::ZeroRotator);
 	if (Projectile != nullptr)
 	{
+		Projectile->SetOwner(this);
 		Projectile->FireAt(TargetLocation);
 	}
 }

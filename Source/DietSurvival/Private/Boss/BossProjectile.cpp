@@ -18,6 +18,7 @@ ABossProjectile::ABossProjectile()
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	CollisionSphere->SetNotifyRigidBodyCollision(true);
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
@@ -27,7 +28,7 @@ ABossProjectile::ABossProjectile()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->bIsHomingProjectile = false;
 	ProjectileMovement->InitialSpeed = 800.0f;
-	ProjectileMovement->MaxSpeed = 800.0f;
+	ProjectileMovement->MaxSpeed = 0.0f;
 	ProjectileMovement->ProjectileGravityScale = 0.0f;
 }
 
@@ -39,18 +40,42 @@ void ABossProjectile::BeginPlay()
 
 void ABossProjectile::FireAt(FVector TargetLocation)
 {
-	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
-	ProjectileMovement->Velocity = Direction * ProjectileMovement->InitialSpeed;
+	if (GetOwner() != nullptr)
+	{
+		CollisionSphere->IgnoreActorWhenMoving(GetOwner(), true);
+	}
+
+	ProjectileMovement->ProjectileGravityScale = 1.0f;
+
+	FVector LaunchVelocity;
+	bool bSuccess = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
+		this,
+		LaunchVelocity,
+		GetActorLocation(),
+		TargetLocation,
+		0.0f,     // OverrideGravityZ (0 = 월드 기본 중력 사용)
+		0.5f      // ArcParam (포물선 높이 정도, 임시값)
+	);
+
+	if (bSuccess)
+	{
+		ProjectileMovement->Velocity = LaunchVelocity;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("[BossProjectile] Failed to calculate launch velocity"));
+	}
 }
 
 
 void ABossProjectile::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != nullptr && OtherActor != this)
+	UE_LOG(LogTemp, Log, TEXT("[BossProjectile] Hit: %s"), OtherActor ? *OtherActor->GetName() : TEXT("Unknown"));
+	if (OtherActor == nullptr || OtherActor == this)
 	{
 		UGameplayStatics::ApplyDamage(OtherActor, DamageAmount, nullptr, this, UDamageType::StaticClass());
 	}
 
-	Destroy();
+	//Destroy();
 }
 
