@@ -16,7 +16,7 @@ class DIETSURVIVAL_API USkillBase : public UObject
 
 public:
 	// 스킬 컴포넌트가 인스턴스 생성 후 딱 한 번 호출해서 소유자(플레이어) 등록
-	void InitializeSkill(APlayerCharacter* InOwner);
+	void InitializeSkill(APlayerCharacter* InOwner, FName InSkillFName);
 
 	// 스킬 이름 반환
 	UFUNCTION(BlueprintPure, Category = "Skill")
