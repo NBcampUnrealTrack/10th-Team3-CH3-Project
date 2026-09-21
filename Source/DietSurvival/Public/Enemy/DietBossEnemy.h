@@ -15,6 +15,8 @@ UCLASS()
 class DIETSURVIVAL_API ADietBossEnemy : public ADietEnemyBase
 {
 	GENERATED_BODY()
+public:
+	ADietBossEnemy();
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Boss")
@@ -31,6 +33,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	int32 BossMaxHealth = 100;
 protected:
 	virtual void HandleDeath() override;
 };
