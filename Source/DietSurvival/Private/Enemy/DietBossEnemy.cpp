@@ -9,4 +9,5 @@ void ADietBossEnemy::HandleDeath()
 
 	Super::HandleDeath();
 	OnBossDeath.Broadcast();
+	Destroy();
 }
