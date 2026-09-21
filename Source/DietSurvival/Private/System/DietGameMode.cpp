@@ -6,9 +6,10 @@
 #include "System/DataTableSubsystem.h"
 #include "System/EnemyDataRow.h"
 #include "Player/PlayerCharacter.h"
+#include "Player/PlayerStatComponent.h"
 #include "Enemy/EnemySpawner.h"
 #include "Enemy/DietBossEnemy.h"
-#include "Player/PlayerStatComponent.h"
+#include "UI/MainHUD.h"
 #include "Kismet/GameplayStatics.h"
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
@@ -226,7 +227,24 @@ void ADietGameMode::HandleGameOver()
 
 void ADietGameMode::HandleBossDeath()
 {
+
+	//todo 패배 로직도 통일해서 EndLevel로 이관하기
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (PC == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlayerController is nullptr"));
+		return;
+	}
+
+	AMainHUD* MainHUD = Cast<AMainHUD>(PC->GetHUD());
+	if (MainHUD == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] MainHUD is nullptr"));
+		return;
+	}
+
 	EndLevel(true);
+	MainHUD->ShowResult(true);
 }
 
 void ADietGameMode::HandleBossPhaseTimeUp()
