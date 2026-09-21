@@ -21,6 +21,9 @@ public:
 	FOnBossDeath OnBossDeath;
 
 	//Todo 보스 체력 설정 구현하기
+
+protected:
+	virtual void BeginPlay() override;
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 	void FireProjectileAt(FVector TargetLocation);

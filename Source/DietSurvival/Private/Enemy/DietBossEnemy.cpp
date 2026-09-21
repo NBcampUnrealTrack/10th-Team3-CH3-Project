@@ -4,6 +4,11 @@
 #include "Enemy/DietBossEnemy.h"
 #include "Boss/BossProjectile.h"
 
+void ADietBossEnemy::BeginPlay()
+{
+	FireProjectileAt(FVector(100.0f, 100.0f, 0.0f));
+}
+
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 {
 	if (ProjectileClass == nullptr)
