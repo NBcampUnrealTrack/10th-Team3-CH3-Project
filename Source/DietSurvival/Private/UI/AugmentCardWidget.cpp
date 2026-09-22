@@ -23,9 +23,10 @@ void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 		NumberFormat.SetMaximumFractionalDigits(FractionalDigit);
 		NumberFormat.SetMinimumFractionalDigits(FractionalDigit);
 		FText Delta = FText::AsNumber(StatAmount, &NumberFormat);
-
 		FText AugmentDescription = FText::Format(Description, Delta);
-		NameText->SetText(Subsystem->GetAugmentUIName(InAugmentFName));
+
+		FText NameFormat = FText::Format(Subsystem->GetAugmentUIName(InAugmentFName), InAugmentLevel + 1);
+		NameText->SetText(NameFormat);
 		DescriptionText->SetText(AugmentDescription);
 	}
 }

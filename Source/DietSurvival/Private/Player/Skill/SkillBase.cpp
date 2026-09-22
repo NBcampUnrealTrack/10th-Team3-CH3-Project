@@ -1,9 +1,10 @@
 ﻿#include "Player/Skill/SkillBase.h"
 #include "Player/PlayerCharacter.h"
 
-void USkillBase::InitializeSkill(APlayerCharacter* InOwner)
+void USkillBase::InitializeSkill(APlayerCharacter* InOwner, FName InSkillFName)
 {
 	OwnerCharacter = InOwner;
+	SkillName = InSkillFName;
 }
 
 void USkillBase::LevelUpSkill(const FSkillDeltaRow& DeltaRow)

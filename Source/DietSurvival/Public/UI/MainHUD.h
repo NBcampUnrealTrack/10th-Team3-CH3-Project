@@ -14,6 +14,7 @@ class UDamageNumberWidget;
 class ADietGameState;
 class UAttackComponent;
 class UMinimapWidget;
+class UBossAlertWidget;
 
 UENUM()
 enum class EUILayer : uint8
@@ -21,6 +22,7 @@ enum class EUILayer : uint8
 	HUD = 0,
 	DamageNumber = 50,
 	AugmentSelect = 100,
+	BossAlert = 150,
 	PauseMenu = 200,
 };
 
@@ -87,6 +89,15 @@ protected:
 	UFUNCTION()
 	void HandleTimeUp();
 
+	UFUNCTION()
+	void HandleBossPhaseStarted();
+
+	UFUNCTION()
+	void HandleBossPhaseTimeChanged(float RemainingSeconds);
+
+	UFUNCTION()
+	void HandleKillCountChanged(int32 KillCount);
+
 	void ShowDamageNumber(AActor* HitActor, float Damage);
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -106,6 +117,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UMinimapWidget> MinimapWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBossAlertWidget> BossAlertWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;
