@@ -127,4 +127,15 @@ protected:
 
 private:
 	bool bIsReloading = false;
+
+	// 총 발사 소리. AttackDirection 레벨에 따라 다른 소리를 구현할 수도 있을 것 같아서 배열로 선언.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Sounds", meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<USoundBase>> FireSounds;
+
+	// 적을 맞췄을 때 히트마커와 동시에 재생될 소리.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Sounds", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> HitSound = nullptr;
+
+	// 적을 맞추고 조금 뒤에 HitSound 재생
+	FTimerHandle PlayHitTimer;
 };
