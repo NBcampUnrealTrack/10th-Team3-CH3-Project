@@ -26,10 +26,12 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-protected:
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 	void FireProjectileAt(FVector TargetLocation);
 
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
 
