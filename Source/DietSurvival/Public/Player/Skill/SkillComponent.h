@@ -71,7 +71,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void CycleSelectedSlot(int32 Direction);
 
-	// 현재 선택된 슬롯의 스킬 발동 (좌클릭)
+	// 현재 선택된 슬롯의 스킬 발동 (우클릭)
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	bool TryActivateSelectedSlot();
 

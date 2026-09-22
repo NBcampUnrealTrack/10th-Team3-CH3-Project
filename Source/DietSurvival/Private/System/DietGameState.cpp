@@ -43,6 +43,8 @@ void ADietGameState::StopTimer()
 void ADietGameState::StartBossPhaseTimer()
 {
 	BossPhaseeRemainigTime = BossPhaseTimeLimit;
+	OnBossPhaseStarted.Broadcast();
+	OnBossPhaseTimeChanged.Broadcast(BossPhaseeRemainigTime);
 	GetWorldTimerManager().SetTimer(
 		BossPhaseTimerHandle,
 		this,
@@ -83,6 +85,7 @@ void ADietGameState::TickTimer()
 void ADietGameState::TickBossPhaseTimer()
 {
 	BossPhaseeRemainigTime = FMath::Max(BossPhaseeRemainigTime - 1.0f, 0.f);
+	OnBossPhaseTimeChanged.Broadcast(BossPhaseeRemainigTime);
 	UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhase] 시간 감소. ElapsedTime: %.0f"), BossPhaseeRemainigTime);
 	if (BossPhaseeRemainigTime <= 0.0f)
 	{
@@ -105,4 +108,11 @@ void ADietGameState::SetPlayerRef(APawn* InPlayer)
 TWeakObjectPtr<APawn> ADietGameState::GetPlayerRef()
 {
 	return PlayerRef;
+}
+
+
+void ADietGameState::AddKill()
+{
+	++KillCount;
+	OnKillCountChanged.Broadcast(KillCount);
 }
