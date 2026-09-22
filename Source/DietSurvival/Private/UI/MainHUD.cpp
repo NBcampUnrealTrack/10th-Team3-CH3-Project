@@ -11,6 +11,7 @@
 #include "Player/AttackComponent.h"
 #include "UI/DamageNumberWidget.h"
 #include "UI/MinimapWidget.h"
+#include "UI/BossAlertWidget.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -196,6 +197,10 @@ void AMainHUD::BindDelegates()
 	{
 		CachedGameState->OnBossPhaseTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->OnBossPhaseStarted.AddDynamic(this, &AMainHUD::HandleBossPhaseStarted);
+		CachedGameState->OnBossPhaseTimeChanged.AddDynamic(this, &AMainHUD::HandleBossPhaseTimeChanged);
+		CachedGameState->OnKillCountChanged.AddDynamic(this, &AMainHUD::HandleKillCountChanged);
+		HandleKillCountChanged(CachedGameState->GetKillCount());
 
 	}
 }
@@ -219,6 +224,9 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		CachedGameState->OnBossPhaseTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
 		CachedGameState->UpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->OnBossPhaseStarted.RemoveDynamic(this, &AMainHUD::HandleBossPhaseStarted);
+		CachedGameState->OnBossPhaseTimeChanged.RemoveDynamic(this, &AMainHUD::HandleBossPhaseTimeChanged);
+		CachedGameState->OnKillCountChanged.RemoveDynamic(this, &AMainHUD::HandleKillCountChanged);
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -341,4 +349,26 @@ void AMainHUD::HandleFullnessMax()
 void AMainHUD::HandleTimeUp()
 {
 	ShowResult(false);
+}
+
+void AMainHUD::HandleBossPhaseStarted()
+{
+	if (!BossAlertWidgetClass) { return; }
+
+	if (UBossAlertWidget* Widget = CreateWidget<UBossAlertWidget>(GetOwningPlayerController(), BossAlertWidgetClass))
+	{
+		Widget->AddToViewport(static_cast<int32>(EUILayer::BossAlert));
+	}
+}
+
+void AMainHUD::HandleBossPhaseTimeChanged(float RemainingSeconds)
+{
+	// 보스 시간 바 위젯이 생기면 여기서 전달
+}
+
+void AMainHUD::HandleKillCountChanged(int32 KillCount)
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetKillCount(KillCount);
+	if (KillCount > 0) { UserHUDWidget->PlayKillConfirm(); }
 }

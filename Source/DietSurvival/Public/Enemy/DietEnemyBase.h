@@ -80,7 +80,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "Minimap")
 	TObjectPtr<UMinimapTrackComponent> MinimapTrackComponent;
 
 	UPROPERTY()

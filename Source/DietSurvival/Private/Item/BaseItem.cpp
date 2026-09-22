@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "UI/MinimapTrackComponent.h"
 
 
 ABaseItem::ABaseItem()
@@ -41,6 +42,10 @@ ABaseItem::ABaseItem()
 	ProjectileMovement->Friction = 2.0f;
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+	PoolObjectComponent->OnPoolActiveChanged.AddDynamic(this, &ABaseItem::HandlePoolActive);
+
+	MinimapTrackComponent = CreateDefaultSubobject<UMinimapTrackComponent>("MinimapTrack");
+	MinimapTrackComponent->SetTracked(false);
 
 }
 
@@ -121,4 +126,9 @@ void ABaseItem::HandleMagnetBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	// 호밍 시작
 	ProjectileMovement->HomingTargetComponent = Player->GetRootComponent();
 	ProjectileMovement->Activate();
+}
+
+void ABaseItem::HandlePoolActive(bool bIsActive)
+{
+	MinimapTrackComponent->SetTracked(bIsActive);
 }

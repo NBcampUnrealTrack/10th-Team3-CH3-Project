@@ -99,7 +99,7 @@ USkillBase* USkillComponent::AcquireOrUpgradeSkill(FName SkillFName, int32 Skill
 		return nullptr;
 	}
 
-	NewSkill->InitializeSkill(OwnerCharacter);
+	NewSkill->InitializeSkill(OwnerCharacter, SkillFName);
 	OwnedSkills.Add(NewSkill);
 
 	NewSkill->OnAcquired(DeltaRow);
@@ -140,11 +140,42 @@ void USkillComponent::CycleSelectedSlot(int32 Direction)
 		return;
 	}
 
-	// 음수 나머지를 피하려고 MaxSkillSlots를 한 번 더해서 모듈로
-	const int32 Step = (Direction > 0) ? 1 : -1;
-	const int32 NewIndex = (SelectedSlotIndex + Step + MaxSkillSlots) % MaxSkillSlots;
+	// 채워진 슬롯 인덱스만 모음
+	TArray<int32> FilledIndices;
+	for (int32 i = 0; i < SkillSlots.Num(); ++i)
+	{
+		if (SkillSlots[i] != nullptr)
+		{
+			FilledIndices.Add(i);
+		}
+	}
 
-	SetSelectedSlot(NewIndex);
+	// 스킬이 하나도 없으면 휠을 돌려도 아무 일 없음
+	if (FilledIndices.Num() == 0)
+	{
+		return;
+	}
+
+	// 스킬이 1개뿐이면 그 슬롯에 고정
+	if (FilledIndices.Num() == 1)
+	{
+		SetSelectedSlot(FilledIndices[0]);
+		return;
+	}
+
+	// 현재 선택된 슬롯이 채워진 목록에서 몇 번째인지 찾음
+	int32 CurrentPos = FilledIndices.IndexOfByKey(SelectedSlotIndex);
+
+	// 선택된 슬롯이 마침 빈 슬롯이었다면(초기 상태 등) 첫 채워진 슬롯 기준으로 시작
+	if (CurrentPos == INDEX_NONE)
+	{
+		CurrentPos = 0;
+	}
+
+	const int32 Step = (Direction > 0) ? 1 : -1; // 마우스 휠 올리면 1, 내리면 -1
+	const int32 NewPos = (CurrentPos + Step + FilledIndices.Num()) % FilledIndices.Num(); //항상 양수를 % 연산하기 위해 + FilledIndices.Num()
+
+	SetSelectedSlot(FilledIndices[NewPos]);
 }
 
 bool USkillComponent::TryActivateSelectedSlot()

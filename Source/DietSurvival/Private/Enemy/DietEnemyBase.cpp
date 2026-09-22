@@ -15,6 +15,7 @@
 #include "System/EnemyDataRow.h"
 #include "System/DietPlayerState.h"
 #include "Item/ItemDropManager.h"
+#include "System/DietGameState.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -162,6 +163,10 @@ void ADietEnemyBase::HandleDeath()
 		if (DietPlayerState && DropManager) {
 			//DropManager->RequestDrop(GetActorLocation());
 			OnEnemyDeath.Broadcast(GetActorLocation(), Exp);
+			if (ADietGameState* GameState = GetWorld()->GetGameState<ADietGameState>())
+			{
+				GameState->AddKill();
+			}
 		}
 		else {
 			UE_LOG(LogTemp, Warning,

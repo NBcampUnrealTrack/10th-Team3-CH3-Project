@@ -15,6 +15,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateElapsedTime, float, InElapsed
 //보스 페이즈 타이머 델리게이트
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossPhaseTimeUp);
 
+//보스 페이즈 시작·남은 시간·킬 수 (UI에서 구독)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossPhaseStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBossPhaseTimeChanged, float, RemainingSeconds);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKillCountChanged, int32, KillCount);
+
 UCLASS()
 class DIETSURVIVAL_API ADietGameState : public AGameState
 {
@@ -36,6 +41,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "GameState")
 	float GetElapsedTime() const { return ElapsedTime; }
+
+	UFUNCTION(BlueprintPure, Category = "GameState")
+	int32 GetKillCount() const { return KillCount; }
 
 	TWeakObjectPtr<APawn> GetPlayerRef();
 
@@ -60,6 +68,9 @@ public:
 
 	void SetPlayerRef(APawn* InPlayer);
 
+	// 적이 죽을 때 호출. 킬 수를 올리고 알림
+	void AddKill();
+
 public:
 	// delegates
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
@@ -73,6 +84,15 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Timer")
 	FOnBossPhaseTimeUp OnBossPhaseTimeUp;
+
+	UPROPERTY(BlueprintAssignable, Category = "Boss")
+	FOnBossPhaseStarted OnBossPhaseStarted;
+
+	UPROPERTY(BlueprintAssignable, Category = "Boss")
+	FOnBossPhaseTimeChanged OnBossPhaseTimeChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kill")
+	FOnKillCountChanged OnKillCountChanged;
 
 protected:
 	// variables
@@ -106,6 +126,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Boss")
 	float BossPhaseTimeLimit = 60.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Kill")
+	int32 KillCount = 0;
 
 private:
 	// variables
