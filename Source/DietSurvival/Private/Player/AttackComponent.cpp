@@ -130,6 +130,12 @@ void UAttackComponent::PerformAttack()
 	CurrentAmmo--;
 	OnCurrentAmmoChanged.Broadcast(CurrentAmmo);
 
+	// 총 발사 소리 재생
+	if (FireSounds.Num() != 0)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSounds[0], GetOwner()->GetActorLocation());
+	}
+
 	// 탄알이 다 떨어졌으면 재장전 후 바로 다음 공격 수행.
 	if (CurrentAmmo <= 0)
 	{
@@ -199,6 +205,21 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 		);
 
 		OnAttackHit.Broadcast(HitResult.GetActor(), DamageAmount);
+
+		// 히트 소리 재생
+		if (HitSound)
+		{
+			TWeakObjectPtr<UAttackComponent> WeakThis(this);
+			GetWorld()->GetTimerManager().SetTimer(PlayHitTimer, [WeakThis]() {
+				if (WeakThis.IsValid())
+				{
+					UAttackComponent* StrongThis = WeakThis.Get();
+					UGameplayStatics::PlaySound2D(StrongThis, StrongThis->HitSound);
+				}
+			},
+			0.1f,
+			false);
+		}
 	}
 }
 
