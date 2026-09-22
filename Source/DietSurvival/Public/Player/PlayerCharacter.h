@@ -101,6 +101,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> UseSkillAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseSkillSlot1Action;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseSkillSlot2Action;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseSkillSlot3Action;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseSkillSlot4Action;
+
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -108,6 +117,13 @@ protected:
 	void Reload();
 	void OnCycleSkillSlot(const FInputActionValue& Value);
 	void OnUseSkillInput(const FInputActionValue& Value);
+
+	void OnUseSkillSlot1(const FInputActionValue& Value);
+	void OnUseSkillSlot2(const FInputActionValue& Value);
+	void OnUseSkillSlot3(const FInputActionValue& Value);
+	void OnUseSkillSlot4(const FInputActionValue& Value);
+
+	void UseSkillSlotByNumber(int32 SlotIndex);
 
 	//StatComponent의 OnFullnessChanged 구독용
 	UFUNCTION()
