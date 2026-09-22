@@ -86,9 +86,10 @@ void ADietGameState::TickBossPhaseTimer()
 {
 	BossPhaseeRemainigTime = FMath::Max(BossPhaseeRemainigTime - 1.0f, 0.f);
 	OnBossPhaseTimeChanged.Broadcast(BossPhaseeRemainigTime);
-	UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhase] 시간 감소. ElapsedTime: %.0f"), BossPhaseeRemainigTime);
+	//UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhase] 시간 감소. ElapsedTime: %.0f"), BossPhaseeRemainigTime);
 	if (BossPhaseeRemainigTime <= 0.0f)
 	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhaseTimer] Boss Phase Timeup"));
 		OnBossPhaseTimeUp.Broadcast();
 		StopBossPhaseTimer();
 	}
