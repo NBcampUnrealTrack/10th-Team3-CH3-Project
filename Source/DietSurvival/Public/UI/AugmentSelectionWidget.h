@@ -19,6 +19,8 @@ public:
 	FOnRerollPressedSignature OnRerollPressed;
 
 protected:
+	virtual void SetInteractionEnabled(bool bEnabled) override;
+
 	UFUNCTION()
 	void HandleRerollClicked();
 
@@ -26,4 +28,7 @@ protected:
 	TObjectPtr<UButton> RerollButton;
 
 	virtual void NativeConstruct() override;
+
+private:
+	bool bRerollUsed = false;
 };

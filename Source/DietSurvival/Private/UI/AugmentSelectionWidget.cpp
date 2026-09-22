@@ -10,7 +10,14 @@ void UAugmentSelectionWidget::NativeConstruct()
 
 void UAugmentSelectionWidget::HandleRerollClicked()
 {
-	// 리롤 여러 번 누르는 상황 방지.
+	// 리롤은 한 번만
+	bRerollUsed = true;
 	RerollButton->SetIsEnabled(false);
 	OnRerollPressed.Broadcast();
+}
+
+void UAugmentSelectionWidget::SetInteractionEnabled(bool bEnabled)
+{
+	Super::SetInteractionEnabled(bEnabled);
+	RerollButton->SetIsEnabled(bEnabled && !bRerollUsed);
 }

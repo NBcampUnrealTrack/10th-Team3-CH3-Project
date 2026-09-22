@@ -25,8 +25,19 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	// 연출 중엔 false. 리롤 버튼처럼 같이 잠글 게 있는 자식이 override
+	virtual void SetInteractionEnabled(bool bEnabled);
+
 	UFUNCTION()
 	void HandleCardClicked(FName AugmentFName);
+
+	UFUNCTION()
+	void HandleCardAppearFinished(UTemplateAugmentCardBase* Card);
+
+	UFUNCTION()
+	void HandleCardChosenFinished(UTemplateAugmentCardBase* Card);
+
+	void PlayAppearAll();
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> CardContainer;
@@ -40,4 +51,7 @@ protected:
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<UTemplateAugmentCardBase>> ActiveCards;
+
+	int32 AppearedCount = 0;
+	FName ChosenAugmentFName;
 };
