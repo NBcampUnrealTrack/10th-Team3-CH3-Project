@@ -10,7 +10,9 @@ enum class EMinimapIconType : uint8
 {
 	Enemy,
 	Boss,
-	Item,
+	Skill,
+	Digestive,
+	None,
 };
 
 USTRUCT(BlueprintType)

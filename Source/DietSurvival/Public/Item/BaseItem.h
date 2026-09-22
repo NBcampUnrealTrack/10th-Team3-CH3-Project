@@ -11,6 +11,7 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UPoolObjectComponent;
 class UProjectileMovementComponent;
+class UMinimapTrackComponent;
 
 UCLASS()
 class DIETSURVIVAL_API ABaseItem : public AActor, public IItemInterface
@@ -48,6 +49,12 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UPoolObjectComponent> PoolObjectComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Minimap")
+	TObjectPtr<UMinimapTrackComponent> MinimapTrackComponent;
+
+	UFUNCTION()
+	void HandlePoolActive(bool bIsActive);
 
 
 
