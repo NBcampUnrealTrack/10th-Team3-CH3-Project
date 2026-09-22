@@ -99,7 +99,6 @@ USkillBase* USkillComponent::AcquireOrUpgradeSkill(FName SkillFName, int32 Skill
 		return nullptr;
 	}
 
-	NewSkill->InitializeSkill(OwnerCharacter);
 	NewSkill->InitializeSkill(OwnerCharacter, SkillFName);
 	OwnedSkills.Add(NewSkill);
 
