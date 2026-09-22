@@ -198,14 +198,16 @@ void ADietGameMode::HandleTimeUp()
 
 	// 보스 소환
 	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, BossSpawnLocation, FRotator::ZeroRotator);
-	SpawnedBoss->SetActorHiddenInGame(false);
-	SpawnedBoss->SetActorEnableCollision(true);
-	SpawnedBoss->RunAI();
-	if(SpawnedBoss == nullptr)
+
+	if (SpawnedBoss == nullptr)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleTimeUp] Failed to spawn boss"));
 		return;
 	}
+
+	SpawnedBoss->SetActorHiddenInGame(false);
+	SpawnedBoss->SetActorEnableCollision(true);
+	SpawnedBoss->RunAI();
 
 	// 보스 사망 델리게이트 바인딩
 	SpawnedBoss->OnBossDeath.AddDynamic(this, &ADietGameMode::HandleBossDeath);

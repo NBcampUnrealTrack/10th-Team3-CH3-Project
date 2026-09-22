@@ -7,17 +7,36 @@
 #include "DietBossEnemy.generated.h"
 
 
+class ABossProjectile;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossDeath);
 
 UCLASS()
 class DIETSURVIVAL_API ADietBossEnemy : public ADietEnemyBase
 {
 	GENERATED_BODY()
+public:
+	ADietBossEnemy();
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Boss")
 	FOnBossDeath OnBossDeath;
 
+	//Todo 보스 체력 설정 구현하기
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	void FireProjectileAt(FVector TargetLocation);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	TSubclassOf<ABossProjectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	int32 BossMaxHealth = 100;
 protected:
 	virtual void HandleDeath() override;
 };
