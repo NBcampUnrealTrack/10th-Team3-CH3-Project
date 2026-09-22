@@ -100,6 +100,7 @@ USkillBase* USkillComponent::AcquireOrUpgradeSkill(FName SkillFName, int32 Skill
 	}
 
 	NewSkill->InitializeSkill(OwnerCharacter);
+	NewSkill->InitializeSkill(OwnerCharacter, SkillFName);
 	OwnedSkills.Add(NewSkill);
 
 	NewSkill->OnAcquired(DeltaRow);
