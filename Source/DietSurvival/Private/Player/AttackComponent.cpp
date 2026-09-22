@@ -108,10 +108,21 @@ void UAttackComponent::PerformAttack()
 		// 탄 수 : StatComponent가 있으면 그 값을, 없으면 1단계(정면만)를 사용
 		const int32 DirectionCount = CachedStatComponent ? CachedStatComponent->GetAttackDirection() : 1;
 
-		// 탄 수만큼 정해진 각도로 동시에 발사
-		for (const float YawOffset : GetActiveDirectionAngles(DirectionCount))
+		if (bUseParallelSpreadMode)
 		{
-			FireTraceInDirection(Start, ViewRotation, YawOffset, Range);
+			// 집중 공격: 각도는 그대로 정면 고정, 좌우로만 나란히 오프셋
+			for (const float LateralOffset : GetParallelOffsets(DirectionCount))
+			{
+				FireParallelTrace(Start, ViewRotation, LateralOffset, Range);
+			}
+		}
+		else
+		{
+			// 기존 부채꼴 모드
+			for (const float YawOffset : GetActiveDirectionAngles(DirectionCount))
+			{
+				FireTraceInDirection(Start, ViewRotation, YawOffset, Range);
+			}
 		}
 	}
 
@@ -189,6 +200,86 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 
 		OnAttackHit.Broadcast(HitResult.GetActor(), DamageAmount);
 	}
+}
+
+void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range)
+{
+	AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	// 방향은 그대로 정면(ViewRotation). 시작점만 오른쪽 벡터로 LateralOffset만큼 이동
+	const FVector RightVector = ViewRotation.RotateVector(FVector::RightVector);
+	const FVector OffsetStart = Start + RightVector * LateralOffset;
+
+	const FVector Forward = ViewRotation.Vector();
+	const FVector End = OffsetStart + Forward * Range;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(Owner);
+
+	FHitResult HitResult;
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, OffsetStart, End, TraceChannel, QueryParams);
+	const bool bHitEnemy = bHit && HitResult.GetActor() && HitResult.GetActor()->ActorHasTag(TEXT("Enemy"));
+
+	if (bDrawDebugTrace)
+	{
+		FColor DebugColor = FColor::Green;
+		if (bHit)
+		{
+			DebugColor = bHitEnemy ? FColor::Red : FColor::Yellow;
+		}
+		DrawDebugLine(GetWorld(), OffsetStart, bHit ? HitResult.Location : End, DebugColor, false, 0.5f, 0, 2.f);
+	}
+
+	if (bHitEnemy)
+	{
+		const float BaseDamage = CachedStatComponent ? CachedStatComponent->GetAttackPower() : 10.f;
+
+		// 데미지 감소 배율 적용
+		const float DamageAmount = BaseDamage * ParallelModeDamageMultiplier;
+
+		UGameplayStatics::ApplyDamage(
+			HitResult.GetActor(), DamageAmount,
+			Owner->GetInstigatorController(), Owner, UDamageType::StaticClass()
+		);
+
+		OnAttackHit.Broadcast(HitResult.GetActor(), DamageAmount);
+	}
+}
+
+const TArray<float>& UAttackComponent::GetParallelOffsets(int32 ShotCount)
+{
+	const int32 ClampedCount = FMath::Max(ShotCount, 1);
+
+	if (const TArray<float>* FoundOffsets = CachedParallelOffsets.Find(ClampedCount))
+	{
+		return *FoundOffsets;
+	}
+
+	TArray<float> NewOffsets;
+	NewOffsets.Reserve(ClampedCount);
+
+	if (ClampedCount <= 1)
+	{
+		// 1발일 땐 정중앙 하나만
+		NewOffsets.Add(0.f);
+	}
+	else
+	{
+		// 항상 고정된 ParallelSpreadTotalWidth 안에서만 퍼짐
+		const float StepOffset = ParallelSpreadTotalWidth / (ClampedCount - 1);
+		const float StartOffset = -ParallelSpreadTotalWidth / 2.f;
+
+		for (int32 i = 0; i < ClampedCount; ++i)
+		{
+			NewOffsets.Add(StartOffset + StepOffset * i);
+		}
+	}
+
+	return CachedParallelOffsets.Add(ClampedCount, MoveTemp(NewOffsets));
 }
 
 const TArray<float>& UAttackComponent::GetActiveDirectionAngles(int32 DirectionLevel)

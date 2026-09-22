@@ -109,7 +109,8 @@ protected:
 	TObjectPtr<UInputAction> UseSkillSlot3Action;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> UseSkillSlot4Action;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ParallelAttackModifierAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -132,4 +133,7 @@ protected:
 	//StatComponent의 OnMoveSpeedChanged 구독용
 	UFUNCTION()
 	void HandleMoveSpeedChanged(float NewEffectiveSpeed);
+
+	void OnParallelAttackModifierStarted(const FInputActionValue& Value);
+	void OnParallelAttackModifierEnded(const FInputActionValue& Value);
 };
