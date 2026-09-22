@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -70,12 +71,27 @@ void ABossProjectile::FireAt(FVector TargetLocation)
 
 void ABossProjectile::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Log, TEXT("[BossProjectile] Hit: %s"), OtherActor ? *OtherActor->GetName() : TEXT("Unknown"));
-	if (OtherActor == nullptr || OtherActor == this)
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, DamageAmount, nullptr, this, UDamageType::StaticClass());
-	}
+	Explode();
+}
 
-	//Destroy();
+void ABossProjectile::Explode()
+{
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(this);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 16, FColor::Red, false, 0.5f);
+
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		DamageAmount,
+		GetActorLocation(),
+		ExplosionRadius,
+		UDamageType::StaticClass(),
+		IgnoredActors,
+		this,
+		nullptr
+	);
+
+	Destroy();
 }
 

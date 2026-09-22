@@ -24,6 +24,16 @@ protected:
 	UFUNCTION()
 	void HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void Explode();
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Explosion")
+	float ExplosionRadius = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Damage")
+	float DamageAmount = 20.0f;
+
 	UPROPERTY(VisibleAnywhere, Category = "Projectile|Collision")
 	TObjectPtr<USphereComponent> CollisionSphere;
 
@@ -33,6 +43,5 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Projectile|Mesh")
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Projectile|Damage")
-	float DamageAmount = 20.0f;
+
 };
