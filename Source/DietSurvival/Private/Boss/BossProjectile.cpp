@@ -71,15 +71,26 @@ void ABossProjectile::FireAt(FVector TargetLocation)
 
 void ABossProjectile::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Explode();
+	if (bHasLanded)
+	{
+		return;   // 이미 착지 처리된 상태면 무시 (중복 방지)
+	}
+	bHasLanded = true;
+
+	// 더 이상 움직이지 않게 멈춤
+	ProjectileMovement->StopMovementImmediately();
+	ProjectileMovement->Deactivate();
+
+	// 딜레이 후 폭발
+	GetWorldTimerManager().SetTimer(ExplosionTimerHandle, this, &ABossProjectile::Explode, ExplosionDelay, false);
 }
 
 void ABossProjectile::Explode()
 {
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 16, FColor::Red, false, 0.5f);
+
 	TArray<AActor*> IgnoredActors;
 	IgnoredActors.Add(this);
-
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 16, FColor::Red, false, 0.5f);
 
 	UGameplayStatics::ApplyRadialDamage(
 		this,

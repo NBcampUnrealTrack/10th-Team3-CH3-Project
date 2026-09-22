@@ -34,6 +34,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Damage")
 	float DamageAmount = 20.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Explosion")
+	float ExplosionDelay = 1.0f;   // 착지 후 터지기까지의 딜레이
+
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "Projectile|Collision")
 	TObjectPtr<USphereComponent> CollisionSphere;
 
@@ -42,6 +46,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Projectile|Mesh")
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
+
+private:
+	FTimerHandle ExplosionTimerHandle;
+	bool bHasLanded = false;
 
 
 };
