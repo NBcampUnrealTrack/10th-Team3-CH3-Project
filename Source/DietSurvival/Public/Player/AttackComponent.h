@@ -50,6 +50,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Combat")
 	FOnCurrentAmmoChanged OnCurrentAmmoChanged;
 
+	// 플레이어캐릭터에서 호출
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	void SetParallelSpreadMode(bool bEnable) { bUseParallelSpreadMode = bEnable; }
+
 protected:
 	// StatComponent를 못 찾았을 때 쓸 기본 공격 간격(혹시나)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
@@ -77,6 +81,25 @@ protected:
 	// 매번 GetOwner()->FindComponentByClass()를 호출하지 않도록 BeginPlay에서 캐싱
 	UPROPERTY()
 	TObjectPtr<UPlayerStatComponent> CachedStatComponent;
+
+	// 집중공격 여부
+	bool bUseParallelSpreadMode = false;
+
+	// 집중공격 범위
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	float ParallelSpreadTotalWidth = 10.f;
+
+	// 집중 공격 데미지 배율
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	float ParallelModeDamageMultiplier = 0.5f;
+
+	// 옆으로 LateralOffset만큼 평행 이동한 위치에서 정면으로 직진 발사
+	void FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range);
+
+	// 탄 수에 따른 좌우 오프셋 목록 계산
+	const TArray<float>& GetParallelOffsets(int32 ShotCount);
+
+	TMap<int32, TArray<float>> CachedParallelOffsets;
 
 	FTimerHandle AttackTimerHandle;
 

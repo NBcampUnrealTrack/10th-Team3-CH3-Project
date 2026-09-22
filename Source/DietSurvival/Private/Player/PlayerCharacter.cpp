@@ -146,6 +146,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInput->BindAction(UseSkillSlot4Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot4);
 		}
+		if (ParallelAttackModifierAction)
+		{
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Started, this, &APlayerCharacter::OnParallelAttackModifierStarted);
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnParallelAttackModifierEnded);
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Canceled, this, &APlayerCharacter::OnParallelAttackModifierEnded); //일시정지 등의 상황
+		}
 	}
 }
 
@@ -332,4 +338,20 @@ void APlayerCharacter::EndSkillInvincibility()
 	OnInvincibilityChanged.Broadcast(IsInvincible());
 
 	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 종료"));
+}
+
+void APlayerCharacter::OnParallelAttackModifierStarted(const FInputActionValue& Value)
+{
+	if (AttackComponent)
+	{
+		AttackComponent->SetParallelSpreadMode(true);
+	}
+}
+
+void APlayerCharacter::OnParallelAttackModifierEnded(const FInputActionValue& Value)
+{
+	if (AttackComponent)
+	{
+		AttackComponent->SetParallelSpreadMode(false);
+	}
 }
