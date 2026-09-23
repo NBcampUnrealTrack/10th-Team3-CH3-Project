@@ -5,7 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
-
+#include "Particles/ParticleSystemComponent.h"
 
 USkill_AreaAttack::USkill_AreaAttack()
 {
@@ -48,10 +48,15 @@ void USkill_AreaAttack::Activate()
 		}
 	}
 
-#if ENABLE_DRAW_DEBUG
-	// 범위 확인용 디버그 구체
-	DrawDebugSphere(Owner->GetWorld(), Center, Radius, 24, FColor::Orange, false, 1.f);
-#endif
+	// 폭발 이펙트
+	if (ExplosionEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, Owner->GetActorLocation());
+	}
+//#if ENABLE_DRAW_DEBUG
+//	// 범위 확인용 디버그 구체
+//	DrawDebugSphere(Owner->GetWorld(), Center, Radius, 24, FColor::Orange, false, 1.f);
+//#endif
 }
 
 void USkill_AreaAttack::OnAcquired(const FSkillDeltaRow& DeltaRow)

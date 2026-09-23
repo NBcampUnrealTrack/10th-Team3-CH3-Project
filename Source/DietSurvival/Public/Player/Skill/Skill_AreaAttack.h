@@ -31,4 +31,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")
 	float CooldownDecreasePerLevel = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill|AreaAttack")
+	TObjectPtr<UParticleSystem> ExplosionEffect;
 };
