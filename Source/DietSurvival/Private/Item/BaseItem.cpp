@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "UI/MinimapTrackComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ABaseItem::ABaseItem()
@@ -89,7 +90,12 @@ void ABaseItem::OnItemEndOverlap(AActor* OverlapActor)
 
 void ABaseItem::ActivateItem(APawn* Activator)
 {
-	UE_LOG(LogTemp, Log, TEXT("[BaseItem::ActivateItem] call function"));
+	//UE_LOG(LogTemp, Log, TEXT("[BaseItem::ActivateItem] call function"));
+
+	if (PickupSound)
+	{
+		UGameplayStatics::PlaySound2D(this, PickupSound);
+	}
 }
 
 FName ABaseItem::GetItemType()

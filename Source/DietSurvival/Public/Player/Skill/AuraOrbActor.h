@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> AttackSound;
+
 	UFUNCTION()
 	void OnOrbOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

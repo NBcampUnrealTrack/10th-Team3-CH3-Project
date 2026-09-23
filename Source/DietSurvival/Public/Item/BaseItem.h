@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Minimap")
 	TObjectPtr<UMinimapTrackComponent> MinimapTrackComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> PickupSound;
+
 	UFUNCTION()
 	void HandlePoolActive(bool bIsActive);
 
