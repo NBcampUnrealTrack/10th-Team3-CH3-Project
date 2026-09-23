@@ -10,6 +10,7 @@
 class ABossProjectile;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBossHealthChanged, int32, CurrentHealth, int32, MaxHealth);
 
 UCLASS()
 class DIETSURVIVAL_API ADietBossEnemy : public ADietEnemyBase
@@ -21,6 +22,9 @@ public:
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Boss")
 	FOnBossDeath OnBossDeath;
+
+	UPROPERTY(BlueprintAssignable, Category = "Boss")
+	FOnBossHealthChanged OnBossHealthChanged;
 
 protected:
 	virtual void BeginPlay() override;
@@ -63,6 +67,9 @@ protected:
 protected:
 	virtual void HandleDeath() override;
 
+	UFUNCTION()
+	void HandleHealthChanged(int32 CurrentHealth, int32 MaxHealth);
+
 	virtual void OnCapsuleOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -72,5 +79,6 @@ protected:
 		const FHitResult& SweepResult
 	) override;
 
+public:
 	void EndCharge();
 };
