@@ -5,6 +5,7 @@
 #include "Boss/BossProjectile.h"
 #include "Enemy/Component/HealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ADietBossEnemy::ADietBossEnemy()
@@ -17,6 +18,7 @@ void ADietBossEnemy::BeginPlay()
 {
 	//Super::BeginPlay();
 	//FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
+	//UE_LOG(LogTemp, Log, TEXT("Collision Enabled: %d"), (int32)GetCapsuleComponent()->GetCollisionEnabled());
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)

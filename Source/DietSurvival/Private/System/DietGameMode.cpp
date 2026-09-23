@@ -10,7 +10,9 @@
 #include "Enemy/EnemySpawner.h"
 #include "Enemy/DietBossEnemy.h"
 #include "UI/MainHUD.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
 {
@@ -208,7 +210,7 @@ void ADietGameMode::HandleTimeUp()
 	SpawnedBoss->SetActorHiddenInGame(false);
 	SpawnedBoss->SetActorEnableCollision(true);
 	SpawnedBoss->RunAI();
-
+	//UE_LOG(LogTemp, Log, TEXT("After SetActorEnableCollision: %d"), (int32)SpawnedBoss->GetCapsuleComponent()->GetCollisionEnabled());
 	// 보스 사망 델리게이트 바인딩
 	SpawnedBoss->OnBossDeath.AddDynamic(this, &ADietGameMode::HandleBossDeath);
 
