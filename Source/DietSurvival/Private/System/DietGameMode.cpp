@@ -198,8 +198,9 @@ void ADietGameMode::HandleTimeUp()
 	CachedDietGameState->StopTimer();
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleTimeUp] Time Up!, Spawn Boss"));
 
+	FVector SpawnLocation = BossSpawnPoint != nullptr ? BossSpawnPoint->GetActorLocation() : FVector::ZeroVector;
 	// 보스 소환
-	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, BossSpawnLocation, FRotator::ZeroRotator);
+	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, SpawnLocation, FRotator::ZeroRotator);
 
 	if (SpawnedBoss == nullptr)
 	{
