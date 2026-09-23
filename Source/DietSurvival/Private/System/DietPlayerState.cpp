@@ -1,6 +1,7 @@
 ﻿#include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
 #include "System/SkillManagerComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADietPlayerState::ADietPlayerState()
 {
@@ -41,6 +42,11 @@ void ADietPlayerState::LevelUp()
 	Exp -= MaxExp;
 	Level++;
 	MaxExp += 5;
+
+	if (LevelUpSound)
+	{
+		UGameplayStatics::PlaySound2D(this, LevelUpSound);
+	}
 
 	OnLevelUp.Broadcast(Level);
 }
