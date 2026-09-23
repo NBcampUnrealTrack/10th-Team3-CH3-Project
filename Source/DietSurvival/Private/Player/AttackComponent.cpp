@@ -10,6 +10,9 @@
 #include "DrawDebugHelpers.h"
 #include "CollisionQueryParams.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+
 UAttackComponent::UAttackComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -166,6 +169,9 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	const FVector Forward = DirectionRotation.Vector();
 	const FVector End = Start + Forward * Range;
 
+	// 이펙트 그리는 용도 끝 좌표
+	FVector TrailEnd = End;
+
 	//플레이어는 충돌 판정에서 제외
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(Owner);
@@ -173,6 +179,27 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	//충돌이 일어나면 bHit = true
 	FHitResult HitResult;
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, TraceChannel, QueryParams);
+
+	// 총알 경로 이펙트
+	if (bHit)
+	{
+		TrailEnd = HitResult.ImpactPoint;
+	}
+	
+	if (BulletTrailSystem)
+	{
+		UNiagaraComponent* TrailComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			BulletTrailSystem,
+			Start
+		);
+
+		if (TrailComp)
+		{
+			TrailComp->SetNiagaraVariableVec3(TEXT("User.BeamStart"), Start);
+			TrailComp->SetNiagaraVariableVec3(TEXT("User.BeamEnd"), TrailEnd);
+		}
+	}
 
 	//HitResult가 Enemy 태그를 가진 오브젝트와 충돌한 것일 때 true
 	const bool bHitEnemy = bHit && HitResult.GetActor() && HitResult.GetActor()->ActorHasTag(TEXT("Enemy"));

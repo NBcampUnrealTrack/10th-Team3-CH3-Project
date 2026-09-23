@@ -6,6 +6,7 @@
 #include "AttackComponent.generated.h"
 
 class UPlayerStatComponent;
+class UNiagaraSystem;
 
 //적에게 공격 적중했을 때 방송(UI에서 구독)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttackHit, AActor*, HitActor, float, DamageAmount);
@@ -135,6 +136,10 @@ private:
 	// 적을 맞췄을 때 히트마커와 동시에 재생될 소리.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Sounds", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> HitSound = nullptr;
+
+	// 총알 트레일 이펙트
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UNiagaraSystem> BulletTrailSystem;
 
 	// 적을 맞추고 조금 뒤에 HitSound 재생
 	FTimerHandle PlayHitTimer;
