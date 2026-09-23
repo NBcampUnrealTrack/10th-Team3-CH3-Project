@@ -65,7 +65,7 @@ protected:
 	virtual void AttackToTarget(AActor* Target);
 
 	UFUNCTION()
-	void OnCapsuleOverlap(
+	virtual void OnCapsuleOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
