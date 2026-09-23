@@ -80,7 +80,7 @@ private:
 	TSubclassOf<ADietBossEnemy> BossClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Boss")
-	FVector BossSpawnLocation;
+	TObjectPtr<AActor> BossSpawnPoint;
 
 	//플레이어, 컨트롤러 등록 임시
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))

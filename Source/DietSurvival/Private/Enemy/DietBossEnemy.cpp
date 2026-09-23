@@ -4,6 +4,9 @@
 #include "Enemy/DietBossEnemy.h"
 #include "Boss/BossProjectile.h"
 #include "Enemy/Component/HealthComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADietBossEnemy::ADietBossEnemy()
 {
@@ -13,8 +16,9 @@ ADietBossEnemy::ADietBossEnemy()
 
 void ADietBossEnemy::BeginPlay()
 {
-	//Super::BeginPlay();
+	Super::BeginPlay();
 	//FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
+	//UE_LOG(LogTemp, Log, TEXT("Collision Enabled: %d"), (int32)GetCapsuleComponent()->GetCollisionEnabled());
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
@@ -34,6 +38,28 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 	}
 }
 
+void ADietBossEnemy::ChargeAt(FVector TargetLocation)
+{
+	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
+	bIsCharging = true;
+
+	LaunchCharacter(Direction * ChargeSpeed, true, false);
+
+	GetWorldTimerManager().SetTimer(ChargeTimeoutHandle, this, &ADietBossEnemy::EndCharge, MaxChargeDuration, false);
+
+}
+
+bool ADietBossEnemy::IsPlayerInChargeRange() const
+{
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (PlayerPawn == nullptr)
+	{
+		return false;
+	}
+
+	return FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation()) <= ChargeRange;
+}
+
 void ADietBossEnemy::HandleDeath()
 {
 	if (bIsDead) return;
@@ -41,4 +67,46 @@ void ADietBossEnemy::HandleDeath()
 	Super::HandleDeath();
 	OnBossDeath.Broadcast();
 	Destroy();
+}
+
+void ADietBossEnemy::OnCapsuleOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	Super::OnCapsuleOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
+	if (!bIsCharging)
+	{
+		return;
+	}
+
+	ACharacter* PlayerCharacter = Cast<ACharacter>(OtherActor);
+	if (PlayerCharacter == nullptr)
+	{
+		return;
+	}
+
+	// 넉백 처리
+	FVector KnockbackDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	PlayerCharacter->LaunchCharacter(KnockbackDirection * KnockbackStrength, true, true);
+
+	// 돌진 종료
+	EndCharge();
+}
+
+void ADietBossEnemy::EndCharge()
+{
+	if (!bIsCharging)
+	{
+		return;
+	}
+	bIsCharging = false;
+
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().ClearTimer(ChargeTimeoutHandle);
 }

@@ -10,7 +10,9 @@
 #include "Enemy/EnemySpawner.h"
 #include "Enemy/DietBossEnemy.h"
 #include "UI/MainHUD.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+
 
 ADietGameMode* ADietGameMode::Get(const UObject* WorldContext)
 {
@@ -104,6 +106,17 @@ void ADietGameMode::BeginPlay()
 			}
 		}
 	});
+	// 보스 스폰 포인트 설정
+	TArray<AActor*> FoundSpawnPoints;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("BossSpawn"), FoundSpawnPoints);
+	if (FoundSpawnPoints.Num() > 0)
+	{
+		BossSpawnPoint = FoundSpawnPoints[0];
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] BossSpawnPoint not found"));
+	}
 	StartLevel();
 }
 
@@ -196,8 +209,9 @@ void ADietGameMode::HandleTimeUp()
 	CachedDietGameState->StopTimer();
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleTimeUp] Time Up!, Spawn Boss"));
 
+	FVector SpawnLocation = BossSpawnPoint != nullptr ? BossSpawnPoint->GetActorLocation() : FVector::ZeroVector;
 	// 보스 소환
-	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, BossSpawnLocation, FRotator::ZeroRotator);
+	ADietBossEnemy* SpawnedBoss = GetWorld()->SpawnActor<ADietBossEnemy>(BossClass, SpawnLocation, FRotator::ZeroRotator);
 
 	if (SpawnedBoss == nullptr)
 	{
@@ -208,7 +222,7 @@ void ADietGameMode::HandleTimeUp()
 	SpawnedBoss->SetActorHiddenInGame(false);
 	SpawnedBoss->SetActorEnableCollision(true);
 	SpawnedBoss->RunAI();
-
+	//UE_LOG(LogTemp, Log, TEXT("After SetActorEnableCollision: %d"), (int32)SpawnedBoss->GetCapsuleComponent()->GetCollisionEnabled());
 	// 보스 사망 델리게이트 바인딩
 	SpawnedBoss->OnBossDeath.AddDynamic(this, &ADietGameMode::HandleBossDeath);
 
