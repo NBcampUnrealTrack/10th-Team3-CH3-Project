@@ -1,5 +1,6 @@
 ﻿#include "Player/Skill/ActiveSkillBase.h"
 #include "Player/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 bool UActiveSkillBase::TryActivate()
 {
@@ -16,6 +17,11 @@ bool UActiveSkillBase::TryActivate()
 	}
 
 	Activate();
+	if (ActivationSound)
+	{
+		UGameplayStatics::PlaySound2D(this, ActivationSound);
+	}
+
 	return true;
 }
 
