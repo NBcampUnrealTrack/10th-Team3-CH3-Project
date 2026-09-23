@@ -12,6 +12,8 @@
 #include "UI/DamageNumberWidget.h"
 #include "UI/MinimapWidget.h"
 #include "UI/BossAlertWidget.h"
+#include "UI/BossStatusWidget.h"
+#include "Enemy/DietBossEnemy.h"
 
 void AMainHUD::BeginPlay()
 {
@@ -353,17 +355,34 @@ void AMainHUD::HandleTimeUp()
 
 void AMainHUD::HandleBossPhaseStarted()
 {
-	if (!BossAlertWidgetClass) { return; }
-
-	if (UBossAlertWidget* Widget = CreateWidget<UBossAlertWidget>(GetOwningPlayerController(), BossAlertWidgetClass))
+	if (BossAlertWidgetClass)
 	{
-		Widget->AddToViewport(static_cast<int32>(EUILayer::BossAlert));
+		if (UBossAlertWidget* Widget = CreateWidget<UBossAlertWidget>(GetOwningPlayerController(), BossAlertWidgetClass))
+		{
+			Widget->AddToViewport(static_cast<int32>(EUILayer::BossAlert));
+		}
 	}
+
+	if (BossStatusWidget || !BossStatusWidgetClass)
+	{
+		return;
+	}
+
+	BossStatusWidget = CreateWidget<UBossStatusWidget>(GetOwningPlayerController(), BossStatusWidgetClass);
+	if (!BossStatusWidget)
+	{
+		return;
+	}
+
+	BossStatusWidget->AddToViewport(static_cast<int32>(EUILayer::HUD));
+	// 보스 스폰 직후 방송되므로 이 시점엔 보스가 월드에 있음 (DietGameMode::HandleTimeUp)
+	BossStatusWidget->SetBoss(Cast<ADietBossEnemy>(UGameplayStatics::GetActorOfClass(this, ADietBossEnemy::StaticClass())));
 }
 
 void AMainHUD::HandleBossPhaseTimeChanged(float RemainingSeconds)
 {
-	// 보스 시간 바 위젯이 생기면 여기서 전달
+	if (!BossStatusWidget) { return; }
+	BossStatusWidget->SetRemainingTime(RemainingSeconds);
 }
 
 void AMainHUD::HandleKillCountChanged(int32 KillCount)

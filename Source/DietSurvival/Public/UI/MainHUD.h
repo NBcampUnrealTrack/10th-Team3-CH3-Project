@@ -15,6 +15,7 @@ class ADietGameState;
 class UAttackComponent;
 class UMinimapWidget;
 class UBossAlertWidget;
+class UBossStatusWidget;
 
 UENUM()
 enum class EUILayer : uint8
@@ -37,10 +38,10 @@ public:
 
 	void ShowMainHUD();
 
-	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowPauseMenu();
 
-	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HidePauseMenu();
 
 	UAugmentSelectionWidget* ShowAugmentSelect(const TArray<TTuple<FName, int32>>& Augments);
@@ -121,6 +122,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UBossAlertWidget> BossAlertWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBossStatusWidget> BossStatusWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;
 
@@ -135,6 +139,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UMinimapWidget> MinimapWidget;
+
+	UPROPERTY()
+	TObjectPtr<UBossStatusWidget> BossStatusWidget;
 
 	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPlayerState;
