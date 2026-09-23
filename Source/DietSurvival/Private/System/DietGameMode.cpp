@@ -106,6 +106,17 @@ void ADietGameMode::BeginPlay()
 			}
 		}
 	});
+	// 보스 스폰 포인트 설정
+	TArray<AActor*> FoundSpawnPoints;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("BossSpawn"), FoundSpawnPoints);
+	if (FoundSpawnPoints.Num() > 0)
+	{
+		BossSpawnPoint = FoundSpawnPoints[0];
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] BossSpawnPoint not found"));
+	}
 	StartLevel();
 }
 
