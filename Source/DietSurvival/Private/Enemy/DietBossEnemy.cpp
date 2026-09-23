@@ -4,6 +4,7 @@
 #include "Enemy/DietBossEnemy.h"
 #include "Boss/BossProjectile.h"
 #include "Enemy/Component/HealthComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ADietBossEnemy::ADietBossEnemy()
 {
@@ -34,6 +35,17 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 	}
 }
 
+void ADietBossEnemy::ChargeAt(FVector TargetLocation)
+{
+	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
+	bIsCharging = true;
+
+	LaunchCharacter(Direction * ChargeSpeed, true, false);
+
+	GetWorldTimerManager().SetTimer(ChargeTimeoutHandle, this, &ADietBossEnemy::EndCharge, MaxChargeDuration, false);
+
+}
+
 void ADietBossEnemy::HandleDeath()
 {
 	if (bIsDead) return;
@@ -41,4 +53,46 @@ void ADietBossEnemy::HandleDeath()
 	Super::HandleDeath();
 	OnBossDeath.Broadcast();
 	Destroy();
+}
+
+void ADietBossEnemy::OnCapsuleOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	Super::OnCapsuleOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
+	if (!bIsCharging)
+	{
+		return;
+	}
+
+	ACharacter* PlayerCharacter = Cast<ACharacter>(OtherActor);
+	if (PlayerCharacter == nullptr)
+	{
+		return;
+	}
+
+	// 넉백 처리
+	FVector KnockbackDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	PlayerCharacter->LaunchCharacter(KnockbackDirection * KnockbackStrength, true, true);
+
+	// 돌진 종료
+	EndCharge();
+}
+
+void ADietBossEnemy::EndCharge()
+{
+	if (!bIsCharging)
+	{
+		return;
+	}
+	bIsCharging = false;
+
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().ClearTimer(ChargeTimeoutHandle);
 }
