@@ -35,6 +35,15 @@ EBTNodeResult::Type UBTTask_Charge::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	return EBTNodeResult::InProgress;
 }
 
+EBTNodeResult::Type UBTTask_Charge::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	if (CachedBoss != nullptr)
+	{
+		CachedBoss->EndCharge();   // 강제로 정리
+	}
+	return EBTNodeResult::Aborted;
+}
+
 void UBTTask_Charge::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	if (CachedBoss == nullptr || !CachedBoss->IsCharging())
