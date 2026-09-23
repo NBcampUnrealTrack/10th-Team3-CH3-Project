@@ -1,4 +1,5 @@
 ﻿#include "Player/PlayerStatComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UPlayerStatComponent::UPlayerStatComponent()
 {
@@ -45,6 +46,12 @@ void UPlayerStatComponent::AddFullness(float Amount)
 
 	const float PreviousFullness = Fullness;
 	Fullness = FMath::Clamp(Fullness + Amount, 0.f, MaxFullness);
+
+	// 먹는 소리 재생
+	if (Amount > 0.f && EatingSound)
+	{
+		UGameplayStatics::PlaySound2D(this, EatingSound);
+	}
 
 	//포만감 변화 Broadcast
 	if (!FMath::IsNearlyEqual(PreviousFullness, Fullness))

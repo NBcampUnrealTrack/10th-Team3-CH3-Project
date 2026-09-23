@@ -64,5 +64,11 @@ void AAuraOrbActor::OnOrbOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	// 증강에서 정해준 데미지로
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, InOwner->GetInstigatorController(), InOwner, UDamageType::StaticClass());
 
+	// 소리 재생
+	if (AttackSound)
+	{
+		UGameplayStatics::PlaySound2D(this, AttackSound);
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("[AuraOrbActor] %s에게 %.1f 데미지 적용 (오라 접촉)"), *OtherActor->GetName(), Damage);
 }

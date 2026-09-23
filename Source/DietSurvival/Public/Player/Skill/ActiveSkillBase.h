@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill")
 	float Cooldown = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Skill")
+	TObjectPtr<USoundBase> ActivationSound;
+
 private:
 	// 마지막으로 발동한 월드 시간(초). 아주 과거값으로 초기화해서 시작하자마자 사용 가능하게 함
 	float LastActivationWorldTime = -100000.f;

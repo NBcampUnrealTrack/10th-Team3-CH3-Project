@@ -148,6 +148,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat|Combat", meta = (AllowPrivateAccess = "true"))
 	float ReloadTime = 2.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stat|Sound", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> EatingSound;
+
+
 public:
 	//---------Getter, Setter-----------
 	UFUNCTION(BlueprintCallable, Category = "Stat|Movement")

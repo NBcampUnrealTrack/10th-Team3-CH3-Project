@@ -8,6 +8,7 @@ ADigestiveItem::ADigestiveItem()
 
 void ADigestiveItem::ActivateItem(APawn* Activator)
 {
+	Super::ActivateItem(Activator);
 	UE_LOG(LogTemp, Log, TEXT("[DigestiveItem] Activated by %s"), *Activator->GetName());
 	UPlayerStatComponent* StatComp = Activator->FindComponentByClass<UPlayerStatComponent>();
 	if (StatComp == nullptr)

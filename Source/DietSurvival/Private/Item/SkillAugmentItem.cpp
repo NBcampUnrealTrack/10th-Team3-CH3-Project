@@ -3,6 +3,7 @@
 
 void ASkillAugmentItem::ActivateItem(APawn* Activator)
 {
+	Super::ActivateItem(Activator);
 	UE_LOG(LogTemp, Log, TEXT("[SkillAugmentItem] Activate by %s"), *Activator->GetName());
 
 	ADietPlayerState* DietPlayerState = Activator->GetPlayerState<ADietPlayerState>();

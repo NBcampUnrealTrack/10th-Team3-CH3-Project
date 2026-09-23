@@ -76,6 +76,10 @@ protected:
 
 	float PendingExp = 0.f;
 
+	// ----- 사운드 -----
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Exp")
+	TObjectPtr<USoundBase> LevelUpSound;
+	
 	// ----- 경험치 증가 테스트용 -----
 	FTimerHandle TestExpTimer;
 	void TestGainExp();
