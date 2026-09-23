@@ -33,7 +33,8 @@ void UHealthComponent::Heal(int32 HealAmount)
 void UHealthComponent::TakeDamage(int32 Damage)
 {
 	if (Damage <= 0) return;
-	HealthCurrent -= Damage;
+	HealthCurrent = FMath::Max(HealthCurrent - Damage, 0.0f);
+	OnHealthChanged.Broadcast(HealthCurrent, HealthMax);
 
 	if (HealthCurrent <= 0) {
 		OnDeath.Broadcast();

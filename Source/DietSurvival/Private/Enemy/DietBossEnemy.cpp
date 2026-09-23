@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 ADietBossEnemy::ADietBossEnemy()
 {
@@ -17,8 +18,11 @@ ADietBossEnemy::ADietBossEnemy()
 void ADietBossEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	//FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
-	//UE_LOG(LogTemp, Log, TEXT("Collision Enabled: %d"), (int32)GetCapsuleComponent()->GetCollisionEnabled());
+
+	if (HealthComponent != nullptr)
+	{
+		HealthComponent->OnHealthChanged.AddDynamic(this, &ADietBossEnemy::HandleHealthChanged);
+	}
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
@@ -40,17 +44,20 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 
 void ADietBossEnemy::ChargeAt(FVector TargetLocation)
 {
+	UE_LOG(LogTemp, Log, TEXT("[ADietBossEnemy::ChargeAt] Called. Target: %s"), *TargetLocation.ToString());
+
 	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
 	bIsCharging = true;
 
 	LaunchCharacter(Direction * ChargeSpeed, true, false);
 
 	GetWorldTimerManager().SetTimer(ChargeTimeoutHandle, this, &ADietBossEnemy::EndCharge, MaxChargeDuration, false);
-
+	UE_LOG(LogTemp, Log, TEXT("[ADietBossEnemy::ChargeAt] LaunchCharacter velocity: %s"), *(Direction * ChargeSpeed).ToString());
 }
 
 bool ADietBossEnemy::IsPlayerInChargeRange() const
 {
+	DrawDebugCircle(GetWorld(), GetActorLocation(), ChargeRange, 32, FColor::Red, false, -1.0f, 0, 2.0f, FVector(1, 0, 0), FVector(0, 1, 0), false);
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
 	if (PlayerPawn == nullptr)
 	{
@@ -69,6 +76,11 @@ void ADietBossEnemy::HandleDeath()
 	Destroy();
 }
 
+void ADietBossEnemy::HandleHealthChanged(int32 CurrentHealth, int32 MaxHealth)
+{
+	OnBossHealthChanged.Broadcast(CurrentHealth, MaxHealth);
+}
+
 void ADietBossEnemy::OnCapsuleOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -78,6 +90,11 @@ void ADietBossEnemy::OnCapsuleOverlap(
 	const FHitResult& SweepResult
 )
 {
+	if (!OtherActor || !OtherActor->ActorHasTag("Player"))
+	{
+		return;   // 플레이어가 아니면 완전히 무시
+	}
+
 	Super::OnCapsuleOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
 	if (!bIsCharging)
@@ -101,6 +118,7 @@ void ADietBossEnemy::OnCapsuleOverlap(
 
 void ADietBossEnemy::EndCharge()
 {
+	UE_LOG(LogTemp, Log, TEXT("[ADietBossEnemy::EndCharge] Called. Was charging: %s"), bIsCharging ? TEXT("true") : TEXT("false"));
 	if (!bIsCharging)
 	{
 		return;

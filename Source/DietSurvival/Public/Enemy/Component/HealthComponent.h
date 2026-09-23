@@ -7,6 +7,7 @@
 #include "HealthComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, int32, CurrentHealth, int32, MaxHealth);
 
 UCLASS( ClassGroup=(Attribute), meta=(BlueprintSpawnableComponent) )
 class DIETSURVIVAL_API UHealthComponent : public UActorComponent
@@ -26,6 +27,9 @@ protected:
 public:	
 	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChanged OnHealthChanged;
 
 	void Initailize(int32 NewHealth);
 
