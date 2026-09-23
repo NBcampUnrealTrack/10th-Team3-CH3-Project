@@ -16,7 +16,7 @@ ADietBossEnemy::ADietBossEnemy()
 
 void ADietBossEnemy::BeginPlay()
 {
-	//Super::BeginPlay();
+	Super::BeginPlay();
 	//FireProjectileAt(FVector(1000.0f, 1000.0f, 0.0f));
 	//UE_LOG(LogTemp, Log, TEXT("Collision Enabled: %d"), (int32)GetCapsuleComponent()->GetCollisionEnabled());
 }
