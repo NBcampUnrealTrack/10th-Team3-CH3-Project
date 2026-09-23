@@ -34,6 +34,9 @@ public:
 
 	bool IsCharging() const { return bIsCharging; }
 
+	UFUNCTION(BlueprintPure, Category = "Attack")
+	bool IsPlayerInChargeRange() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
@@ -51,6 +54,9 @@ protected:
 	float MaxChargeDuration = 2.0f;
 
 	bool bIsCharging = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	float ChargeRange = 300.0f;
 
 	FTimerHandle ChargeTimeoutHandle;
 

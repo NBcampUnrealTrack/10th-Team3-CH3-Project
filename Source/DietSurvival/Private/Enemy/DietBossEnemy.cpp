@@ -5,6 +5,7 @@
 #include "Boss/BossProjectile.h"
 #include "Enemy/Component/HealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADietBossEnemy::ADietBossEnemy()
 {
@@ -44,6 +45,17 @@ void ADietBossEnemy::ChargeAt(FVector TargetLocation)
 
 	GetWorldTimerManager().SetTimer(ChargeTimeoutHandle, this, &ADietBossEnemy::EndCharge, MaxChargeDuration, false);
 
+}
+
+bool ADietBossEnemy::IsPlayerInChargeRange() const
+{
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (PlayerPawn == nullptr)
+	{
+		return false;
+	}
+
+	return FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation()) <= ChargeRange;
 }
 
 void ADietBossEnemy::HandleDeath()
