@@ -317,11 +317,11 @@ void APlayerCharacter::ActivateTemporaryInvincibility(float Duration)
 
 	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 시작 (%.1f초)"), Duration);
 
-	if (GEngine)
+	/*if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, Duration, FColor::Cyan,
 			FString::Printf(TEXT("스킬 무적 ON (%.1f초)"), Duration));
-	}
+	}*/
 
 	GetWorldTimerManager().SetTimer(
 		SkillInvincibilityTimerHandle,
