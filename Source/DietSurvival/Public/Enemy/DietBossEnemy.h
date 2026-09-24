@@ -41,6 +41,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Attack")
 	bool IsPlayerInChargeRange() const;
 
+	void FaceTowardsPlayer();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
@@ -63,6 +65,9 @@ protected:
 	float ChargeRange = 300.0f;
 
 	FTimerHandle ChargeTimeoutHandle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	int32 BossPowerAttack = 20;
 
 protected:
 	virtual void HandleDeath() override;
