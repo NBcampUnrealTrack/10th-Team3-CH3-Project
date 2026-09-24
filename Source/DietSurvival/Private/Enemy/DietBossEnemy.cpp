@@ -95,7 +95,13 @@ void ADietBossEnemy::OnCapsuleOverlap(
 		return;   // 플레이어가 아니면 완전히 무시
 	}
 
-	Super::OnCapsuleOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+	UGameplayStatics::ApplyDamage(
+		OtherActor,
+		BossPowerAttack,
+		GetController(),
+		this,
+		UDamageType::StaticClass()
+	);
 
 	if (!bIsCharging)
 	{

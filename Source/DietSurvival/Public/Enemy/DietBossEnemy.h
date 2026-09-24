@@ -64,6 +64,9 @@ protected:
 
 	FTimerHandle ChargeTimeoutHandle;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	int32 BossPowerAttack = 20;
+
 protected:
 	virtual void HandleDeath() override;
 
