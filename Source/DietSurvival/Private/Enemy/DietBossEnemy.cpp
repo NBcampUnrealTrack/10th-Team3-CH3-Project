@@ -33,6 +33,8 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 		return;
 	}
 
+	FaceTowardsPlayer();
+
 	FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);   // 약간 위에서 발사 (임시)
 	ABossProjectile* Projectile = GetWorld()->SpawnActor<ABossProjectile>(ProjectileClass, SpawnLocation, FRotator::ZeroRotator);
 	if (Projectile != nullptr)
@@ -44,6 +46,7 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 
 void ADietBossEnemy::ChargeAt(FVector TargetLocation)
 {
+	FaceTowardsPlayer();
 	UE_LOG(LogTemp, Log, TEXT("[ADietBossEnemy::ChargeAt] Called. Target: %s"), *TargetLocation.ToString());
 
 	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
@@ -133,4 +136,19 @@ void ADietBossEnemy::EndCharge()
 
 	GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().ClearTimer(ChargeTimeoutHandle);
+}
+
+void ADietBossEnemy::FaceTowardsPlayer()
+{
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (PlayerPawn == nullptr)
+	{
+		return;
+	}
+
+	FVector ToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
+	ToPlayer.Z = 0.0f;
+
+	FRotator TargetRotation = ToPlayer.Rotation();
+	SetActorRotation(TargetRotation);  
 }

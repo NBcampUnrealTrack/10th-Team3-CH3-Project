@@ -41,6 +41,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Attack")
 	bool IsPlayerInChargeRange() const;
 
+	void FaceTowardsPlayer();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
