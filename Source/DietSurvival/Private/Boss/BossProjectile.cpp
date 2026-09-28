@@ -7,6 +7,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ABossProjectile::ABossProjectile()
@@ -100,11 +102,17 @@ void ABossProjectile::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 void ABossProjectile::Explode()
 {
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 16, FColor::Red, false, 0.5f);
+	// 무적 이펙트 재생
 	if (ExplosionEffect)
 	{
-		
+		UNiagaraComponent* EffectComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			ExplosionEffect,
+			GetActorLocation(),
+			FRotator::ZeroRotator
+		);
 	}
-
+	
 	// 소리 재생
 	if (ExplosionSound)
 	{
