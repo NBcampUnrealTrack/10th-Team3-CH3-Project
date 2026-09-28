@@ -7,6 +7,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UStaticMeshComponent;
+class UNiagaraSystem;
 
 UCLASS()
 class DIETSURVIVAL_API ABossProjectile : public AActor
@@ -46,6 +47,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Projectile|Mesh")
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Effect")
+	TObjectPtr<UNiagaraSystem> ExplosionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|Effect")
+	TObjectPtr<USoundBase> ExplosionSound;
 
 private:
 	FTimerHandle ExplosionTimerHandle;
