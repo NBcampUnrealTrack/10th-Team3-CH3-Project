@@ -95,7 +95,7 @@ protected:
 	float ParallelModeDamageMultiplier = 0.5f;
 
 	// 옆으로 LateralOffset만큼 평행 이동한 위치에서 정면으로 직진 발사
-	void FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range);
+	void FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range, float DamageMultiplier);
 
 	// 탄 수에 따른 좌우 오프셋 목록 계산
 	const TArray<float>& GetParallelOffsets(int32 ShotCount);
