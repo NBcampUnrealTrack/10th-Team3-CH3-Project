@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "System/DietGameMode.h"
+﻿#include "System/DietGameMode.h"
 #include "System/DietGameState.h"
 #include "System/DataTableSubsystem.h"
 #include "System/EnemyDataRow.h"
@@ -237,34 +234,37 @@ void ADietGameMode::HandleTimeUp()
 
 void ADietGameMode::HandleGameOver()
 {
+	// Todo 게임 종료 로직 통일하기
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode] Player Defeat"));
 	EndLevel(false);
 }
 
 void ADietGameMode::HandleBossDeath()
 {
-
-	//todo 패배 로직도 통일해서 EndLevel로 이관하기
-	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
-	if (PC == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] PlayerController is nullptr"));
-		return;
-	}
-
-	AMainHUD* MainHUD = Cast<AMainHUD>(PC->GetHUD());
-	if (MainHUD == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[DietGameMode] MainHUD is nullptr"));
-		return;
-	}
-
+	// Todo 게임 종료 로직 통일하기
 	EndLevel(true);
-	MainHUD->ShowResult(true);
+	GetWorldTimerManager().SetTimer(
+		ResultTimerHandle,
+		FTimerDelegate::CreateUObject(this, &ADietGameMode::ShowResultUI, true),
+		ResultDelay,
+		false
+	);
 }
 
 void ADietGameMode::HandleBossPhaseTimeUp()
 {
+	// Todo 게임 종료 로직 통일하기
 	UE_LOG(LogTemp, Log, TEXT("[DietGameMode::HandleBossPhaseTimeUp] Boss phase Timeup"));
 	EndLevel(false);
+}
+
+void ADietGameMode::ShowResultUI(bool bWin)
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (PC == nullptr) return;
+
+	AMainHUD* MainHUD = Cast<AMainHUD>(PC->GetHUD());
+	if (MainHUD == nullptr) return;
+
+	MainHUD->ShowResult(bWin);
 }

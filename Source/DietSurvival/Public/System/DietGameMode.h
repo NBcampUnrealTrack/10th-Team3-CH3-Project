@@ -67,6 +67,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Wave")
 	float SpawnDuration;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Result")
+	float ResultDelay = 1.5f;
+
 	UPROPERTY()
 	TObjectPtr<AEnemySpawner> CachedEnemySpawner;
 
@@ -88,4 +91,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APlayerController> DefaultPlayerControllerClass;
+
+	void ShowResultUI(bool bWin);
+	FTimerHandle ResultTimerHandle;
 };
