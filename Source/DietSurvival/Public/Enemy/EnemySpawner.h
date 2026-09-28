@@ -34,13 +34,13 @@ public:
 	void Initialize();
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UBoxComponent>> CollisionBoxArray;
+
 	TObjectPtr<ADietGameState> DietGameState;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Scene;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> CollisionBox;
 
 	UPROPERTY()
 	TObjectPtr<APoolManager> PoolManager;
