@@ -71,6 +71,18 @@ void ABossProjectile::FireAt(FVector TargetLocation)
 
 void ABossProjectile::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (bHasExploded)
+	{
+		return;
+	}
+
+	// 플레이어에게 맞으면 딜레이 없이 즉시 폭발
+	if (OtherActor != nullptr && OtherActor->ActorHasTag("Player"))
+	{
+		Explode();
+		return;
+	}
+
 	if (bHasLanded)
 	{
 		return;   // 이미 착지 처리된 상태면 무시 (중복 방지)
@@ -91,6 +103,10 @@ void ABossProjectile::Explode()
 
 	TArray<AActor*> IgnoredActors;
 	IgnoredActors.Add(this);
+
+	TArray<AActor*> EnemyActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Enemy"), EnemyActors);
+	IgnoredActors.Append(EnemyActors);
 
 	UGameplayStatics::ApplyRadialDamage(
 		this,

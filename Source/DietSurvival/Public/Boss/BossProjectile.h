@@ -50,6 +50,7 @@ protected:
 private:
 	FTimerHandle ExplosionTimerHandle;
 	bool bHasLanded = false;
+	bool bHasExploded = false;
 
 
 };

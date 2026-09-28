@@ -8,6 +8,7 @@
 
 
 class ABossProjectile;
+class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBossHealthChanged, int32, CurrentHealth, int32, MaxHealth);
@@ -43,6 +44,8 @@ public:
 
 	void FaceTowardsPlayer();
 
+	void PlayThrowSound();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<ABossProjectile> ProjectileClass;
@@ -68,6 +71,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	int32 BossPowerAttack = 20;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	TObjectPtr<USoundBase> SpawnSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	TObjectPtr<USoundBase> ThrowSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	TObjectPtr<USoundBase> ChargeSound;
 
 protected:
 	virtual void HandleDeath() override;

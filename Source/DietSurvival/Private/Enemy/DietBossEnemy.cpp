@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Sound/SoundBase.h"
 
 ADietBossEnemy::ADietBossEnemy()
 {
@@ -23,6 +24,11 @@ void ADietBossEnemy::BeginPlay()
 	{
 		HealthComponent->OnHealthChanged.AddDynamic(this, &ADietBossEnemy::HandleHealthChanged);
 	}
+
+	if (SpawnSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, SpawnSound);
+	}
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
@@ -31,6 +37,11 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[BossEnemy::FireProjectileAt] ProjectileClass is nullptr"));
 		return;
+	}
+
+	if (ThrowSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ThrowSound);
 	}
 
 	FaceTowardsPlayer();
@@ -47,6 +58,12 @@ void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
 void ADietBossEnemy::ChargeAt(FVector TargetLocation)
 {
 	FaceTowardsPlayer();
+
+	if (ChargeSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ChargeSound);
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("[ADietBossEnemy::ChargeAt] Called. Target: %s"), *TargetLocation.ToString());
 
 	FVector Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
@@ -151,4 +168,12 @@ void ADietBossEnemy::FaceTowardsPlayer()
 
 	FRotator TargetRotation = ToPlayer.Rotation();
 	SetActorRotation(TargetRotation);  
+}
+
+void ADietBossEnemy::PlayThrowSound()
+{
+	if (ThrowSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ThrowSound);
+	}
 }
