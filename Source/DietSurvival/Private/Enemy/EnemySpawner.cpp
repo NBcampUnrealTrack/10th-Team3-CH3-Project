@@ -17,10 +17,6 @@ AEnemySpawner::AEnemySpawner()
 	if (Scene) {
 		SetRootComponent(Scene);
 	}
-	CollisionBox = CreateDefaultSubobject<UBoxComponent>("CollisionBox");
-	if (CollisionBox) {
-		CollisionBox->SetupAttachment(Scene);
-	}
 
 
 	PrimaryActorTick.bCanEverTick = false;
@@ -64,6 +60,8 @@ void AEnemySpawner::Initialize()
 	if (!DietGameState) {
 		DietGameState = Cast<ADietGameState>(GetWorld()->GetGameState());
 	}
+
+	GetComponents<UBoxComponent>(CollisionBoxArray);
 }
 
 void AEnemySpawner::SetSpawnTime(float NewSpawnTime)
@@ -140,9 +138,9 @@ void AEnemySpawner::StartSpawn()
 
 FVector3d AEnemySpawner::GetNewSpawnLocation() const
 {
-	if (!CollisionBox) {
+	if (CollisionBoxArray.IsEmpty()) {
 		UE_LOG(LogTemp, Warning,
-			TEXT("AEnemySpawner::GetNewSpawnLocation, CollisionBox is Null"));
+			TEXT("AEnemySpawner::GetNewSpawnLocation, CollisionBoxArray is Empty"));
 		return FVector(0);
 	}
 
@@ -160,17 +158,19 @@ FVector3d AEnemySpawner::GetNewSpawnLocation() const
 
 	FVector PlayerLocation = DietGameState->GetPlayerRef().Get()->GetActorLocation();
 
-	FVector SpawnerLocation = GetActorLocation();
-	FVector BoxExtent = CollisionBox->GetScaledBoxExtent();
+	int32 RandomIndex = FMath::RandRange(0, (CollisionBoxArray.Num() - 1));
+	UBoxComponent* SelectedBox = CollisionBoxArray[RandomIndex];
+	FVector BoxLocation = SelectedBox->GetComponentLocation();
+	FVector BoxExtent = SelectedBox->GetScaledBoxExtent();
 
 	float DistSuqredSafeDistance = DistanceSafeSpawn * DistanceSafeSpawn;
 
 	while (true)
 	{
 		FVector SpawnLocation = FVector(
-			FMath::RandRange(SpawnerLocation.X - BoxExtent.X, SpawnerLocation.X + BoxExtent.X),
-			FMath::RandRange(SpawnerLocation.Y - BoxExtent.Y, SpawnerLocation.Y + BoxExtent.Y),
-			SpawnerLocation.Z
+			FMath::RandRange(BoxLocation.X - BoxExtent.X, BoxLocation.X + BoxExtent.X),
+			FMath::RandRange(BoxLocation.Y - BoxExtent.Y, BoxLocation.Y + BoxExtent.Y),
+			BoxLocation.Z
 		);
 
 		float DistSuqredDistanceFromPlayer = FVector::DistSquared(PlayerLocation, SpawnLocation);
