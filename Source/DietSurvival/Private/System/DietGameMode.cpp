@@ -243,6 +243,7 @@ void ADietGameMode::HandleBossDeath()
 {
 	// Todo 게임 종료 로직 통일하기
 	EndLevel(true);
+	CachedDietGameState->SetLevelEnded(true);
 	GetWorldTimerManager().SetTimer(
 		ResultTimerHandle,
 		FTimerDelegate::CreateUObject(this, &ADietGameMode::ShowResultUI, true),

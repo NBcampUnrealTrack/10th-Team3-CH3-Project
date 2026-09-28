@@ -275,6 +275,12 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		return 0.f;
 	}
 
+	ADietGameState* GS = GetWorld()->GetGameState<ADietGameState>();
+	if (GS != nullptr && GS->IsLevelEnded())
+	{
+		return 0.0f;
+	}
+
 	// AActor 기본 구현: OnTakeAnyDamage 등 표준 델리게이트 브로드캐스트 후 DamageAmount를 그대로 반환
 	const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 

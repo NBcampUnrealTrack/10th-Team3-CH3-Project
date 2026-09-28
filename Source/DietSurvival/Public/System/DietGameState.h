@@ -58,7 +58,6 @@ public:
 	void StartBossPhaseTimer();
 	void StopBossPhaseTimer();
 
-
 	// 타이머 조건 확인 함수 -- 웨이브, 종료 조건
 	UFUNCTION() 
 	void TickTimer();
@@ -134,5 +133,9 @@ private:
 	// variables
 	FTimerHandle ElapsedTimerHandle;
 	FTimerHandle BossPhaseTimerHandle;
+	bool bLevelEnded = false;
 
+public:
+	bool IsLevelEnded() const { return bLevelEnded; }
+	void SetLevelEnded(bool bEnded) { bLevelEnded = bEnded; }
 };
