@@ -141,6 +141,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Effects", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UNiagaraSystem> BulletTrailSystem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UNiagaraSystem> PowerAttackTrailSystem;
+
 	// 적을 맞추고 조금 뒤에 HitSound 재생
 	FTimerHandle PlayHitTimer;
 };
