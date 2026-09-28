@@ -426,7 +426,12 @@ void UAttackComponent::ReloadAmmo()
 		&UAttackComponent::OnReloadFinished,
 		CachedStatComponent ? CachedStatComponent->GetReloadTime() : 1.f,
 		false
-	);	
+	);
+
+	if (ReloadSound)
+	{
+		UGameplayStatics::PlaySound2D(this, ReloadSound);
+	}
 }
 
 void UAttackComponent::OnReloadFinished()

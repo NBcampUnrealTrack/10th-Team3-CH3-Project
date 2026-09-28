@@ -137,6 +137,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Sounds", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> HitSound = nullptr;
 
+	// 재장전 소리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Sounds", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> ReloadSound = nullptr;
+
 	// 총알 트레일 이펙트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack|Effects", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UNiagaraSystem> BulletTrailSystem;
