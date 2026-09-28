@@ -37,6 +37,7 @@ void APoolBase::InitalizePool(TSubclassOf<AActor> ObjectClass, int32 PoolSize)
 		if (NewObject && NewObject->FindComponentByClass<UPoolObjectComponent>()) {
 			UPoolObjectComponent* PoolObjectComponent = NewObject->FindComponentByClass<UPoolObjectComponent>();
 			PoolObjectComponent->SetPool(this);
+			PoolObjectComponent->OnRelease();
 			AllObjects.Add(NewObject);
 			AvailableObjects.Add(NewObject);
 		}

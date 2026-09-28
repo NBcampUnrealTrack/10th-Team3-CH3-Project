@@ -6,7 +6,9 @@
 
 class AEnemySpawner;
 class ADietGameState;
+class ADietBossEnemy;
 struct FEnemyDataRow;
+
 
 UCLASS()
 class DIETSURVIVAL_API ADietGameMode : public AGameMode
@@ -53,11 +55,20 @@ public:
 	UFUNCTION()
 	void HandleGameOver(); //todo 함수 이름 변경
 
+	UFUNCTION()
+	void HandleBossDeath();
+
+	UFUNCTION()
+	void HandleBossPhaseTimeUp();
+
 private:
 	// variables
 
 	UPROPERTY(VisibleAnywhere, Category = "Wave")
 	float SpawnDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Result")
+	float ResultDelay = 1.5f;
 
 	UPROPERTY()
 	TObjectPtr<AEnemySpawner> CachedEnemySpawner;
@@ -68,10 +79,19 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Wave")
 	TObjectPtr<UDataTable> WaveSpawnDataTable;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	TSubclassOf<ADietBossEnemy> BossClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	TObjectPtr<AActor> BossSpawnPoint;
+
 	//플레이어, 컨트롤러 등록 임시
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APawn> DefaultPlayerCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APlayerController> DefaultPlayerControllerClass;
+
+	void ShowResultUI(bool bWin);
+	FTimerHandle ResultTimerHandle;
 };

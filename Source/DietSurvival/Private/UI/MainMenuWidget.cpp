@@ -24,6 +24,12 @@ void UMainMenuWidget::NativeConstruct()
 
 void UMainMenuWidget::HandleStartClicked()
 {
+	if (APlayerController* PC = GetOwningPlayer())
+	{
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->SetShowMouseCursor(false);
+	}
+
 	UGameplayStatics::OpenLevel(this, GameLevelName);
 }
 

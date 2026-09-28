@@ -1,4 +1,5 @@
 ﻿#include "Player/PlayerStatComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UPlayerStatComponent::UPlayerStatComponent()
 {
@@ -21,6 +22,18 @@ void UPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	{
 		return;
 	}
+
+	if (MoveFullnessDecayPerSecond != 0.f)
+	{
+		if (const AActor* Owner = GetOwner())
+		{
+			const float CurrentSpeed = Owner->GetVelocity().Size();
+			if (CurrentSpeed > MovingSpeedThreshold)
+			{
+				AddFullness(-MoveFullnessDecayPerSecond * DeltaTime);
+			}
+		}
+	}
 }
 
 void UPlayerStatComponent::AddFullness(float Amount)
@@ -33,6 +46,12 @@ void UPlayerStatComponent::AddFullness(float Amount)
 
 	const float PreviousFullness = Fullness;
 	Fullness = FMath::Clamp(Fullness + Amount, 0.f, MaxFullness);
+
+	// 먹는 소리 재생
+	if (Amount > 0.f && EatingSound)
+	{
+		UGameplayStatics::PlaySound2D(this, EatingSound);
+	}
 
 	//포만감 변화 Broadcast
 	if (!FMath::IsNearlyEqual(PreviousFullness, Fullness))
@@ -55,6 +74,7 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 	{
 	case EPlayerStatType::MoveSpeed:
 		MoveSpeed += Amount;
+		OnMoveSpeedChanged.Broadcast(GetEffectiveMoveSpeed());
 		break;
 
 	case EPlayerStatType::AttackPower:
@@ -63,6 +83,22 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 
 	case EPlayerStatType::AttackSpeed:
 		AttackSpeed += Amount;
+		break;
+
+	case EPlayerStatType::AttackRange:
+		AttackRange += Amount;
+		break;
+
+	case EPlayerStatType::AttackDirection:
+		SetAttackDirection(AttackDirection + FMath::RoundToInt(Amount));
+		break;
+
+	case EPlayerStatType::MoveFullnessDecayPerSecond:
+		MoveFullnessDecayPerSecond += Amount;
+		break;
+
+	case EPlayerStatType::MaxAmmo:
+		MaxAmmo += FMath::RoundToInt(Amount);
 		break;
 
 	case EPlayerStatType::Fullness:
@@ -75,15 +111,27 @@ void UPlayerStatComponent::UpgradeStat(EPlayerStatType StatType, float Amount)
 		OnFullnessChanged.Broadcast(Fullness, MaxFullness);
 		break;
 
-	case EPlayerStatType::AttackRange:
-		AttackRange += Amount;
-		break;
-
-	case EPlayerStatType::AttackDirection:
-		SetAttackDirection(AttackDirection + FMath::RoundToInt(Amount));
-		break;
-
 	default:
 		break;
 	}
+}
+
+float UPlayerStatComponent::GetEffectiveMoveSpeed() const
+{
+	const float Ratio = GetFullnessRatio();
+
+	float StrongestMultiplier = 1.f; // 아무 임계값도 안 넘었으면 배율 1.0(정상 속도)
+	float HighestMatchedRatio = -1.f;
+
+	for (const FMoveSpeedPenaltyThreshold& Penalty : MoveSpeedPenalties)
+	{
+		// 다음 기준임계값을 넘었을 때 업데이트. (가장 높은 기준값으로 적용하기 위해)
+		if (Ratio >= Penalty.FullnessRatio && Penalty.FullnessRatio > HighestMatchedRatio)
+		{
+			HighestMatchedRatio = Penalty.FullnessRatio;
+			StrongestMultiplier = Penalty.SpeedMultiplier;
+		}
+	}
+
+	return MoveSpeed * StrongestMultiplier;
 }

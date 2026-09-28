@@ -1,39 +1,34 @@
 ﻿#pragma once
 
+#include "UI/TemplateAugmentSelectionBase.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AugmentSelectionWidget.generated.h"
 
-class UHorizontalBox;
-class UAugmentCardWidget;
+class UButton;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRerollPressedSignature);
 
 UCLASS()
-class DIETSURVIVAL_API UAugmentSelectionWidget : public UUserWidget
+class DIETSURVIVAL_API UAugmentSelectionWidget : public UTemplateAugmentSelectionBase
 {
 	GENERATED_BODY()
 
 public:
-	void InitializeCards(const TArray<TTuple<FName, int32>>& Augments);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAugmentChosenSignature, FName, ChosenAugmentId);
-
 	UPROPERTY(BlueprintAssignable, Category = "Augment")
-	FOnAugmentChosenSignature OnAugmentChosen;
+	FOnRerollPressedSignature OnRerollPressed;
 
 protected:
+	virtual void SetInteractionEnabled(bool bEnabled) override;
+
 	UFUNCTION()
-	void HandleCardClicked(FName AugmentFName);
+	void HandleRerollClicked();
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> CardContainer;
+	TObjectPtr<UButton> RerollButton;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Augment")
-	TSubclassOf<UAugmentCardWidget> CardWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Augment")
-	FMargin CardPadding = FMargin(40.f, 0.f);
+	virtual void NativeConstruct() override;
 
 private:
-	UPROPERTY()
-	TArray<TObjectPtr<UAugmentCardWidget>> ActiveCards;
+	bool bRerollUsed = false;
 };

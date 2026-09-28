@@ -6,10 +6,10 @@
 ADietGameState::ADietGameState()
 {
 	CurrentWave = 0;
-	ElapsedTime = 0.0f;
+	MyElapsedTime = 0.0f;
 	TimeInterval = 1.0f;
 	WaveInterval = 10.0f;
-	MaxGameTime = 60.0f;
+	MaxGameTime = 180.0f;
 }
 
 void ADietGameState::BeginPlay()
@@ -40,25 +40,58 @@ void ADietGameState::StopTimer()
 	GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
 }
 
+void ADietGameState::StartBossPhaseTimer()
+{
+	BossPhaseeRemainigTime = BossPhaseTimeLimit;
+	OnBossPhaseStarted.Broadcast();
+	OnBossPhaseTimeChanged.Broadcast(BossPhaseeRemainigTime);
+	GetWorldTimerManager().SetTimer(
+		BossPhaseTimerHandle,
+		this,
+		&ADietGameState::TickBossPhaseTimer,
+		1.0f,
+		true
+	);
+}
+
+void ADietGameState::StopBossPhaseTimer()
+{
+	GetWorldTimerManager().ClearTimer(BossPhaseTimerHandle);
+}
+
 //웨이브 증가와 제한 시간 조건 확인
 void ADietGameState::TickTimer()
 {
-	//Todo: 시간이 두배로 증가하는 원인 파악
-	ElapsedTime += 0.5f;	// [임시조치]시간이 두배로 증가해서 0.5씩 증가하게 해둠
-	//Todo: 로그 찍을 때 %f로 하면 오류가 발생하는지 알아보기
-	UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %d"), ElapsedTime);
-	if (ElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
+	MyElapsedTime += 1.0f;
+	
+	UpdateElapsedTime.Broadcast(MyElapsedTime);
+
+	//UE_LOG(LogTemp, Log, TEXT("[DietGameState]시간 증가. ElapsedTime: %.0f"), MyElapsedTime);
+	if (MyElapsedTime >= WaveInterval * CurrentWave || CurrentWave == 0)
 	{
 		CurrentWave++;
 		OnWaveIncrease.Broadcast(CurrentWave);
 		//테스트용
-		UE_LOG(LogTemp, Log, TEXT("[DietGameState]Wave 증가. 현재 Wave: %d"), CurrentWave);
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickTimer]Wave 증가. 현재 Wave: %d"), CurrentWave);
 	}
-	if (ElapsedTime >= MaxGameTime)
+	if (MyElapsedTime >= MaxGameTime)
 	{
 		OnTimeUp.Broadcast();
 		GetWorldTimerManager().ClearTimer(ElapsedTimerHandle);
-		UE_LOG(LogTemp, Log, TEXT("[DietGameState]최대 시간 도달"));
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickTimer]최대 시간 도달"));
+	}
+}
+
+void ADietGameState::TickBossPhaseTimer()
+{
+	BossPhaseeRemainigTime = FMath::Max(BossPhaseeRemainigTime - 1.0f, 0.f);
+	OnBossPhaseTimeChanged.Broadcast(BossPhaseeRemainigTime);
+	//UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhase] 시간 감소. ElapsedTime: %.0f"), BossPhaseeRemainigTime);
+	if (BossPhaseeRemainigTime <= 0.0f)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[DietGameState::TickBossPhaseTimer] Boss Phase Timeup"));
+		OnBossPhaseTimeUp.Broadcast();
+		StopBossPhaseTimer();
 	}
 }
 
@@ -76,4 +109,11 @@ void ADietGameState::SetPlayerRef(APawn* InPlayer)
 TWeakObjectPtr<APawn> ADietGameState::GetPlayerRef()
 {
 	return PlayerRef;
+}
+
+
+void ADietGameState::AddKill()
+{
+	++KillCount;
+	OnKillCountChanged.Broadcast(KillCount);
 }

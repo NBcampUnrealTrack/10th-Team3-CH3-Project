@@ -1,41 +1,23 @@
 ﻿#include "UI/AugmentSelectionWidget.h"
-#include "UI/AugmentCardWidget.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
+#include "Components/Button.h"
 
-void UAugmentSelectionWidget::InitializeCards(const TArray<TTuple<FName, int32>>& Augments)
+void UAugmentSelectionWidget::NativeConstruct()
 {
-	if (!CardContainer || !CardWidgetClass)
-	{
-		return;
-	}
+	Super::NativeConstruct();
 
-	CardContainer->ClearChildren();
-	ActiveCards.Reset();
-
-	for (const auto& [Name, Level] : Augments)
-	{
-		UAugmentCardWidget* Card = CreateWidget<UAugmentCardWidget>(GetOwningPlayer(), CardWidgetClass);
-		if (!Card) { continue; }
-
-		Card->SetupCard(Name, Level);
-		Card->OnCardClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleCardClicked);
-
-		UHorizontalBoxSlot* HorizonSlot = CardContainer->AddChildToHorizontalBox(Card);
-		HorizonSlot->SetPadding(CardPadding);
-		HorizonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
-		HorizonSlot->SetVerticalAlignment(VAlign_Center);
-		ActiveCards.Add(Card);
-	}
+	RerollButton->OnClicked.AddDynamic(this, &UAugmentSelectionWidget::HandleRerollClicked);
 }
 
-void UAugmentSelectionWidget::HandleCardClicked(FName AugmentFName)
+void UAugmentSelectionWidget::HandleRerollClicked()
 {
-	// 중복 클릭 방지. 모든 카드 비활성화.
-	for (UAugmentCardWidget* Card : ActiveCards)
-	{
-		Card->SetIsEnabled(false);
-	}
+	// 리롤은 한 번만
+	bRerollUsed = true;
+	RerollButton->SetIsEnabled(false);
+	OnRerollPressed.Broadcast();
+}
 
-	OnAugmentChosen.Broadcast(AugmentFName);
+void UAugmentSelectionWidget::SetInteractionEnabled(bool bEnabled)
+{
+	Super::SetInteractionEnabled(bEnabled);
+	RerollButton->SetIsEnabled(bEnabled && !bRerollUsed);
 }

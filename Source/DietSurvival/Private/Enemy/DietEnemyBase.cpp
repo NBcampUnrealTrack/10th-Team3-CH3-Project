@@ -10,9 +10,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Enemy/Component/HealthComponent.h"
 #include "Pool/PoolObjectComponent.h"
+#include "UI/MinimapTrackComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/EnemyDataRow.h"
 #include "System/DietPlayerState.h"
+#include "Item/ItemDropManager.h"
+#include "System/DietGameState.h"
 
 // Sets default values
 ADietEnemyBase::ADietEnemyBase()
@@ -30,6 +33,10 @@ ADietEnemyBase::ADietEnemyBase()
 	HealthComponent->OnDeath.AddDynamic(this, &ADietEnemyBase::HandleDeath);
 
 	PoolObjectComponent = CreateDefaultSubobject<UPoolObjectComponent>("PoolObject");
+	PoolObjectComponent->OnPoolActiveChanged.AddDynamic(this, &ADietEnemyBase::HandlePoolActive);
+
+	MinimapTrackComponent = CreateDefaultSubobject<UMinimapTrackComponent>("MinimapTrack");
+	MinimapTrackComponent->SetTracked(false);
 
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
@@ -45,6 +52,20 @@ ADietEnemyBase::ADietEnemyBase()
 
 	Tags.Add(FName("Enemy"));
 }
+
+// Called when the game starts or when spawned
+void ADietEnemyBase::BeginPlay()
+{
+	Super::BeginPlay();
+	UItemDropManager* DropManager = UItemDropManager::Get(this);
+	if (DropManager == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[EnemyBase] ItemDropManager is nullptr"));
+		return;
+	}
+	OnEnemyDeath.AddDynamic(DropManager, &UItemDropManager::RequestDrop);
+}
+
 
 void ADietEnemyBase::InitAttritube(const FEnemyDataRow& EnemyDataRow)
 {
@@ -129,22 +150,23 @@ void ADietEnemyBase::StopAI()
 
 }
 
-// Called when the game starts or when spawned
-void ADietEnemyBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ADietEnemyBase::HandleDeath()
 {
 	if (bIsDead) return;
 	bIsDead = true;
 	StopAI();
 
+	UItemDropManager* DropManager = UItemDropManager::Get(this);
+
 	if (ControllerLastAttacked) {
 		ADietPlayerState* DietPlayerState = ControllerLastAttacked->GetPlayerState<ADietPlayerState>();
-		if (DietPlayerState) {
-			DietPlayerState->GainExp(Exp);
+		if (DietPlayerState && DropManager) {
+			//DropManager->RequestDrop(GetActorLocation());
+			OnEnemyDeath.Broadcast(GetActorLocation(), Exp);
+			if (ADietGameState* GameState = GetWorld()->GetGameState<ADietGameState>())
+			{
+				GameState->AddKill();
+			}
 		}
 		else {
 			UE_LOG(LogTemp, Warning,
@@ -197,5 +219,10 @@ void ADietEnemyBase::AttackToTarget(AActor* Target)
 		UE_LOG(LogTemp, Warning,
 			TEXT("ADietEnemyBase::AttackToTarget, PoolObjectComponent is Null"));
 	}
+}
+
+void ADietEnemyBase::HandlePoolActive(bool bIsActive)
+{
+	MinimapTrackComponent->SetTracked(bIsActive);
 }
 

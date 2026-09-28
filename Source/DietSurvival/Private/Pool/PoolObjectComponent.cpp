@@ -17,6 +17,7 @@ void UPoolObjectComponent::OnAcquire(bool bIsNeedTick)
 	Owner->SetActorHiddenInGame(false);
 	Owner->SetActorEnableCollision(true);
 	Owner->SetActorTickEnabled(bIsNeedTick);
+	OnPoolActiveChanged.Broadcast(true);
 }
 
 void UPoolObjectComponent::OnRelease()
@@ -26,6 +27,7 @@ void UPoolObjectComponent::OnRelease()
 	Owner->SetActorHiddenInGame(true);
 	Owner->SetActorEnableCollision(false);
 	Owner->SetActorTickEnabled(false);
+	OnPoolActiveChanged.Broadcast(false);
 }
 
 bool UPoolObjectComponent::IsInPool() const

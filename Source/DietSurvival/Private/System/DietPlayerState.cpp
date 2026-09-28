@@ -1,15 +1,32 @@
 ﻿#include "System/DietPlayerState.h"
 #include "System/AugmentManagerComponent.h"
+#include "System/SkillManagerComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADietPlayerState::ADietPlayerState()
 {
+	// 경험치 점진적 증가를 위한 틱 On
+	PrimaryActorTick.bCanEverTick = true;
+
 	AugmentManager = CreateDefaultSubobject<UAugmentManagerComponent>(TEXT("AugmentManager"));
+	SkillManager = CreateDefaultSubobject<USkillManagerComponent>(TEXT("SkillManager"));
 }
 
 void ADietPlayerState::GainExp(int32 Amount)
 {
-	Exp += Amount;
+	if (Amount <= 0) return;
 
+	PendingExp += (float)Amount;
+}
+
+void ADietPlayerState::GainSkillItem()
+{
+	OnSkillUp.Broadcast();
+}
+
+void ADietPlayerState::ApplyExp(float Amount)
+{
+	Exp += Amount;
 	OnExpChanged.Broadcast(Exp, MaxExp);
 
 	// 레벨업 처리(한 번에 큰 경험치를 얻어 2레벨 이상 증가하는 경우 대비)
@@ -26,13 +43,42 @@ void ADietPlayerState::LevelUp()
 	Level++;
 	MaxExp += 5;
 
+	if (LevelUpSound)
+	{
+		UGameplayStatics::PlaySound2D(this, LevelUpSound);
+	}
+
 	OnLevelUp.Broadcast(Level);
+}
+
+void ADietPlayerState::ManageExp(float DeltaTime)
+{
+	// 적용할 경험치가 없다면 return
+	if (FMath::IsNearlyZero(PendingExp) || PendingExp <= 0.f) { return; }
+
+	// 이번 프레임에서 적용할 경험치 계산
+	// 적용해야할 경험치가 많이 쌓여있다면 경험치 적용 속도 빠르게
+	const float Multiplier = FMath::Clamp((PendingExp / ExpAbsorbRate), 1.f, MaxAbsorbRateMultiplier);
+	float TickExp = ExpAbsorbRate * DeltaTime * Multiplier;
+	TickExp = FMath::Min(TickExp, PendingExp);
+
+	if (FMath::IsNearlyZero(TickExp) || TickExp <= 0) { return; }
+	PendingExp -= TickExp;
+	ApplyExp(TickExp);
 }
 
 void ADietPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	//GetWorldTimerManager().SetTimer(TestExpTimer, this, &ADietPlayerState::TestGainExp, 1.f, true);
+}
+
+void ADietPlayerState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// 경험치 관련
+	ManageExp(DeltaTime);
 }
 
 void ADietPlayerState::TestGainExp()

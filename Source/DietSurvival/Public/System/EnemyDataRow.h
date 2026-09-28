@@ -21,4 +21,7 @@ struct FEnemyDataRow : public FTableRowBase // 데이터테이블 연동 시 FTa
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	int32 Exp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float SpawnInterval;
 };

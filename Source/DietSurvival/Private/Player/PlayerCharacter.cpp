@@ -1,4 +1,6 @@
 ﻿#include "Player/PlayerCharacter.h"
+#include "Player/Skill/Skill_Invincibility.h"
+#include "Player/Skill/Skill_AreaAttack.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -9,9 +11,11 @@
 #include "TimerManager.h"
 #include "Engine/Engine.h"
 #include "System/DietGameState.h"
+#include "UI/MainHUD.h"
 
  #include "Player/PlayerStatComponent.h"
  #include "Player/AttackComponent.h"
+ #include "Player/Skill/SkillComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -45,6 +49,7 @@ APlayerCharacter::APlayerCharacter()
 	//컴포넌트 생성
 	StatComponent = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("StatComponent"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -62,12 +67,16 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 
-		//이동속도 초기화
-		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		if (StatComponent)
 		{
-			if (StatComponent)
+			// 이벤트 구독 추가
+			StatComponent->OnMoveSpeedChanged.AddDynamic(this, &APlayerCharacter::HandleMoveSpeedChanged);
+			StatComponent->OnFullnessChanged.AddDynamic(this, &APlayerCharacter::HandleFullnessChanged);
+
+			// 초기 이동 속도 적용
+			if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
 			{
-				MoveComp->MaxWalkSpeed = StatComponent->GetMoveSpeed();
+				MoveComp->MaxWalkSpeed = StatComponent->GetEffectiveMoveSpeed();
 			}
 		}
 
@@ -100,6 +109,49 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		}
+
+		if (PauseAction)
+		{
+			EnhancedInput->BindAction(PauseAction, ETriggerEvent::Started, this, &APlayerCharacter::Pause);
+		}
+
+		if(ReloadAction)
+		{
+			EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &APlayerCharacter::Reload);
+		}
+
+		if (CycleSkillSlotAction)
+		{
+			EnhancedInput->BindAction(CycleSkillSlotAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnCycleSkillSlot);
+		}
+
+		if (UseSkillAction)
+		{
+			EnhancedInput->BindAction(UseSkillAction, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillInput);
+		}
+
+		if (UseSkillSlot1Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot1Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot1);
+		}
+		if (UseSkillSlot2Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot2Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot2);
+		}
+		if (UseSkillSlot3Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot3Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot3);
+		}
+		if (UseSkillSlot4Action)
+		{
+			EnhancedInput->BindAction(UseSkillSlot4Action, ETriggerEvent::Started, this, &APlayerCharacter::OnUseSkillSlot4);
+		}
+		if (ParallelAttackModifierAction)
+		{
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Started, this, &APlayerCharacter::OnParallelAttackModifierStarted);
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnParallelAttackModifierEnded);
+			EnhancedInput->BindAction(ParallelAttackModifierAction, ETriggerEvent::Canceled, this, &APlayerCharacter::OnParallelAttackModifierEnded); //일시정지 등의 상황
+		}
 	}
 }
 
@@ -123,7 +175,6 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	UE_LOG(LogTemp, Warning, TEXT("Look called: %s"), *LookAxisVector.ToString());
 	if (!Controller)
 	{
 		return;
@@ -134,6 +185,86 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 	//상하
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void APlayerCharacter::Pause()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC) { return; }
+
+	if (AMainHUD* HUD = PC->GetHUD<AMainHUD>())
+	{
+		HUD->ShowPauseMenu();
+	}
+}
+
+void APlayerCharacter::Reload()
+{
+	if (AttackComponent)
+	{
+		AttackComponent->ReloadAmmo();
+	}
+}
+
+void APlayerCharacter::OnCycleSkillSlot(const FInputActionValue& Value)
+{
+	if (!SkillComponent)
+	{
+		return;
+	}
+
+	const float AxisValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(AxisValue))
+	{
+		return;
+	}
+
+	SkillComponent->CycleSelectedSlot(AxisValue > 0.f ? 1 : -1);
+}
+
+void APlayerCharacter::OnUseSkillInput(const FInputActionValue& Value)
+{
+	if (SkillComponent)
+	{
+		// 선택된 슬롯이 비어있으면 그냥 실패 처리됨
+		SkillComponent->TryActivateSelectedSlot();
+	}
+}
+
+void APlayerCharacter::OnUseSkillSlot1(const FInputActionValue& Value) { UseSkillSlotByNumber(0); }
+void APlayerCharacter::OnUseSkillSlot2(const FInputActionValue& Value) { UseSkillSlotByNumber(1); }
+void APlayerCharacter::OnUseSkillSlot3(const FInputActionValue& Value) { UseSkillSlotByNumber(2); }
+void APlayerCharacter::OnUseSkillSlot4(const FInputActionValue& Value) { UseSkillSlotByNumber(3); }
+
+void APlayerCharacter::UseSkillSlotByNumber(int32 SlotIndex)
+{
+	if (!SkillComponent)
+	{
+		return;
+	}
+	SkillComponent->SetSelectedSlot(SlotIndex);
+	SkillComponent->TryActivateSkill(SlotIndex);
+}
+
+void APlayerCharacter::HandleFullnessChanged(float NewFullness, float MaxFullnessValue)
+{
+	// 포만감이 변경되어 임계값을 넘어가면 이동속도 변경
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		if (StatComponent)
+		{
+			MoveComp->MaxWalkSpeed = StatComponent->GetEffectiveMoveSpeed();
+		}
+	}
+}
+
+//변경된 이동속도를 캐릭터 무브먼트 컴포넌트에 적용
+void APlayerCharacter::HandleMoveSpeedChanged(float NewEffectiveSpeed)
+{
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		MoveComp->MaxWalkSpeed = NewEffectiveSpeed;
+	}
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -177,4 +308,50 @@ void APlayerCharacter::EndHitInvincibility()
 {
 	bIsHitInvincible = false;
 	OnInvincibilityChanged.Broadcast(false);
+}
+
+void APlayerCharacter::ActivateTemporaryInvincibility(float Duration)
+{
+	bIsSkillInvincible = true;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 시작 (%.1f초)"), Duration);
+
+	/*if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, Duration, FColor::Cyan,
+			FString::Printf(TEXT("스킬 무적 ON (%.1f초)"), Duration));
+	}*/
+
+	GetWorldTimerManager().SetTimer(
+		SkillInvincibilityTimerHandle,
+		this,
+		&APlayerCharacter::EndSkillInvincibility,
+		Duration,
+		false
+	);
+}
+
+void APlayerCharacter::EndSkillInvincibility()
+{
+	bIsSkillInvincible = false;
+	OnInvincibilityChanged.Broadcast(IsInvincible());
+
+	UE_LOG(LogTemp, Log, TEXT("[PlayerCharacter] 스킬 무적 종료"));
+}
+
+void APlayerCharacter::OnParallelAttackModifierStarted(const FInputActionValue& Value)
+{
+	if (AttackComponent)
+	{
+		AttackComponent->SetParallelSpreadMode(true);
+	}
+}
+
+void APlayerCharacter::OnParallelAttackModifierEnded(const FInputActionValue& Value)
+{
+	if (AttackComponent)
+	{
+		AttackComponent->SetParallelSpreadMode(false);
+	}
 }

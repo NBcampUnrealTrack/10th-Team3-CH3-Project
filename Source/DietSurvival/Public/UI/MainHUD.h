@@ -10,9 +10,12 @@ class ADietPlayerState;
 class UPlayerStatComponent;
 class UAugmentSelectionWidget;
 class UResultWidget;
+class UDamageNumberWidget;
 class ADietGameState;
-class APlayerCharacter;
 class UAttackComponent;
+class UMinimapWidget;
+class UBossAlertWidget;
+class UBossStatusWidget;
 
 UENUM()
 enum class EUILayer : uint8
@@ -20,6 +23,7 @@ enum class EUILayer : uint8
 	HUD = 0,
 	DamageNumber = 50,
 	AugmentSelect = 100,
+	BossAlert = 150,
 	PauseMenu = 200,
 };
 
@@ -34,10 +38,10 @@ public:
 
 	void ShowMainHUD();
 
-	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowPauseMenu();
 
-	UFUNCTION(Exec, BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HidePauseMenu();
 
 	UAugmentSelectionWidget* ShowAugmentSelect(const TArray<TTuple<FName, int32>>& Augments);
@@ -54,7 +58,13 @@ protected:
 	void BindDelegates();
 
 	UFUNCTION()
-	void HandleExpChanged(int32 CurrentExp, int32 MaxExp);
+	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	void BindPawnDelegates(APawn* Pawn);
+	void UnbindPawnDelegates();
+
+	UFUNCTION()
+	void HandleExpChanged(float CurrentExp, float MaxExp);
 
 	UFUNCTION()
 	void HandleLevelUp(int32 NewLevel);
@@ -63,18 +73,33 @@ protected:
 	void HandleFullnessChanged(float NewFullness, float MaxFullness);
 
 	UFUNCTION()
-	void HandleWaveIncrease(int32 CurrentWave);
-
-	void RefreshTimer();
-
-	UFUNCTION()
-	void HandleInvincibilityChanged(bool bIsNowInvincible);
-
-	UFUNCTION()
-	void HandleGameOver();
+	void HandleElapsedTimeUpdated(float ElapsedSeconds);
 
 	UFUNCTION()
 	void HandleAttackHit(AActor* HitActor, float DamageAmount);
+
+	UFUNCTION()
+	void HandleCurrentAmmoChanged(int32 CurrentAmmo);
+
+	UFUNCTION()
+	void HandleReloadStart();
+
+	UFUNCTION()
+	void HandleFullnessMax();
+
+	UFUNCTION()
+	void HandleTimeUp();
+
+	UFUNCTION()
+	void HandleBossPhaseStarted();
+
+	UFUNCTION()
+	void HandleBossPhaseTimeChanged(float RemainingSeconds);
+
+	UFUNCTION()
+	void HandleKillCountChanged(int32 KillCount);
+
+	void ShowDamageNumber(AActor* HitActor, float Damage);
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserHUDWidget> UserHUDWidgetClass;
@@ -87,6 +112,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UResultWidget> ResultWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UDamageNumberWidget> DamageNumberWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UMinimapWidget> MinimapWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBossAlertWidget> BossAlertWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBossStatusWidget> BossStatusWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UAugmentSelectionWidget> AugmentSelectWidget;
@@ -101,6 +138,12 @@ protected:
 	TObjectPtr<UResultWidget> ResultWidget;
 
 	UPROPERTY()
+	TObjectPtr<UMinimapWidget> MinimapWidget;
+
+	UPROPERTY()
+	TObjectPtr<UBossStatusWidget> BossStatusWidget;
+
+	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPlayerState;
 
 	UPROPERTY()
@@ -109,12 +152,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ADietGameState> CachedGameState;
 
-	FTimerHandle TimerRefreshHandle;
-
-	UPROPERTY()
-	TObjectPtr<APlayerCharacter> CachedPlayerCharacter;
-
 	UPROPERTY()
 	TObjectPtr<UAttackComponent> CachedAttackComp;
-
+	float LastFullness = 0.f;
 };

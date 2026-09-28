@@ -10,8 +10,11 @@ class UBehaviorTree;
 class ADietAIController;
 class UHealthComponent;
 class UPoolObjectComponent;
+class UMinimapTrackComponent;
 
 struct FEnemyDataRow;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEnemyDeath, FVector, SpawnLocation, int32, MyExp);
 
 UCLASS()
 class DIETSURVIVAL_API ADietEnemyBase : public ACharacter
@@ -34,6 +37,10 @@ public:
 	virtual void RunAI();
 
 	virtual void StopAI();
+
+	UPROPERTY(BlueprintAssignable, Category="Exp")
+	FOnEnemyDeath OnEnemyDeath;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Attribute")
@@ -49,13 +56,16 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
+	void HandlePoolActive(bool bIsActive);
+
+	UFUNCTION()
 	virtual void HandleDeath();
 
 	UFUNCTION()
 	virtual void AttackToTarget(AActor* Target);
 
 	UFUNCTION()
-	void OnCapsuleOverlap(
+	virtual void OnCapsuleOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -69,6 +79,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY(VisibleAnywhere, Category = "Minimap")
+	TObjectPtr<UMinimapTrackComponent> MinimapTrackComponent;
+
 	UPROPERTY()
 	TObjectPtr<ADietAIController> DietAIController;
 	UPROPERTY()

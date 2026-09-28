@@ -5,6 +5,7 @@
 #include "PlayerCharacterController.generated.h"
 
 class UAugmentSelectionComponent;
+class USkillSelectionComponent;
 
 UCLASS()
 class DIETSURVIVAL_API APlayerCharacterController : public APlayerController
@@ -16,6 +17,9 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Augment")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<UAugmentSelectionComponent> AugmentSelectionComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Diet")
+	TObjectPtr<USkillSelectionComponent> SkillSelectionComponent;
 };

@@ -5,9 +5,11 @@
 #include "DietPlayerState.generated.h"
 
 class UAugmentManagerComponent;
+class USkillManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUpSignature, int32, NewLevel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, int32, CurrentExp, int32, MaxExp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillUpSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExpChangedSignature, float, CurrentExp, float, MaxExp);
 
 UCLASS()
 class DIETSURVIVAL_API ADietPlayerState : public APlayerState
@@ -20,14 +22,23 @@ public:
 	// 캐릭터가 Amount만큼의 경험치를 획득
 	void GainExp(int32 Amount);
 
+	UFUNCTION()
+	void GainSkillItem();
+
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnLevelUpSignature OnLevelUp;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill")
+	FOnSkillUpSignature OnSkillUp;
 
 	UPROPERTY(BlueprintAssignable, Category = "Exp")
 	FOnExpChangedSignature OnExpChanged;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet|Augment")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<UAugmentManagerComponent> AugmentManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Diet")
+	TObjectPtr<USkillManagerComponent> SkillManager;
 	
 	FORCEINLINE int32 GetCurrentLevel() { return Level; }
 
@@ -36,17 +47,40 @@ public:
 	FORCEINLINE int32 GetMaxExp() { return MaxExp; }
 
 protected:
+	void ApplyExp(float Amount);
+
 	void LevelUp();
+
+	void ManageExp(float DeltaTime);
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
-	int32 Exp = 0;
+	// ----- 경험치, 레벨 -----
 
-	int32 MaxExp = 10;
-
+	float Exp = 0;
+	float MaxExp = 10;
 	int32 Level = 1;
 
+	// ----- 경험치 대기열(점진적 경험치 증가) -----
+
+	// 초당 적용할 경험치
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float ExpAbsorbRate = 5.f;
+
+	// 경험치가 많이 쌓이면 경험치 적용 속도를 빠르게
+	UPROPERTY(EditDefaultsOnly, Category = "EXP")
+	float MaxAbsorbRateMultiplier = 10.f;
+
+	float PendingExp = 0.f;
+
+	// ----- 사운드 -----
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Exp")
+	TObjectPtr<USoundBase> LevelUpSound;
+	
+	// ----- 경험치 증가 테스트용 -----
 	FTimerHandle TestExpTimer;
 	void TestGainExp();
 };

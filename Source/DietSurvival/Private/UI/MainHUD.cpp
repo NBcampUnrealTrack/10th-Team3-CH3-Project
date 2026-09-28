@@ -8,16 +8,27 @@
 #include "UI/ResultWidget.h"
 #include "GameFramework/Pawn.h"
 #include "System/DietGameState.h"
-#include "Player/PlayerCharacter.h"
 #include "Player/AttackComponent.h"
+#include "UI/DamageNumberWidget.h"
+#include "UI/MinimapWidget.h"
+#include "UI/BossAlertWidget.h"
+#include "UI/BossStatusWidget.h"
+#include "Enemy/DietBossEnemy.h"
 
 void AMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetUIInputMode(false);
+
 	ShowMainHUD();
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &AMainHUD::BindDelegates);
+
+	if (APlayerController* PC = GetOwningPlayerController())
+	{
+		PC->OnPossessedPawnChanged.AddDynamic(this, &AMainHUD::HandlePossessedPawnChanged);
+	}
 }
 
 void AMainHUD::ShowMainHUD()
@@ -34,6 +45,12 @@ void AMainHUD::ShowMainHUD()
 	}
 
 	UserHUDWidget->AddToViewport(static_cast<int32>(EUILayer::HUD));
+
+	if (MinimapWidgetClass)
+	{
+		MinimapWidget = CreateWidget<UMinimapWidget>(GetOwningPlayerController(), MinimapWidgetClass);
+		if (MinimapWidget) { MinimapWidget->AddToViewport(static_cast<int32>(EUILayer::HUD)); }
+	}
 }
 
 void AMainHUD::ShowPauseMenu()
@@ -119,6 +136,7 @@ void AMainHUD::ShowResult(bool bWin)
 
 	ResultWidget->AddToViewport(static_cast<int32>(EUILayer::PauseMenu));
 	ResultWidget->OnResultReady(bWin);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	SetUIInputMode(true);
 }
 
@@ -132,10 +150,8 @@ void AMainHUD::HideResult()
 	ResultWidget->RemoveFromParent();
 	ResultWidget = nullptr;
 
-	if (!UGameplayStatics::IsGamePaused(GetWorld()))
-	{
-		SetUIInputMode(false);
-	}
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	SetUIInputMode(false);
 }
 
 void AMainHUD::SetUIInputMode(bool bUIOnly)
@@ -176,37 +192,18 @@ void AMainHUD::BindDelegates()
 		HandleLevelUp(CachedPlayerState->GetCurrentLevel());
 	}
 
-	APawn* Pawn = PC->GetPawn();
-	CachedStatComp = Pawn ? Pawn->FindComponentByClass<UPlayerStatComponent>() : nullptr;
-	if (CachedStatComp)
-	{
-		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
-		CachedStatComp->OnFullnessMax.AddDynamic(this, &AMainHUD::HandleGameOver);
-
-		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
-		UserHUDWidget->SetFullnessWarning(CachedStatComp->IsGameOver());
-	}
-
-	CachedPlayerCharacter = Cast<APlayerCharacter>(Pawn);
-	if (CachedPlayerCharacter)
-	{
-		CachedPlayerCharacter->OnInvincibilityChanged.AddDynamic(this, &AMainHUD::HandleInvincibilityChanged);
-	}
-
-	CachedAttackComp = Pawn ? Pawn->FindComponentByClass<UAttackComponent>() : nullptr;
-	if (CachedAttackComp)
-	{
-		CachedAttackComp->OnAttackHit.AddDynamic(this, &AMainHUD::HandleAttackHit);
-	}
+	BindPawnDelegates(PC->GetPawn());
 
 	CachedGameState = GetWorld()->GetGameState<ADietGameState>();
 	if (CachedGameState)
 	{
-		CachedGameState->OnWaveIncrease.AddDynamic(this, &AMainHUD::HandleWaveIncrease);
+		CachedGameState->OnBossPhaseTimeUp.AddDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->UpdateElapsedTime.AddDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->OnBossPhaseStarted.AddDynamic(this, &AMainHUD::HandleBossPhaseStarted);
+		CachedGameState->OnBossPhaseTimeChanged.AddDynamic(this, &AMainHUD::HandleBossPhaseTimeChanged);
+		CachedGameState->OnKillCountChanged.AddDynamic(this, &AMainHUD::HandleKillCountChanged);
+		HandleKillCountChanged(CachedGameState->GetKillCount());
 
-		HandleWaveIncrease(CachedGameState->GetCurrentWave());
-		RefreshTimer();
-		GetWorldTimerManager().SetTimer(TimerRefreshHandle, this, &AMainHUD::RefreshTimer, 1.f, true);
 	}
 }
 
@@ -218,32 +215,26 @@ void AMainHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		CachedPlayerState->OnLevelUp.RemoveDynamic(this, &AMainHUD::HandleLevelUp);
 	}
 
-	if (CachedStatComp)
-	{
-		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
-		CachedStatComp->OnFullnessMax.RemoveDynamic(this, &AMainHUD::HandleGameOver);
-	}
+	UnbindPawnDelegates();
 
-	if (CachedPlayerCharacter)
+	if (APlayerController* PC = GetOwningPlayerController())
 	{
-		CachedPlayerCharacter->OnInvincibilityChanged.RemoveDynamic(this, &AMainHUD::HandleInvincibilityChanged);
-	}
-
-	if (CachedAttackComp)
-	{
-		CachedAttackComp->OnAttackHit.RemoveDynamic(this, &AMainHUD::HandleAttackHit);
+		PC->OnPossessedPawnChanged.RemoveDynamic(this, &AMainHUD::HandlePossessedPawnChanged);
 	}
 
 	if (CachedGameState)
 	{
-		CachedGameState->OnWaveIncrease.RemoveDynamic(this, &AMainHUD::HandleWaveIncrease);
+		CachedGameState->OnBossPhaseTimeUp.RemoveDynamic(this, &AMainHUD::HandleTimeUp);
+		CachedGameState->UpdateElapsedTime.RemoveDynamic(this, &AMainHUD::HandleElapsedTimeUpdated);
+		CachedGameState->OnBossPhaseStarted.RemoveDynamic(this, &AMainHUD::HandleBossPhaseStarted);
+		CachedGameState->OnBossPhaseTimeChanged.RemoveDynamic(this, &AMainHUD::HandleBossPhaseTimeChanged);
+		CachedGameState->OnKillCountChanged.RemoveDynamic(this, &AMainHUD::HandleKillCountChanged);
 	}
-	GetWorldTimerManager().ClearTimer(TimerRefreshHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
 
-void AMainHUD::HandleExpChanged(int32 CurrentExp, int32 MaxExp)
+void AMainHUD::HandleExpChanged(float CurrentExp, float MaxExp)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetExp(CurrentExp, MaxExp);
@@ -259,35 +250,144 @@ void AMainHUD::HandleFullnessChanged(float NewFullness, float MaxFullness)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->SetFullness(NewFullness, MaxFullness);
+	UserHUDWidget->SetFullnessWarning(MaxFullness > 0.f ? NewFullness / MaxFullness : 0.f);
+	if (NewFullness > LastFullness) { UserHUDWidget->PlayHitFlash(); }
+	LastFullness = NewFullness;
 }
 
-void AMainHUD::HandleWaveIncrease(int32 CurrentWave)
+void AMainHUD::HandleElapsedTimeUpdated(float ElapsedSeconds)
 {
 	if (!UserHUDWidget) { return; }
-	UserHUDWidget->SetWave(CurrentWave);
-}
-
-void AMainHUD::RefreshTimer()
-{
-	if (!UserHUDWidget || !CachedGameState) { return; }
-	UserHUDWidget->SetTimer(CachedGameState->GetElapsedTime());
-}
-
-
-void AMainHUD::HandleInvincibilityChanged(bool bIsNowInvincible)
-{
-	if (!UserHUDWidget || !bIsNowInvincible) { return; }
-	UserHUDWidget->PlayHitFlash();
-}
-
-void AMainHUD::HandleGameOver()
-{
-	if (!UserHUDWidget) { return; }
-	UserHUDWidget->SetFullnessWarning(true);
+	UserHUDWidget->SetTimer(ElapsedSeconds);
 }
 
 void AMainHUD::HandleAttackHit(AActor* HitActor, float DamageAmount)
 {
 	if (!UserHUDWidget) { return; }
 	UserHUDWidget->PlayHitMarker();
+	ShowDamageNumber(HitActor, DamageAmount);
+}
+
+void AMainHUD::HandleCurrentAmmoChanged(int32 CurrentAmmo)
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetAmmo(CurrentAmmo);
+	UserHUDWidget->FinishReload();
+}
+
+void AMainHUD::HandleReloadStart()
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->StartReload();
+}
+
+void AMainHUD::ShowDamageNumber(AActor* HitActor, float Damage)
+{
+	APlayerController* PC = GetOwningPlayerController();
+	if (!PC || !HitActor || !DamageNumberWidgetClass) { return; }
+
+	UDamageNumberWidget* Widget = CreateWidget<UDamageNumberWidget>(PC, DamageNumberWidgetClass);
+	if (!Widget) { return; }
+
+	Widget->AttachToActor(HitActor);
+	Widget->AddToViewport(static_cast<int32>(EUILayer::DamageNumber));
+	Widget->SetDamage(Damage);
+}
+
+
+void AMainHUD::BindPawnDelegates(APawn* Pawn)
+{
+	UnbindPawnDelegates();
+	if (!Pawn || !UserHUDWidget) { return; }
+
+	CachedStatComp = Pawn->FindComponentByClass<UPlayerStatComponent>();
+	if (CachedStatComp)
+	{
+		CachedStatComp->OnFullnessChanged.AddDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnFullnessMax.AddDynamic(this, &AMainHUD::HandleFullnessMax);
+		LastFullness = CachedStatComp->GetFullness();
+		HandleFullnessChanged(CachedStatComp->GetFullness(), CachedStatComp->GetMaxFullness());
+	}
+
+	CachedAttackComp = Pawn->FindComponentByClass<UAttackComponent>();
+	if (CachedAttackComp)
+	{
+		CachedAttackComp->OnAttackHit.AddDynamic(this, &AMainHUD::HandleAttackHit);
+		CachedAttackComp->OnCurrentAmmoChanged.AddDynamic(this, &AMainHUD::HandleCurrentAmmoChanged);
+		CachedAttackComp->OnReloadStart.AddDynamic(this, &AMainHUD::HandleReloadStart);
+
+		HandleCurrentAmmoChanged(CachedStatComp->GetMaxAmmo());
+	}
+}
+
+void AMainHUD::UnbindPawnDelegates()
+{
+	if (CachedStatComp)
+	{
+		CachedStatComp->OnFullnessChanged.RemoveDynamic(this, &AMainHUD::HandleFullnessChanged);
+		CachedStatComp->OnFullnessMax.RemoveDynamic(this, &AMainHUD::HandleFullnessMax);
+		CachedStatComp = nullptr;
+	}
+
+	if (CachedAttackComp)
+	{
+		CachedAttackComp->OnAttackHit.RemoveDynamic(this, &AMainHUD::HandleAttackHit);
+		CachedAttackComp->OnCurrentAmmoChanged.RemoveDynamic(this, &AMainHUD::HandleCurrentAmmoChanged);
+		CachedAttackComp->OnReloadStart.RemoveDynamic(this, &AMainHUD::HandleReloadStart);
+		CachedAttackComp = nullptr;
+	}
+}
+
+void AMainHUD::HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
+{
+	BindPawnDelegates(NewPawn);
+}
+
+void AMainHUD::HandleFullnessMax()
+{
+	ShowResult(false);
+}
+
+void AMainHUD::HandleTimeUp()
+{
+	ShowResult(false);
+}
+
+void AMainHUD::HandleBossPhaseStarted()
+{
+	if (BossAlertWidgetClass)
+	{
+		if (UBossAlertWidget* Widget = CreateWidget<UBossAlertWidget>(GetOwningPlayerController(), BossAlertWidgetClass))
+		{
+			Widget->AddToViewport(static_cast<int32>(EUILayer::BossAlert));
+		}
+	}
+
+	if (BossStatusWidget || !BossStatusWidgetClass)
+	{
+		return;
+	}
+
+	BossStatusWidget = CreateWidget<UBossStatusWidget>(GetOwningPlayerController(), BossStatusWidgetClass);
+	if (!BossStatusWidget)
+	{
+		return;
+	}
+
+	BossStatusWidget->AddToViewport(static_cast<int32>(EUILayer::HUD));
+	// 보스 스폰 직후 방송되므로 이 시점엔 보스가 월드에 있음 (DietGameMode::HandleTimeUp)
+	BossStatusWidget->SetBoss(Cast<ADietBossEnemy>(UGameplayStatics::GetActorOfClass(this, ADietBossEnemy::StaticClass())));
+}
+
+void AMainHUD::HandleBossPhaseTimeChanged(float RemainingSeconds)
+{
+	if (!BossStatusWidget) { return; }
+	BossStatusWidget->SetRemainingTime(RemainingSeconds);
+}
+
+void AMainHUD::HandleKillCountChanged(int32 KillCount)
+{
+	if (!UserHUDWidget) { return; }
+	UserHUDWidget->SetKillCount(KillCount);
+	if (KillCount > 0) { UserHUDWidget->PlayKillConfirm(); }
 }

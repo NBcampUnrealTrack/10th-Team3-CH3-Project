@@ -1,10 +1,11 @@
 ﻿#include "UI/AugmentCardWidget.h"
 #include "System/DataTableSubsystem.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 {
-	AugmentFName = InAugmentFName;
+	Super::SetupCard(InAugmentFName, InAugmentLevel);
 
 	if (UDataTableSubsystem* Subsystem = UDataTableSubsystem::Get(this))
 	{
@@ -22,23 +23,10 @@ void UAugmentCardWidget::SetupCard(FName InAugmentFName, int32 InAugmentLevel)
 		NumberFormat.SetMaximumFractionalDigits(FractionalDigit);
 		NumberFormat.SetMinimumFractionalDigits(FractionalDigit);
 		FText Delta = FText::AsNumber(StatAmount, &NumberFormat);
-
 		FText AugmentDescription = FText::Format(Description, Delta);
-		OnCardDataReady(FText::FromName(InAugmentFName), AugmentDescription);
+
+		FText NameFormat = FText::Format(Subsystem->GetAugmentUIName(InAugmentFName), InAugmentLevel + 1);
+		NameText->SetText(NameFormat);
+		DescriptionText->SetText(AugmentDescription);
 	}
-}
-
-void UAugmentCardWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	if (CardButton)
-	{
-		CardButton->OnClicked.AddDynamic(this, &UAugmentCardWidget::HandleButtonClicked);
-	}
-}
-
-void UAugmentCardWidget::HandleButtonClicked()
-{
-	OnCardClicked.Broadcast(AugmentFName);
 }
