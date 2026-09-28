@@ -13,7 +13,7 @@
 ADietBossEnemy::ADietBossEnemy()
 {
 	HealthComponent->Initailize(BossMaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("[BossEnemy::BeginPlay] (test)fire !"));
+	//UE_LOG(LogTemp, Warning, TEXT("[BossEnemy::BeginPlay] (test)fire !"));
 }
 
 void ADietBossEnemy::BeginPlay()
