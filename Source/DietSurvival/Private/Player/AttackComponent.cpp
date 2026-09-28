@@ -327,6 +327,21 @@ void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& V
 		);
 
 		OnAttackHit.Broadcast(HitResult.GetActor(), DamageAmount);
+
+		// 히트 소리 재생
+		if (HitSound)
+		{
+			TWeakObjectPtr<UAttackComponent> WeakThis(this);
+			GetWorld()->GetTimerManager().SetTimer(PlayHitTimer, [WeakThis]() {
+				if (WeakThis.IsValid())
+				{
+					UAttackComponent* StrongThis = WeakThis.Get();
+					UGameplayStatics::PlaySound2D(StrongThis, StrongThis->HitSound);
+				}
+			},
+				0.1f,
+				false);
+		}
 	}
 }
 
