@@ -29,6 +29,8 @@ void ADietBossEnemy::BeginPlay()
 	{
 		UGameplayStatics::PlaySound2D(this, SpawnSound);
 	}
+
+	HealthComponent->Initailize(BossMaxHealth);
 }
 
 void ADietBossEnemy::FireProjectileAt(FVector TargetLocation)
