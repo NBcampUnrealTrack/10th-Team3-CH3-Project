@@ -113,10 +113,12 @@ void UAttackComponent::PerformAttack()
 
 		if (bUseParallelSpreadMode)
 		{
+			const float DamageMultiplier = (DirectionCount > 1) ? ParallelModeDamageMultiplier : 1.f;
+
 			// 집중 공격: 각도는 그대로 정면 고정, 좌우로만 나란히 오프셋
 			for (const float LateralOffset : GetParallelOffsets(DirectionCount))
 			{
-				FireParallelTrace(Start, ViewRotation, LateralOffset, Range);
+				FireParallelTrace(Start, ViewRotation, LateralOffset, Range, DamageMultiplier);
 			}
 		}
 		else
@@ -250,7 +252,7 @@ void UAttackComponent::FireTraceInDirection(const FVector& Start, const FRotator
 	}
 }
 
-void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range)
+void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& ViewRotation, float LateralOffset, float Range, float DamageMultiplier)
 {
 	AActor* Owner = GetOwner();
 	if (!Owner)
@@ -287,7 +289,7 @@ void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& V
 		const float BaseDamage = CachedStatComponent ? CachedStatComponent->GetAttackPower() : 10.f;
 
 		// 데미지 감소 배율 적용
-		const float DamageAmount = BaseDamage * ParallelModeDamageMultiplier;
+		const float DamageAmount = BaseDamage * DamageMultiplier;
 
 		UGameplayStatics::ApplyDamage(
 			HitResult.GetActor(), DamageAmount,
