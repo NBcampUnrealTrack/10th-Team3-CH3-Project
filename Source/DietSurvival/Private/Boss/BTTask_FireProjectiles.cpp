@@ -31,6 +31,8 @@ EBTNodeResult::Type UBTTask_FireProjectiles::ExecuteTask(UBehaviorTreeComponent&
 
 	CachedOwnerComp = &OwnerComp;
 	RemainingShots = ShotCount;
+
+	CachedBoss->PlayThrowSound();
 	FireNext();
 
 	return EBTNodeResult::InProgress;
