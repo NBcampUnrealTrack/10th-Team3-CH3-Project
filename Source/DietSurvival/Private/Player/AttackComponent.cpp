@@ -120,6 +120,12 @@ void UAttackComponent::PerformAttack()
 			{
 				FireParallelTrace(Start, ViewRotation, LateralOffset, Range, DamageMultiplier);
 			}
+
+			// 집중 공격 발사 소리 재생
+			if (FireSounds.IsValidIndex(1))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSounds[1], GetOwner()->GetActorLocation());
+			}
 		}
 		else
 		{
@@ -128,18 +134,18 @@ void UAttackComponent::PerformAttack()
 			{
 				FireTraceInDirection(Start, ViewRotation, YawOffset, Range);
 			}
+
+			// 총 발사 소리 재생
+			if (FireSounds.IsValidIndex(0))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSounds[0], GetOwner()->GetActorLocation());
+			}
 		}
 	}
 
 	// 현재 탄알 수 감소
 	CurrentAmmo--;
 	OnCurrentAmmoChanged.Broadcast(CurrentAmmo);
-
-	// 총 발사 소리 재생
-	if (FireSounds.Num() != 0)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSounds[0], GetOwner()->GetActorLocation());
-	}
 
 	// 탄알이 다 떨어졌으면 재장전 후 바로 다음 공격 수행.
 	if (CurrentAmmo <= 0)
@@ -267,12 +273,36 @@ void UAttackComponent::FireParallelTrace(const FVector& Start, const FRotator& V
 	const FVector Forward = ViewRotation.Vector();
 	const FVector End = OffsetStart + Forward * Range;
 
+	// 이펙트 그리는 용도 끝 좌표
+	FVector TrailEnd = End;
+
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(Owner);
 
 	FHitResult HitResult;
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, OffsetStart, End, TraceChannel, QueryParams);
 	const bool bHitEnemy = bHit && HitResult.GetActor() && HitResult.GetActor()->ActorHasTag(TEXT("Enemy"));
+
+	// 총알 경로 이펙트
+	if (bHit)
+	{
+		TrailEnd = HitResult.ImpactPoint;
+	}
+
+	if (PowerAttackTrailSystem)
+	{
+		UNiagaraComponent* TrailComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			PowerAttackTrailSystem,
+			Start
+		);
+
+		if (TrailComp)
+		{
+			TrailComp->SetNiagaraVariableVec3(TEXT("User.BeamStart"), Start);
+			TrailComp->SetNiagaraVariableVec3(TEXT("User.BeamEnd"), TrailEnd);
+		}
+	}
 
 	if (bDrawDebugTrace)
 	{
@@ -396,7 +426,12 @@ void UAttackComponent::ReloadAmmo()
 		&UAttackComponent::OnReloadFinished,
 		CachedStatComponent ? CachedStatComponent->GetReloadTime() : 1.f,
 		false
-	);	
+	);
+
+	if (ReloadSound)
+	{
+		UGameplayStatics::PlaySound2D(this, ReloadSound);
+	}
 }
 
 void UAttackComponent::OnReloadFinished()
