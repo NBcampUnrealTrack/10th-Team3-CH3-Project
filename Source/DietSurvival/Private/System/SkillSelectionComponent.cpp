@@ -6,24 +6,11 @@
 
 #include "Player/PlayerCharacter.h"
 #include "Player/Skill/SkillComponent.h"
+#include "Player/PlayerCharacterController.h"
 
 USkillSelectionComponent::USkillSelectionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-}
-
-void USkillSelectionComponent::HandleSkillUp()
-{
-	HandlePending();
-}
-
-void USkillSelectionComponent::TryBindToDelegate()
-{
-	APlayerController* PC = GetOwningController();
-	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
-	if (!CachedPS) { return; }
-
-	CachedPS->OnSkillUp.AddDynamic(this, &USkillSelectionComponent::HandleSkillUp);
 }
 
 void USkillSelectionComponent::LoadCandidates()

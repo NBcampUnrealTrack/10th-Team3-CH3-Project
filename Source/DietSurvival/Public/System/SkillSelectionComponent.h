@@ -14,10 +14,9 @@ public:
 	USkillSelectionComponent();
 	
 protected:
-	UFUNCTION()
-	void HandleSkillUp();
+	/*UFUNCTION()
+	void HandleSkillUp();*/
 
-	virtual void TryBindToDelegate() override;
 	virtual void LoadCandidates() override;
 	virtual void InitializeSelectionWidget() override;
 	virtual void ApplyAugment(FName AugmentFName, int32 Level) override;
