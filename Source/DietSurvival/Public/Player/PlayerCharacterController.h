@@ -22,4 +22,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Diet")
 	TObjectPtr<USkillSelectionComponent> SkillSelectionComponent;
+
+	// 동시에 levelup, skillup을 broadcast.
+	UFUNCTION(Exec)
+	void ExecBroadCastAugments();
 };
