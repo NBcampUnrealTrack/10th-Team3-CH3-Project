@@ -19,10 +19,8 @@ void USkillSelectionComponent::HandleSkillUp()
 
 void USkillSelectionComponent::TryBindToDelegate()
 {
-	APlayerController* PC = GetOwningController();
-	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
+	Super::TryBindToDelegate();
 	if (!CachedPS) { return; }
-
 	CachedPS->OnSkillUp.AddDynamic(this, &USkillSelectionComponent::HandleSkillUp);
 }
 

@@ -21,10 +21,8 @@ void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
 
 void UAugmentSelectionComponent::TryBindToDelegate()
 {
-	APlayerController* PC = GetOwningController();
-	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
+	Super::TryBindToDelegate();
 	if (!CachedPS) { return; }
-
 	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
 }
 

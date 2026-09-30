@@ -52,6 +52,8 @@ void UTemplateAugSelectionCompBase::HandleAugmentChosen(FName ChosenAugmentFName
 
 void UTemplateAugSelectionCompBase::TryBindToDelegate()
 {
+	APlayerController* PC = GetOwningController();
+	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
 }
 
 void UTemplateAugSelectionCompBase::StartSelection()
