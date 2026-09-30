@@ -13,18 +13,6 @@ USkillSelectionComponent::USkillSelectionComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-//void USkillSelectionComponent::HandleSkillUp()
-//{
-//	HandlePending();
-//}
-
-void USkillSelectionComponent::TryBindToDelegate()
-{
-	Super::TryBindToDelegate();
-	//if (!CachedPS) { return; }
-	//CachedPS->OnSkillUp.AddDynamic(this, &USkillSelectionComponent::HandleSkillUp);
-}
-
 void USkillSelectionComponent::LoadCandidates()
 {
 	CachedCandidates = CachedPS->SkillManager->GetSkillList();

@@ -29,9 +29,6 @@ protected:
 
 	// ----- 상속받은 컴포넌트가 오버라이딩 해야하는 함수 -----
 
-	// PlayerState를 캐시하고 OnLevelUp, OnSkillUp 등의 이벤트에 핸들러 바인딩
-	UFUNCTION()
-	virtual void TryBindToDelegate();
 	// CachedCandidates에 최대 3개의 증강 저장
 	virtual void LoadCandidates();
 	// InitializeCards(), Delegate 바인딩 수행
@@ -40,7 +37,8 @@ protected:
 	virtual void ApplyAugment(FName AugmentFName, int32 Level);
 
 	void FinishSelection();
-	//void HandlePending();
+	// PlayerState를 캐시
+	void CachePlayerState();
 
 	FORCEINLINE APlayerCharacterController* GetOwningController() const { return Cast<APlayerCharacterController>(GetOwner()); }
 

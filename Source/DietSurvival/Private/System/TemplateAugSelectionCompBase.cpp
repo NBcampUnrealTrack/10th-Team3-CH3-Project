@@ -15,8 +15,8 @@ void UTemplateAugSelectionCompBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// BeginPlay시점에 PlayerState가 nullptr일 수도 있으니 바인드를 한 틱 미룬다.
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UTemplateAugSelectionCompBase::TryBindToDelegate);
+	// BeginPlay시점에 PlayerState가 nullptr일 수도 있으니 한 틱 미룬다.
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UTemplateAugSelectionCompBase::CachePlayerState);
 }
 
 void UTemplateAugSelectionCompBase::EndPlay(const EEndPlayReason::Type Reason)
@@ -51,7 +51,7 @@ void UTemplateAugSelectionCompBase::HandleAugmentChosen(FName ChosenAugmentFName
 	FinishSelection();
 }
 
-void UTemplateAugSelectionCompBase::TryBindToDelegate()
+void UTemplateAugSelectionCompBase::CachePlayerState()
 {
 	APlayerCharacterController* PC = GetOwningController();
 	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
@@ -103,24 +103,7 @@ void UTemplateAugSelectionCompBase::FinishSelection()
 	PC->SetInputMode(FInputModeGameOnly());
 	PC->SetPause(false);
 	PC->bIsSelectingAugment = false;
-
-	/*if (PendingAugmentCount > 0)
-	{
-		PendingAugmentCount--;
-		StartSelection();
-	}*/
 }
-
-//void UTemplateAugSelectionCompBase::HandlePending()
-//{
-//	// 한 번에 스킬 아이템을 2개 이상 획득해 OnSkillUp이 여러 번 Broadcast 될 수도 있음.
-//	PendingAugmentCount++;
-//	if (!PC->bIsSelectingAugment)
-//	{
-//		PendingAugmentCount--;
-//		StartSelection();
-//	}
-//}
 
 void UTemplateAugSelectionCompBase::LoadCandidates() {
 
