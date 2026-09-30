@@ -8,22 +8,23 @@
 
 #include "Player/PlayerCharacter.h"
 #include "Player/PlayerStatComponent.h"
+#include "Player/PlayerCharacterController.h"
 
 UAugmentSelectionComponent::UAugmentSelectionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
-{
-	HandlePending();
-}
+//void UAugmentSelectionComponent::HandleLevelUp(int32 NewLevel)
+//{
+//	HandlePending();
+//}
 
 void UAugmentSelectionComponent::TryBindToDelegate()
 {
 	Super::TryBindToDelegate();
-	if (!CachedPS) { return; }
-	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);
+	/*if (!CachedPS) { return; }
+	CachedPS->OnLevelUp.AddDynamic(this, &UAugmentSelectionComponent::HandleLevelUp);*/
 }
 
 void UAugmentSelectionComponent::LoadCandidates()

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Player/PlayerCharacterController.h"
 #include "TemplateAugSelectionCompBase.generated.h"
 
 class ADietPlayerState;
@@ -15,6 +16,8 @@ class DIETSURVIVAL_API UTemplateAugSelectionCompBase : public UActorComponent
 
 public:
 	UTemplateAugSelectionCompBase();
+
+	void StartSelection();
 
 protected:
 	// 플레이어가 증강을 선택했을 때 실행될 핸들러. ActiveWidgetInstance의 증강 선택 이벤트에 바인딩한다.
@@ -36,11 +39,10 @@ protected:
 	// 플레이어가 선택한 증강을 실제로 적용
 	virtual void ApplyAugment(FName AugmentFName, int32 Level);
 
-	void StartSelection();
 	void FinishSelection();
-	void HandlePending();
+	//void HandlePending();
 
-	FORCEINLINE APlayerController* GetOwningController() const { return Cast<APlayerController>(GetOwner()); }
+	FORCEINLINE APlayerCharacterController* GetOwningController() const { return Cast<APlayerCharacterController>(GetOwner()); }
 
 	UPROPERTY()
 	TObjectPtr<ADietPlayerState> CachedPS;
@@ -53,5 +55,4 @@ protected:
 
 	TArray<TTuple<FName, int32>> CachedCandidates;
 	int32 PendingAugmentCount = 0;
-	bool bIsSelecting = false;
 };

@@ -1,5 +1,6 @@
 ﻿#include "System/TemplateAugSelectionCompBase.h"
 #include "System/DietPlayerState.h"
+#include "Player/PlayerCharacterController.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/TemplateAugmentSelectionBase.h"
 
@@ -52,16 +53,16 @@ void UTemplateAugSelectionCompBase::HandleAugmentChosen(FName ChosenAugmentFName
 
 void UTemplateAugSelectionCompBase::TryBindToDelegate()
 {
-	APlayerController* PC = GetOwningController();
+	APlayerCharacterController* PC = GetOwningController();
 	CachedPS = PC ? PC->GetPlayerState<ADietPlayerState>() : nullptr;
 }
 
 void UTemplateAugSelectionCompBase::StartSelection()
 {
-	APlayerController* PC = GetOwningController();
-	if (!PC || bIsSelecting) { return; }
+	APlayerCharacterController* PC = GetOwningController();
+	if (!PC || PC->bIsSelectingAugment) { return; }
 
-	bIsSelecting = true;
+	PC->bIsSelectingAugment = true;
 
 	// 증강 선택지 가져오기
 	CachedCandidates.Reset();
@@ -89,7 +90,7 @@ void UTemplateAugSelectionCompBase::StartSelection()
 
 void UTemplateAugSelectionCompBase::FinishSelection()
 {
-	APlayerController* PC = GetOwningController();
+	APlayerCharacterController* PC = GetOwningController();
 	if (!PC) { return; }
 
 	if (ActiveWidgetInstance)
@@ -101,25 +102,25 @@ void UTemplateAugSelectionCompBase::FinishSelection()
 	PC->bShowMouseCursor = false;
 	PC->SetInputMode(FInputModeGameOnly());
 	PC->SetPause(false);
-	bIsSelecting = false;
+	PC->bIsSelectingAugment = false;
 
-	if (PendingAugmentCount > 0)
+	/*if (PendingAugmentCount > 0)
 	{
 		PendingAugmentCount--;
 		StartSelection();
-	}
+	}*/
 }
 
-void UTemplateAugSelectionCompBase::HandlePending()
-{
-	// 한 번에 스킬 아이템을 2개 이상 획득해 OnSkillUp이 여러 번 Broadcast 될 수도 있음.
-	PendingAugmentCount++;
-	if (!bIsSelecting)
-	{
-		PendingAugmentCount--;
-		StartSelection();
-	}
-}
+//void UTemplateAugSelectionCompBase::HandlePending()
+//{
+//	// 한 번에 스킬 아이템을 2개 이상 획득해 OnSkillUp이 여러 번 Broadcast 될 수도 있음.
+//	PendingAugmentCount++;
+//	if (!PC->bIsSelectingAugment)
+//	{
+//		PendingAugmentCount--;
+//		StartSelection();
+//	}
+//}
 
 void UTemplateAugSelectionCompBase::LoadCandidates() {
 

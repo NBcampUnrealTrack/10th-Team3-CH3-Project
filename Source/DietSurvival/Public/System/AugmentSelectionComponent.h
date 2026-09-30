@@ -14,8 +14,8 @@ public:
 	UAugmentSelectionComponent();
 
 protected:
-	UFUNCTION()
-	void HandleLevelUp(int32 NewLevel);
+	/*UFUNCTION()
+	void HandleLevelUp(int32 NewLevel);*/
 
 	UFUNCTION()
 	void HandleRerollPressed();
