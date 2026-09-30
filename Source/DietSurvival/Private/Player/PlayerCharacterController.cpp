@@ -1,8 +1,7 @@
 ﻿#include "Player/PlayerCharacterController.h"
 #include "System/AugmentSelectionComponent.h"
 #include "System/SkillSelectionComponent.h"
-
-#include "System/DietPlayerState.h" // 버그 확인용
+#include "System/DietPlayerState.h"
 
 APlayerCharacterController::APlayerCharacterController()
 {
